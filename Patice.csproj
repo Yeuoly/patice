@@ -4,7 +4,7 @@
     <LangVersion>12</LangVersion>
     <AssemblyName>Patice</AssemblyName>
     <RootNamespace>Patice</RootNamespace>
-    <Version>0.2.12</Version>
+    <Version>0.2.13</Version>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
@@ -14,6 +14,8 @@
     <DebugType>none</DebugType>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="segments/**/*.json" Exclude="segments/**/*.schema.json"
+                      LogicalName="Patice.Segments.%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Include="src/**/*.cs" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" GeneratePathProperty="true" ExcludeAssets="all" />
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.48" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />

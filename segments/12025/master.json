@@ -1,6 +1,5 @@
 {
   "schemaVersion": 1,
-  "exampleOnly": true,
   "timeBase": "music-start-ms",
   "chart": {
     "musicId": 12025,
@@ -12,6 +11,12 @@
       "name": "开场",
       "startMs": 2000,
       "endMs": 9000
+    },
+    {
+      "id": "passage",
+      "name": "后段",
+      "startMs": 15000,
+      "endMs": 23000
     }
   ]
 }
