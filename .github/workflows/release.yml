@@ -50,6 +50,10 @@ jobs:
         run: |
           dotnet build Patice.csproj --no-restore -c Release -p:ContinuousIntegrationBuild=true
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Test segment store integration
+        run: |
+          dotnet test tests/Patice.IntegrationTests.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@v4
         with:
           name: Patice
