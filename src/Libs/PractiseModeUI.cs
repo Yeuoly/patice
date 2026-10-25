@@ -20,6 +20,7 @@ public sealed class PracticeModeUI : MonoBehaviour
         session = new PracticeSession(player, segments);
         session.Open();
         view.Update(session);
+        MelonLoader.MelonLogger.Msg("Patice selector opened.");
     }
 
     public bool PreventGameEnd => session != null && session.State != PracticeState.Closed &&
