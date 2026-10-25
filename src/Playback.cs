@@ -7,6 +7,7 @@ using DB;
 using MAI2.Util;
 using Manager;
 using Monitor;
+using Monitor.Game;
 using Process;
 
 namespace Patice;
@@ -18,6 +19,8 @@ public sealed class Playback
     public const float MusicStartDelayMs = 91;
     private readonly GameProcess process;
     private readonly GameMonitor monitor;
+    private readonly GameCtrl controller;
+    private readonly Func<NoteData, bool> skipNote;
     private readonly MovieController movie;
     private readonly int monitorIndex;
     private readonly CriAtomExPlayer music;
@@ -37,6 +40,9 @@ public sealed class Playback
     {
         this.process = process;
         this.monitor = monitor;
+        controller = Traverse.Create(monitor).Field<GameCtrl>("GameController").Value;
+        skipNote = (Func<NoteData, bool>)Delegate.CreateDelegate(typeof(Func<NoteData, bool>), controller,
+            AccessTools.Method(typeof(GameCtrl), "SkipRegistNote"));
         this.movie = movie;
         this.monitorIndex = monitorIndex;
         var players = Traverse.Create(Singleton<SoundCtrl>.Instance).Field<IDictionary>("_players").Value;
@@ -96,6 +102,12 @@ public sealed class Playback
             NotesManager.Pause(true);
             NotesManager.UpdateTimer();
             monitor.Seek((int)milliseconds);
+            // The native debug-skip pass marks notes used even when SkipRegistNote
+            // rejects them inside the judgment window. Keep those notes playable.
+            Traverse.Create(controller).Field("_debugSkipNow").SetValue(false);
+            foreach (var note in NotesManager.Instance(monitorIndex).getReader().GetNoteList())
+                if (note != null && note.end.msec < engineTime)
+                    note.isUsed = skipNote(note);
             SoundManager.SeekMusic((int)milliseconds);
             movie.SetSeekFrame(monitorIndex, milliseconds);
             process.UpdateNotes();
