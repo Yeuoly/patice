@@ -3,7 +3,7 @@
     "musicId": 12025,
     "difficulty": "master",
     "id": "fa0a1e02-cfd6-4059-8bac-b3002368c778",
-    "name": "开场",
+    "name": "Opening",
     "startMs": 2000,
     "endMs": 9000
   },
@@ -11,7 +11,7 @@
     "musicId": 12025,
     "difficulty": "master",
     "id": "36bb9082-6f8d-4f20-b14a-8fcc3423530a",
-    "name": "后段",
+    "name": "Passage",
     "startMs": 15000,
     "endMs": 23000
   }

@@ -84,13 +84,13 @@ public sealed class Playback
         try
         {
             var engineTime = (float)Math.Max(0, milliseconds) + MusicStartDelayMs;
+            // Initialize reloads this chart and clears the shared note clock.
+            // Restart the clock only after the native score reset has finished.
+            Singleton<GamePlayManager>.Instance.GetGameScore(monitorIndex, -1).Initialize(monitorIndex, false);
             nativeAnchor = chartAnchor = lastNativeTime = engineTime;
             NotesManager.StartPlay(engineTime);
             NotesManager.Pause(true);
             NotesManager.UpdateTimer();
-            // The native seek clears pooled notes, judgment flags and touch chains.
-            // Reset only this player's current attempt; retain all other tracks and manager state.
-            Singleton<GamePlayManager>.Instance.GetGameScore(monitorIndex, -1).Initialize(monitorIndex, false);
             monitor.Seek((int)milliseconds);
             SoundManager.SeekMusic((int)milliseconds);
             movie.SetSeekFrame(monitorIndex, milliseconds);

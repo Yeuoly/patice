@@ -42,8 +42,8 @@ public sealed class PracticeView : IDisposable
         this.monitor = monitor;
         try
         {
-            font = Resources.FindObjectsOfTypeAll<TMP_FontAsset>().FirstOrDefault(x => x.name == "SEGA_MaruGothicDB SDF")
-                ?? throw new InvalidOperationException("Native SEGA_MaruGothicDB SDF font is not loaded.");
+            font = Resources.FindObjectsOfTypeAll<TMP_FontAsset>().FirstOrDefault(x => x.name == "LiberationSans SDF")
+                ?? throw new InvalidOperationException("Native LiberationSans SDF font is not loaded.");
             var main = Camera.main;
             gameCamera = main;
             originalUiLayerMask = main.cullingMask & (1 << UiLayer);
@@ -102,6 +102,7 @@ public sealed class PracticeView : IDisposable
                 .First(x => x.gameObject.scene.IsValid() && x.MonitorId == monitor);
             var windowPrefab = Traverse.Create(messageMonitor).Field<CommonWindow>("_small").Value;
             dialog = Object.Instantiate(windowPrefab, board, false);
+            foreach (var label in dialog.GetComponentsInChildren<TextMeshProUGUI>(true)) label.font = font;
             dialog.SetVisible(false);
             Layer(root.transform);
         }
@@ -121,7 +122,7 @@ public sealed class PracticeView : IDisposable
             {
                 dialog.Prepare(messageMonitor, WindowMessageID.EntryConfirmGuest, WindowPositionID.Middle,
                     Vector3.zero, new Process.WindowParam { hideTitle = true, replaceText = true,
-                        text = "要退出练习吗？", changeSize = true, sizeID = WindowSizeID.Middle });
+                        text = "Exit practice?", changeSize = true, sizeID = WindowSizeID.Middle });
             }
             else
             {
@@ -136,7 +137,7 @@ public sealed class PracticeView : IDisposable
         count.gameObject.SetActive(session.State == PracticeState.Countdown);
         count.text = session.Countdown.ToString();
         speed.text = session.Rate.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "X";
-        mode.text = session.Loop ? "循环" : "单次";
+        mode.text = session.Loop ? "LOOP" : "ONCE";
         name.text = session.Current.name;
         range.text = $"{TimeSpan.FromMilliseconds(session.Current.startMs):mm\\:ss} — {TimeSpan.FromMilliseconds(session.Current.endMs):mm\\:ss}";
         page.text = $"{session.Index + 1} / {session.Count}";
@@ -187,6 +188,8 @@ public sealed class PracticeView : IDisposable
         // Keep the native circle background, particles and press animation.
         var face = button.transform.Find("IMG_Top").GetComponent<RectTransform>();
         var text = Text(face, "Value", 0, 0, face.rect.width, face.rect.height, 28);
+        text.color = Symbol(button).color;
+        text.fontStyle = FontStyles.Bold;
         text.rectTransform.anchorMin = Vector2.zero;
         text.rectTransform.anchorMax = Vector2.one;
         text.rectTransform.offsetMin = text.rectTransform.offsetMax = Vector2.zero;
@@ -222,7 +225,7 @@ public sealed class PracticeView : IDisposable
         text.font = font;
         text.fontSize = size;
         text.alignment = TextAlignmentOptions.Center;
-        text.color = new Color32(91, 76, 126, 255);
+        text.color = Color.white;
         text.raycastTarget = false;
         return text;
     }

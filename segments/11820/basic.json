@@ -3,7 +3,7 @@
     "musicId": 11820,
     "difficulty": "basic",
     "id": "6be11e11-8806-4ad5-b513-2db2cb0fe64c",
-    "name": "开场",
+    "name": "Opening",
     "startMs": 2000,
     "endMs": 9000
   },
@@ -11,7 +11,7 @@
     "musicId": 11820,
     "difficulty": "basic",
     "id": "bdd2a8ae-9d2b-48f2-8d6d-f8e3e34ad457",
-    "name": "后段",
+    "name": "Passage",
     "startMs": 15000,
     "endMs": 23000
   }
