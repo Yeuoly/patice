@@ -1,37 +1,36 @@
 using System;
 using System.IO;
 using Manager;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Patice.Domain;
 
-[DataContract]
+[JsonObject(MemberSerialization.OptIn)]
 public sealed class ChartIdentity
 {
-    [DataMember] public int musicId;
-    [DataMember] public string difficulty;
+    [JsonProperty] public int musicId;
+    [JsonProperty] public string difficulty;
 }
 
-[DataContract]
+[JsonObject(MemberSerialization.OptIn)]
 public sealed class Segment
 {
-    [DataMember] public string id;
-    [DataMember] public string name;
-    [DataMember] public int startMs;
-    [DataMember] public int endMs;
+    [JsonProperty] public string id;
+    [JsonProperty] public string name;
+    [JsonProperty] public int startMs;
+    [JsonProperty] public int endMs;
 }
 
-[DataContract]
+[JsonObject(MemberSerialization.OptIn)]
 public sealed class SegmentDocument
 {
-    [DataMember] public int schemaVersion;
-    [DataMember] public string timeBase;
-    [DataMember] public bool exampleOnly;
-    [DataMember] public ChartIdentity chart;
-    [DataMember] public Segment[] segments;
+    [JsonProperty] public int schemaVersion;
+    [JsonProperty] public string timeBase;
+    [JsonProperty] public bool exampleOnly;
+    [JsonProperty] public ChartIdentity chart;
+    [JsonProperty] public Segment[] segments;
 
     public static SegmentDocument Load(int monitor)
     {
@@ -42,8 +41,7 @@ public sealed class SegmentDocument
         var identity = new ChartIdentity { musicId = musicId, difficulty = difficulties[difficulty] };
         var path = Path.Combine(Environment.CurrentDirectory, $"UserData/PracticeSegments/{musicId}/{identity.difficulty}.json");
         if (new FileInfo(path).Length > 256 * 1024) throw new InvalidDataException("Segment document exceeds 256 KiB.");
-        using var input = File.OpenRead(path);
-        var document = (SegmentDocument)new DataContractJsonSerializer(typeof(SegmentDocument)).ReadObject(input);
+        var document = JsonConvert.DeserializeObject<SegmentDocument>(File.ReadAllText(path));
         if (document == null) throw new InvalidDataException("Empty segment document.");
         document.Validate(identity, NotesManager.Instance().getPlayFinalMsec() - Playback.MusicStartDelayMs);
         return document;

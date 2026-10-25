@@ -4,7 +4,7 @@
     <LangVersion>12</LangVersion>
     <AssemblyName>Patice</AssemblyName>
     <RootNamespace>Patice</RootNamespace>
-    <Version>0.2.6</Version>
+    <Version>0.2.7</Version>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
@@ -15,10 +15,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="src/**/*.cs" />
-    <Reference Include="System.Runtime.Serialization" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" GeneratePathProperty="true" ExcludeAssets="all" />
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.48" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(PkgNewtonsoft_Json)/lib/net20/Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <EmbeddedResource Include="$(PkgNewtonsoft_Json)/LICENSE.md" LogicalName="Patice.Newtonsoft.Json.LICENSE.md" />
     <Reference Include="$(ReferencePath)/*.dll" Exclude="$(ReferencePath)/mscorlib.dll;$(ReferencePath)/System*.dll;$(ReferencePath)/Mono*.dll">
       <Private>false</Private>
     </Reference>
     <EmbeddedResource Include="assets/setting-frame.png" LogicalName="Patice.setting-frame.png" />
   </ItemGroup>
+  <UsingTask TaskName="ILRepack" AssemblyFile="$(PkgILRepack_Lib_MSBuild_Task)/build/ILRepack.Lib.MSBuild.Task.dll" />
+  <Target Name="BundleJson" AfterTargets="Build">
+    <ILRepack InputAssemblies="$(TargetPath);$(PkgNewtonsoft_Json)/lib/net20/Newtonsoft.Json.dll"
+              OutputFile="$(TargetPath)" LibraryPath="$(MSBuildProjectDirectory)/.build/references"
+              Internalize="true" TargetKind="Dll" DebugInfo="false" />
+  </Target>
 </Project>
