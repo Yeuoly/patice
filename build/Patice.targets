@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <PaticeRoot>$(MSBuildThisFileDirectory)..</PaticeRoot>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'AquaMai.Mods'">
+    <Compile Remove="UX/PracticeMode/**/*.cs" />
+    <Compile Include="$(PaticeRoot)/src/**/*.cs" />
+    <EmbeddedResource Include="$(PaticeRoot)/assets/setting-frame.png" LogicalName="Patice.setting-frame.png" />
+  </ItemGroup>
+  <Target Name="PaticeBuildInfo" BeforeTargets="CoreCompile" Condition="'$(MSBuildProjectName)' == 'AquaMai'">
+    <ItemGroup>
+      <PaticeVersionLine Include="namespace AquaMai%3B" />
+      <PaticeVersionLine Include="public static partial class BuildInfo {" />
+      <PaticeVersionLine Include="public const string Version = &quot;1.9.24&quot;%3B" />
+      <PaticeVersionLine Include="public const string GitVersion = &quot;1.9.24-patice-$(SourceRevisionId)&quot;%3B" />
+      <PaticeVersionLine Include="public const string BuildDate = &quot;&quot;%3B" />
+      <PaticeVersionLine Include="}" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(IntermediateOutputPath)Patice.BuildInfo.g.cs" Lines="@(PaticeVersionLine)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)Patice.BuildInfo.g.cs" />
+    </ItemGroup>
+  </Target>
+</Project>

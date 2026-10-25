@@ -1,0 +1,11 @@
+--- a/AquaMai.Mods/Fix/DebugFeature.cs
++++ b/AquaMai.Mods/Fix/DebugFeature.cs
+@@ -233,7 +233,7 @@
+                 timer += GameManager.GetGameMSecAddD();
+             }
+ 
+-            if (KeyMap.disableDebugFeatureHotkeys) return;
++            if (KeyMap.disableDebugFeatureHotkeys || UX.PracticeMode.PracticeMode.ui != null) return;
+ 
+             if (Input.GetKeyDown(Autoplay))
+             {

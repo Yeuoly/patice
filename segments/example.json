@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "exampleOnly": true,
+  "timeBase": "music-start-ms",
+  "chart": {
+    "musicId": 12025,
+    "difficulty": "master"
+  },
+  "segments": [
+    {
+      "id": "opening",
+      "name": "开场",
+      "startMs": 2000,
+      "endMs": 9000
+    }
+  ]
+}

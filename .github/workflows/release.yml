@@ -1,0 +1,84 @@
+name: Build and Release
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: patice-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - name: Checkout AquaMai host
+        uses: actions/checkout@v4
+        with:
+          repository: MuNET-OSS/AquaMai
+          ref: 5e384e6428e2b6b06fcbea4a03b88453855c838f
+          path: .build/AquaMai
+          persist-credentials: false
+      - name: Fetch build references
+        run: |
+          Invoke-WebRequest https://res.mumur.net/aquamai-ci-reference.zip -OutFile .build/references.zip
+          Expand-Archive .build/references.zip .build/AquaMai/Libs -Force
+      - name: Apply host input integration
+        run: |
+          git -C .build/AquaMai apply --check "$env:GITHUB_WORKSPACE/build/DebugFeature.patch"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git -C .build/AquaMai apply "$env:GITHUB_WORKSPACE/build/DebugFeature.patch"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Restore
+        run: |
+          dotnet restore .build/AquaMai/AquaMai/AquaMai.csproj
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build
+        run: |
+          dotnet build .build/AquaMai/AquaMai/AquaMai.csproj --no-restore -c Release "-p:CustomAfterMicrosoftCommonTargets=$env:GITHUB_WORKSPACE/build/Patice.targets" "-p:SourceRevisionId=$env:GITHUB_SHA" -p:ContinuousIntegrationBuild=true
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AquaMai
+          path: .build/AquaMai/Output/AquaMai.dll
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v') && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: AquaMai
+          path: release
+      - name: Publish release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" release/AquaMai.dll --clobber
+          else
+            gh release create "$RELEASE_TAG" release/AquaMai.dll --verify-tag --title "$RELEASE_TAG" --generate-notes
+          fi
