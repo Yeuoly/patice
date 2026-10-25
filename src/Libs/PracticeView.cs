@@ -186,15 +186,18 @@ public sealed class PracticeView : IDisposable
 
     private TextMeshProUGUI Setting(Transform parent, int number)
     {
-        var slot = Slot(parent, number, "MusicSelectInfo");
-        var prefab = Resources.Load<TabButton>("Common/Prefabs/SelectorTab/Button_Tab");
-        var button = Object.Instantiate(prefab, slot, false);
+        // The eight cabinet keys are 45 degrees apart. Rotate the native flat
+        // button anchor around Main's centre, including its animation direction.
+        var slot = Slot(parent, 4, "MusicSelect");
+        var turn = Quaternion.AngleAxis(-45 * (number - 4), Vector3.forward);
+        slot.localPosition = turn * slot.localPosition;
+        slot.localRotation = turn * slot.localRotation;
+        var button = Object.Instantiate(CommonPrefab.GetFlatButtonObject(), slot, false);
         Configure(button, number);
-        // These settings have values, not the native tab's left/right arrow decorations.
-        Traverse.Create(button).Field<Image>("_leftArrow").Value.enabled = false;
-        Traverse.Create(button).Field<Image>("_rightArrow").Value.enabled = false;
         SetFrame(button);
-        return ButtonText(button, 28);
+        var text = ButtonText(button, 40);
+        text.rectTransform.localRotation = Quaternion.Euler(0, 0, 180);
+        return text;
     }
 
     private void AddButton(Transform parent, int number, bool flat, bool flip)
