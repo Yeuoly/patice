@@ -8,7 +8,7 @@ public sealed class PracticeSession : IDisposable
 {
     private readonly Playback player;
     private readonly Segment[] segments;
-    private readonly float[] rates = { 1f, .5f, .75f, .9f };
+    private readonly float[] rates = { 1f, .9f, .8f, .7f, .6f, .5f };
     private int rateIndex;
     private double elapsed;
     private bool playingSegment;
