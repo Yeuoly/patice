@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using HarmonyLib;
@@ -19,7 +20,7 @@ public sealed class Playback
     private readonly MovieController movie;
     private readonly int monitorIndex;
     private readonly CriAtomExPlayer music;
-    private readonly List<MovieMaterialMai2> moviePlayers;
+    private readonly MovieMaterialMai2 moviePlayer;
     private double nativeAnchor, chartAnchor, lastNativeTime;
     private double entryPosition;
     private bool entryPaused, attached, mediaRatePending;
@@ -35,10 +36,10 @@ public sealed class Playback
         this.monitor = monitor;
         this.movie = movie;
         this.monitorIndex = monitorIndex;
-        var players = Traverse.Create(Singleton<SoundCtrl>.Instance).Field<Dictionary<int, object>>("_players").Value;
+        var players = Traverse.Create(Singleton<SoundCtrl>.Instance).Field<IDictionary>("_players").Value;
         music = Traverse.Create(players[2]).Field<CriAtomExPlayer>("Player").Value
             ?? throw new InvalidOperationException("Music player is unavailable.");
-        moviePlayers = Traverse.Create(movie).Field<List<MovieMaterialMai2>>("_moviePlayers").Value;
+        moviePlayer = Traverse.Create(movie).Field<List<MovieMaterialMai2>>("_moviePlayers").Value[monitorIndex];
     }
 
     public void Capture()
@@ -132,7 +133,7 @@ public sealed class Playback
     {
         music.SetPitch((float)(1200 * Math.Log(Rate, 2)));
         music.UpdateAll();
-        foreach (var player in moviePlayers) player.player.SetSpeed(Rate);
+        moviePlayer?.player?.SetSpeed(Rate);
         mediaRatePending = false;
     }
 
