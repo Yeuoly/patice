@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Patice.Domain;
 
@@ -24,8 +23,6 @@ public sealed class BuiltinSegments : ISegmentStore
                 result.Add(document.Id, levels = new Dictionary<string, Segment[]>());
             var entries = levels.TryGetValue(document.Difficulty, out var existing)
                 ? existing.Concat(document.Segments).ToArray() : document.Segments;
-            if (entries.Select(segment => segment.id).Distinct().Count() != entries.Length)
-                throw new InvalidDataException($"Duplicate built-in segment ID in {resource}.");
             levels[document.Difficulty] = entries;
         }
         return result;
