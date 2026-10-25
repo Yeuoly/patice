@@ -17,8 +17,15 @@
     <EmbeddedResource Include="segments/**/*.json" Exclude="segments/**/*.schema.json"
                       LogicalName="Patice.Segments.%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Include="src/**/*.cs" />
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.48" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />
     <Reference Include="$(ReferencePath)/*.dll" Exclude="$(ReferencePath)/mscorlib.dll;$(ReferencePath)/System*.dll;$(ReferencePath)/Mono*.dll">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+  <UsingTask TaskName="ILRepack" AssemblyFile="$(PkgILRepack_Lib_MSBuild_Task)/build/ILRepack.Lib.MSBuild.Task.dll" />
+  <Target Name="BundleDependencies" AfterTargets="Build">
+    <ILRepack InputAssemblies="$(TargetPath);@(ReferenceCopyLocalPaths)"
+              OutputFile="$(TargetPath)" LibraryPath="$(ReferencePath)"
+              Internalize="true" TargetKind="Dll" DebugInfo="false" />
+  </Target>
 </Project>

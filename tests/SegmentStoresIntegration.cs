@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Patice.Domain;
 using Patice.Segments;
 using Xunit;
@@ -46,7 +47,7 @@ public sealed class SegmentStoresIntegration : IDisposable
         Assert.Equal(1000, Assert.Single(new LocalSegmentStore(path).Get(11820, Difficulty.Basic)).startMs);
 
         var file = Path.Combine(path, "11820", "basic.json");
-        File.WriteAllText(file, File.ReadAllText(file).Replace("\"endMs\": 2000", "\"endMs\": 500"));
+        File.WriteAllText(file, Regex.Replace(File.ReadAllText(file), "\"endMs\"\\s*:\\s*2000", "\"endMs\": 500"));
         var management = new SegmentManagement();
         management.RegisterStore(new LocalSegmentStore(path));
         Assert.Throws<InvalidDataException>(() => management.Get(11820, Difficulty.Basic));

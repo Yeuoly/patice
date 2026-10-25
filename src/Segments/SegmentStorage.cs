@@ -2,9 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
+using LitJson;
 using Patice.Domain;
 
 namespace Patice.Segments;
@@ -18,11 +16,13 @@ public interface ISegmentStorage
 public sealed class SegmentStorage : ISegmentStorage
 {
     private readonly string root;
-    private static readonly JsonSerializerSettings jsonSettings = new()
+    static SegmentStorage()
     {
-        MissingMemberHandling = MissingMemberHandling.Error,
-        Converters = { new StringEnumConverter(new CamelCaseNamingStrategy(), false) }
-    };
+        JsonMapper.RegisterImporter<string, Guid>(value => new Guid(value));
+        JsonMapper.RegisterExporter<Guid>((value, writer) => writer.Write(value.ToString()));
+        JsonMapper.RegisterImporter<string, Difficulty>(value => (Difficulty)Enum.Parse(typeof(Difficulty), value, true));
+        JsonMapper.RegisterExporter<Difficulty>((value, writer) => writer.Write(value.ToString().ToLowerInvariant()));
+    }
 
     public SegmentStorage(string path) => root = Path.GetFullPath(path);
 
@@ -39,8 +39,8 @@ public sealed class SegmentStorage : ISegmentStorage
     internal static Segment[] ReadSegments(Stream stream)
     {
         using var reader = new StreamReader(stream, Encoding.UTF8);
-        using var json = new JsonTextReader(reader);
-        return JsonSerializer.Create(jsonSettings).Deserialize<Segment[]>(json);
+        var json = new JsonReader(reader) { SkipNonMembers = false };
+        return JsonMapper.ToObject<Segment[]>(json);
     }
 
     // External data is checked at the storage boundary; CI uses the same rules.
@@ -66,8 +66,8 @@ public sealed class SegmentStorage : ISegmentStorage
         var path = ChartPath(id, difficulty);
         Directory.CreateDirectory(Path.GetDirectoryName(path));
         using var writer = new StreamWriter(path, false, new UTF8Encoding(false));
-        using var json = new JsonTextWriter(writer) { Formatting = Formatting.Indented };
-        JsonSerializer.Create(jsonSettings).Serialize(json, segments);
+        var json = new JsonWriter(writer) { PrettyPrint = true };
+        JsonMapper.ToJson(segments, json);
     }
 
     private string ChartPath(int id, Difficulty difficulty)
