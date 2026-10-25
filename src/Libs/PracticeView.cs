@@ -101,7 +101,7 @@ public sealed class PracticeView : IDisposable
             messageMonitor = Resources.FindObjectsOfTypeAll<GenericMonitor>()
                 .First(x => x.gameObject.scene.IsValid() && x.MonitorId == monitor);
             var windowPrefab = Traverse.Create(messageMonitor).Field<CommonWindow>("_small").Value;
-            dialog = Object.Instantiate(windowPrefab, board, false);
+            dialog = Object.Instantiate(windowPrefab, controls.transform, false);
             foreach (var label in dialog.GetComponentsInChildren<TextMeshProUGUI>(true)) ApplyTypography(label);
             dialog.SetVisible(false);
             Layer(root.transform);
