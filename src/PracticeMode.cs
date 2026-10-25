@@ -121,6 +121,20 @@ public static class PracticeMode
             var score = Singleton<GamePlayManager>.Instance.GetGameScore(i, -1);
             MelonLogger.Msg($"Practice end P{i + 1}: judged={score.IsAllJudged()}, " +
                 $"monitorEnded={____monitors[i].IsAllJudged()}, playEnded={____monitors[i].IsPlayEnd()}");
+            if (score.IsAllJudged()) continue;
+            var results = Traverse.Create(score).Field<Array>("_judgeResultList").Value;
+            var notes = NotesManager.Instance(i).getReader().GetNoteList();
+            var pending = 0;
+            for (var index = 0; index < results.Length; index++)
+            {
+                if (Traverse.Create(results.GetValue(index)).Field<bool>("Judged").Value) continue;
+                pending++;
+                if (pending > 16) continue;
+                var note = notes[index];
+                MelonLogger.Msg($"Pending note {index}: type={note.type.getEnum()}, " +
+                    $"start={note.time.msec}, end={note.end.msec}, used={note.isUsed}, judged={note.isJudged}");
+            }
+            MelonLogger.Msg($"Pending total: {pending}/{results.Length}");
         }
     }
 
