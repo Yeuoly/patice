@@ -31,21 +31,27 @@ public static class PracticeMode
         }
     }
 
-    [HarmonyPatch(typeof(GameProcess), "OnStart"), HarmonyPrefix]
-    private static void Start(GameProcess __instance)
+    [HarmonyPatch]
+    public static class Lifecycle
     {
-        Close();
-        game = __instance;
-        entryHeld = false;
-        MelonLogger.Msg("Practice input attached to gameplay.");
-    }
+        [HarmonyPatch(typeof(GameProcess), "OnStart"), HarmonyPostfix]
+        private static void Start(GameProcess __instance)
+        {
+            Plugin.InstallGameplayHooks();
+            Close();
+            game = __instance;
+            entryHeld = false;
+            ScoreGuard.BeginTrack();
+            MelonLogger.Msg("Practice input attached to gameplay.");
+        }
 
-    [HarmonyPatch(typeof(GameProcess), "OnRelease"), HarmonyPrefix]
-    private static void Release()
-    {
-        game = null;
-        entryHeld = false;
-        Close();
+        [HarmonyPatch(typeof(GameProcess), "OnRelease"), HarmonyPrefix]
+        private static void Release()
+        {
+            game = null;
+            entryHeld = false;
+            Close();
+        }
     }
 
     [HarmonyPatch(typeof(GameProcess), "OnUpdate"), HarmonyPrefix]

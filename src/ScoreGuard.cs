@@ -1,7 +1,6 @@
 using HarmonyLib;
 using MAI2.Util;
 using Manager;
-using Process;
 
 namespace Patice;
 
@@ -14,8 +13,7 @@ public static class ScoreGuard
 
     public static void MarkPractice(int monitor) => owner = Singleton<UserDataManager>.Instance.GetUserData(monitor);
 
-    [HarmonyPatch(typeof(GameProcess), "OnStart"), HarmonyPrefix]
-    private static void BeginTrack() => owner = null;
+    internal static void BeginTrack() => owner = null;
 
     [HarmonyPatch(typeof(UserData), "UpdateScore"), HarmonyPrefix]
     private static bool SaveRecord(UserData __instance) => !ReferenceEquals(__instance, owner);
