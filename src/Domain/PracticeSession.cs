@@ -2,7 +2,7 @@ using System;
 
 namespace Patice.Domain;
 
-public enum PracticeState { Closed, Selecting, Moving, Selected, Countdown, Playing, ExitPrompt }
+public enum PracticeState { Closed, Selecting, Seeking, Selected, Countdown, Playing, ExitPrompt }
 
 public sealed class PracticeSession : IDisposable
 {
@@ -13,7 +13,7 @@ public sealed class PracticeSession : IDisposable
     private double elapsed;
     public PracticeState State { get; private set; }
     public int Index { get; private set; }
-    public double MovePositionMs { get; private set; }
+    public double SeekPositionMs { get; private set; }
     public int Count => segments.Length;
     public Segment Current => segments[Index];
     public bool Loop { get; private set; } = true;
@@ -48,7 +48,7 @@ public sealed class PracticeSession : IDisposable
         switch (State)
         {
             case PracticeState.Selecting: Close(true); break;
-            case PracticeState.Moving: StartPreview(); break;
+            case PracticeState.Seeking: StartPreview(); break;
             case PracticeState.Selected:
             case PracticeState.Countdown: StartPreview(); break;
             case PracticeState.Playing:
@@ -73,13 +73,13 @@ public sealed class PracticeSession : IDisposable
             else { State = PracticeState.Playing; player.Pause(false); }
             return true;
         }
-        if (State == PracticeState.Moving)
+        if (State == PracticeState.Seeking)
         {
             if (number == 4) { Close(false); return true; }
             if (number != 3 && number != 6) return false;
-            MovePositionMs = Math.Max(0, Math.Min(player.DurationMs,
-                MovePositionMs + (number == 3 ? 5000 : -5000)));
-            player.Seek(MovePositionMs);
+            SeekPositionMs = Math.Max(0, Math.Min(player.DurationMs,
+                SeekPositionMs + (number == 3 ? 5000 : -5000)));
+            player.Seek(SeekPositionMs);
             return true;
         }
         if (State != PracticeState.Selecting) return false;
@@ -90,9 +90,9 @@ public sealed class PracticeSession : IDisposable
             case 1: rateIndex = (rateIndex + 1) % rates.Length; player.SetRate(Rate); break;
             case 2:
                 player.Pause(true);
-                MovePositionMs = player.EntryPositionMs;
-                player.Seek(MovePositionMs);
-                State = PracticeState.Moving;
+                SeekPositionMs = player.EntryPositionMs;
+                player.Seek(SeekPositionMs);
+                State = PracticeState.Seeking;
                 break;
             case 8: Loop = !Loop; break;
             case 4:
