@@ -4,7 +4,7 @@
     <LangVersion>12</LangVersion>
     <AssemblyName>Patice</AssemblyName>
     <RootNamespace>Patice</RootNamespace>
-    <Version>0.2.5</Version>
+    <Version>0.2.6</Version>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
@@ -15,6 +15,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="src/**/*.cs" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="$(ReferencePath)/*.dll" Exclude="$(ReferencePath)/mscorlib.dll;$(ReferencePath)/System*.dll;$(ReferencePath)/Mono*.dll">
       <Private>false</Private>
     </Reference>

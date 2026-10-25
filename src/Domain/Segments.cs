@@ -1,36 +1,37 @@
 using System;
 using System.IO;
 using Manager;
-using UnityEngine;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Patice.Domain;
 
-[Serializable]
+[DataContract]
 public sealed class ChartIdentity
 {
-    public int musicId;
-    public string difficulty;
+    [DataMember] public int musicId;
+    [DataMember] public string difficulty;
 }
 
-[Serializable]
+[DataContract]
 public sealed class Segment
 {
-    public string id;
-    public string name;
-    public int startMs;
-    public int endMs;
+    [DataMember] public string id;
+    [DataMember] public string name;
+    [DataMember] public int startMs;
+    [DataMember] public int endMs;
 }
 
-[Serializable]
+[DataContract]
 public sealed class SegmentDocument
 {
-    public int schemaVersion;
-    public string timeBase;
-    public bool exampleOnly;
-    public ChartIdentity chart;
-    public Segment[] segments;
+    [DataMember] public int schemaVersion;
+    [DataMember] public string timeBase;
+    [DataMember] public bool exampleOnly;
+    [DataMember] public ChartIdentity chart;
+    [DataMember] public Segment[] segments;
 
     public static SegmentDocument Load(int monitor)
     {
@@ -41,7 +42,8 @@ public sealed class SegmentDocument
         var identity = new ChartIdentity { musicId = musicId, difficulty = difficulties[difficulty] };
         var path = Path.Combine(Environment.CurrentDirectory, $"UserData/PracticeSegments/{musicId}/{identity.difficulty}.json");
         if (new FileInfo(path).Length > 256 * 1024) throw new InvalidDataException("Segment document exceeds 256 KiB.");
-        var document = JsonUtility.FromJson<SegmentDocument>(File.ReadAllText(path));
+        using var input = File.OpenRead(path);
+        var document = (SegmentDocument)new DataContractJsonSerializer(typeof(SegmentDocument)).ReadObject(input);
         if (document == null) throw new InvalidDataException("Empty segment document.");
         document.Validate(identity, NotesManager.Instance().getPlayFinalMsec() - Playback.MusicStartDelayMs);
         return document;
