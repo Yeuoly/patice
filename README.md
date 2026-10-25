@@ -11,6 +11,10 @@ A standalone practice mod for SDEZ. Practice predefined chart segments with auto
 
 Share this project with your AI agent, such as DeepSeek, GPT, or Claude, and ask it to install the DLL from [Releases](https://github.com/Yeuoly/patice/releases) into your game.
 
+```text
+Hey, please help me install Patice into my SDEZ game. Check the project at https://github.com/Yeuoly/patice and download Patice.dll from the latest release.
+```
+
 ## Acknowledgments
 
 Built with [MelonLoader](https://github.com/LavaGang/MelonLoader) and [Harmony](https://github.com/pardeike/Harmony).
