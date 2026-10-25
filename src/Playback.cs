@@ -110,7 +110,7 @@ public sealed class Playback
         try
         {
             Preview(false);
-            Seek(rewind ? entryPosition : PositionMs);
+            if (rewind) Seek(entryPosition);
         }
         finally
         {

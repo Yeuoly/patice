@@ -52,6 +52,13 @@ public static class PracticeMode
             entryHeld = false;
             Close();
         }
+
+        [HarmonyPatch(typeof(GameProcess), "SetRelease"), HarmonyPrefix]
+        private static void Finish()
+        {
+            // Release playback before the game stops its clock and finalizes scores.
+            Close();
+        }
     }
 
     [HarmonyPatch(typeof(GameProcess), "OnUpdate"), HarmonyPrefix]
