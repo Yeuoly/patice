@@ -18,6 +18,8 @@ public static class PracticeMode
     public static Playback Player { get; private set; }
     private static bool entryHeld;
     private static GameProcess game;
+    private static bool practiced;
+    private static float nextEndReport;
 
     private static void Close()
     {
@@ -42,6 +44,8 @@ public static class PracticeMode
             game = __instance;
             entryHeld = false;
             ScoreGuard.BeginTrack();
+            practiced = false;
+            nextEndReport = 0;
             MelonLogger.Msg("Practice input attached to gameplay.");
         }
 
@@ -91,6 +95,7 @@ public static class PracticeMode
             var segments = Plugin.SegmentManagement.Get(GameManager.SelectMusicID[active], difficulty);
             if (segments.Length == 0) return;
             Player = new Playback(__instance, ____monitors[active], ____gameMovie, active);
+            practiced = true;
             ui = ____monitors[active].gameObject.AddComponent<PracticeModeUI>();
             ui.Initialize(active, segments, Player);
         }
@@ -98,6 +103,24 @@ public static class PracticeMode
         {
             MelonLogger.Error($"[Patice] {exception}");
             Close();
+        }
+    }
+
+    [HarmonyPatch(typeof(GameProcess), "OnUpdate"), HarmonyPostfix]
+    private static void ReportEndState(GameMonitor[] ____monitors, int ____sequence)
+    {
+        if (!practiced || Time.unscaledTime < nextEndReport) return;
+        var position = NotesManager.GetCurrentMsec();
+        var end = NotesManager.Instance().getPlayFinalMsec();
+        if (____sequence < 5 && position < end) return;
+        nextEndReport = Time.unscaledTime + 15;
+        MelonLogger.Msg($"Practice end: sequence={____sequence}, time={position:F0}/{end:F0}, " +
+            $"musicEnded={SoundManager.IsEndMusic()}, blockingEnd={ui != null && ui.PreventGameEnd}");
+        for (var i = 0; i < ____monitors.Length; i++)
+        {
+            var score = Singleton<GamePlayManager>.Instance.GetGameScore(i, -1);
+            MelonLogger.Msg($"Practice end P{i + 1}: judged={score.IsAllJudged()}, " +
+                $"monitorEnded={____monitors[i].IsAllJudged()}, playEnded={____monitors[i].IsPlayEnd()}");
         }
     }
 
