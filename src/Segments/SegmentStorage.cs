@@ -54,7 +54,6 @@ public sealed class SegmentStorage : ISegmentStorage
                 string.IsNullOrWhiteSpace(segment.name) || segment.name.Length > 40 ||
                 segment.startMs < 0 || segment.endMs <= segment.startMs)
                 throw new InvalidDataException("Invalid segment ID, name or range.");
-            ValidateChart(segment.musicId, segment.difficulty);
         }
         if (segments.GroupBy(segment => new { segment.musicId, segment.difficulty, segment.id })
             .Any(group => group.Count() > 1))
@@ -71,15 +70,8 @@ public sealed class SegmentStorage : ISegmentStorage
         JsonSerializer.Create(jsonSettings).Serialize(json, segments);
     }
 
-    private static void ValidateChart(int id, Difficulty difficulty)
-    {
-        if (id <= 0 || !Enum.IsDefined(typeof(Difficulty), difficulty))
-            throw new ArgumentException("Invalid chart ID or difficulty.");
-    }
-
     private string ChartPath(int id, Difficulty difficulty)
     {
-        ValidateChart(id, difficulty);
         return Path.Combine(root, id.ToString(System.Globalization.CultureInfo.InvariantCulture), difficulty.ToString().ToLowerInvariant() + ".json");
     }
 }
