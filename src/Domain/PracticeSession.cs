@@ -1,6 +1,6 @@
 using System;
 
-namespace AquaMai.Mods.UX.PracticeMode.Domain;
+namespace Patice.Domain;
 
 public enum PracticeState { Closed, Selecting, Selected, Countdown, Playing, ExitPrompt }
 

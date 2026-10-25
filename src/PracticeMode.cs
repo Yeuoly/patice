@@ -3,47 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using AquaMai.Mods.Fix;
-using AquaMai.Core.Helpers;
-using AquaMai.Core.Resources;
-using AquaMai.Mods.UX.PracticeMode.Libs;
+using Patice.Libs;
 using HarmonyLib;
 using Manager;
 using Monitor;
 using Monitor.Game;
 using Process;
 using UnityEngine;
-using AquaMai.Config.Attributes;
-using AquaMai.Config.Types;
-using AquaMai.Core.Attributes;
 using MelonLoader;
 using MAI2.Util;
-using AquaMai.Mods.UX.PracticeMode.Domain;
+using Patice.Domain;
 
-namespace AquaMai.Mods.UX.PracticeMode;
+namespace Patice;
 
-[ConfigCollapseNamespace]
-[ConfigSection(
-    en: "Practice Mode.",
-    name: "练习模式")]
-[EnableGameVersion(23000)]
+[HarmonyPatch]
 public class PracticeMode
 {
-    [ConfigEntry(
-        name: "按键",
-        en: "Key to show Practice Mode UI.",
-        zh: "显示练习模式 UI 的按键")]
-    public static readonly KeyCodeOrName key = KeyCodeOrName.Test;
-
-    [ConfigEntry]
-    public static readonly bool longPress = false;
-
-    [ConfigEntry(
-        name: "仅自由模式可用",
-        en: "Only allow Practice Mode in Freedom Mode while time remains.",
-        zh: "仅在自由模式且时间未耗尽时允许使用练习模式")]
-    public static readonly bool onlyInFreedomMode = false;
-
+    private static bool entryHeld;
     public static float speed = 1;
     private static CriAtomExPlayer player;
     private static List<MovieMaterialMai2> movie;
@@ -62,15 +38,6 @@ public class PracticeMode
         }
     }
 
-    public static void TogglePause()
-    {
-        DebugFeature.Pause = !DebugFeature.Pause;
-        if (!DebugFeature.Pause)
-        {
-            Seek(0);
-        }
-    }
-
     public static void GameCtrlResetOptionSpeed()
     {
         foreach (var g in gameCtrl)
@@ -79,13 +46,13 @@ public class PracticeMode
             {
                 g?.ResetOptionSpeed();
             }
-            catch (NullReferenceException) {} // 忽略即可，因为SBGA的代码在ResetOptionSpeed内部没有做null检查，单刷的时候对2P那侧这个函数必定会抛NPE
+            catch (NullReferenceException) { } // Inactive monitors have no initialized note-speed options.
         }
     }
 
     public static void SetSpeed()
     {
-        DontRuinMyAccount.triggerForPracticeMode();
+        ScoreGuard.MarkPractice();
         
         player?.SetPitch((float)(1200 * Math.Log(speed, 2)));
         // player.SetDspTimeStretchRatio(1 / speed);
@@ -95,35 +62,11 @@ public class PracticeMode
         GameCtrlResetOptionSpeed();
     }
 
-    private static IEnumerator SetSpeedCoroutineInner()
-    {
-        yield return null;
-        SetSpeed();
-    }
-
-    public static void SetSpeedCoroutine()
-    {
-        SharedInstances.GameMainObject.StartCoroutine(SetSpeedCoroutineInner());
-    }
-
-    public static void Seek(int addMsec)
-    {
-        // Debug feature 里面那个 timer 不能感知变速
-        // 为了和魔改版本统一，polyfill 里面不修这个
-        // 这里重新实现一个能感知变速的 Seek
-        var msec = CurrentPlayMsec + addMsec;
-        if (msec < 0)
-        {
-            msec = 0;
-        }
-
-        CurrentPlayMsec = msec;
-    }
-
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GameCtrl), "ForceNoteCollect")]
     private static void ForceNoteCollect(NotesManager ___NoteMng)
     {
+        if (ui == null) return;
         foreach (NoteData note in ___NoteMng.getReader().GetNoteList())
         {
             if (note != null && note.type.isConnectSlide())
@@ -138,8 +81,7 @@ public class PracticeMode
         get => NotesManager.GetCurrentMsec() - 91;
         set
         {
-            DebugFeature.CurrentPlayMsec = value;
-            SetSpeedCoroutine();
+            Playback.Seek(value);
         }
     }
 
@@ -169,6 +111,7 @@ public class PracticeMode
         ClearPracticeEffects();
         speed = 1;
         ui = null;
+        entryHeld = false;
     }
 
     [HarmonyPatch(typeof(GameProcess), "OnRelease")]
@@ -178,6 +121,7 @@ public class PracticeMode
         ClearPracticeEffects();
         speed = 1;
         ui = null;
+        entryHeld = false;
     }
 
     [HarmonyPatch(typeof(GameCtrl), "Initialize")]
@@ -194,15 +138,17 @@ public class PracticeMode
         if (____sequence != 4) return;
         try
         {
-            var entry = KeyListener.GetKeyDownOrLongPress(key, longPress);
+            var held = InputManager.GetSystemInputPush(InputManager.SystemButtonSetting.ButtonTest);
+            var entry = held && !entryHeld;
+            entryHeld = held;
             if (ui != null)
             {
                 if (entry) ui.Entry();
                 ui.Step();
-                if (onlyInFreedomMode && GameManager.GetFreedomModeMSec() <= 0) ClearPracticeEffects();
+
                 return;
             }
-            if (!entry || (onlyInFreedomMode && (!GameManager.IsFreedomMode || GameManager.GetFreedomModeMSec() <= 0))) return;
+            if (!entry) return;
             var active = -1;
             for (var i = 0; i < 2; i++)
             {
@@ -212,9 +158,8 @@ public class PracticeMode
                 active = i;
             }
             if (active < 0) return;
-            if (!AquaMai.Core.ConfigLoader.Config.GetSectionState(typeof(DontRuinMyAccount)).Enabled || !DontRuinMyAccount.forPracticeMode)
-                throw new InvalidOperationException("DontRuinMyAccount and ForPracticeMode must be enabled for segment practice.");
             var document = NativePracticePlayer.Load(active);
+            ScoreGuard.Monitor = active;
             ui = ____monitors[active].gameObject.AddComponent<PracticeModeUI>();
             ui.Initialize(active, document.segments);
         }
@@ -223,6 +168,15 @@ public class PracticeMode
             MelonLogger.Error($"[PracticeMode] {exception}");
             ClearPracticeEffects();
         }
+    }
+
+    [HarmonyPatch(typeof(InputManager), "GetSystemInputDown")]
+    [HarmonyPrefix]
+    public static bool ReserveEntry(InputManager.SystemButtonSetting button, ref bool __result)
+    {
+        if (!GameManager.IsInGame || button != InputManager.SystemButtonSetting.ButtonTest) return true;
+        __result = false;
+        return false;
     }
 
     // Filter the lowest common enqueue call: notes, holds, slides and voices use different wrappers.
@@ -274,7 +228,7 @@ public class PracticeMode
     [HarmonyPrefix]
     public static bool NotesManagerPostUpdateTimer(bool ____isPlaying, Stopwatch ____stopwatch, ref float ____curMSec, ref float ____curMSecPre, float ____msecStartGap)
     {
-        if (isInAdvDemo || Shim.IsKaleidxScopeMode)
+        if (isInAdvDemo || ui == null)
         {
             return true;
         }
@@ -285,7 +239,7 @@ public class PracticeMode
             startGap = -1f;
         }
         ____curMSecPre = ____curMSec;
-        if (____isPlaying && ____stopwatch != null && !DebugFeature.Pause)
+        if (____isPlaying && ____stopwatch != null && !Playback.Paused)
         {
             var num = (double)____stopwatch.ElapsedTicks / Stopwatch.Frequency * 1000.0 * speed;
             ____curMSec += (float)num;
@@ -302,17 +256,7 @@ public class PracticeMode
     {
         var wrapper = ____players[2];
         player = (CriAtomExPlayer)wrapper.GetType().GetField("Player").GetValue(wrapper);
-        // var pool = new CriAtomExStandardVoicePool(1, 8, 96000, true, 2);
-        // pool.AttachDspTimeStretch();
-        // player.SetVoicePoolIdentifier(pool.identifier);
 
-        // debug
-        // var wrapper1 = ____players[7];
-        // var player1 = (CriAtomExPlayer)wrapper1.GetType().GetField("Player").GetValue(wrapper1);
-        // var pool = new CriAtomExStandardVoicePool(1, 8, 96000, true, 2);
-        // pool.AttachDspTimeStretch();
-        // player1.SetVoicePoolIdentifier(pool.identifier);
-        // player1.SetDspTimeStretchRatio(2);
     }
 
     [HarmonyPatch(typeof(MovieController), "Awake")]

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>12</LangVersion>
+    <AssemblyName>Patice</AssemblyName>
+    <RootNamespace>Patice</RootNamespace>
+    <Version>0.2.0</Version>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+    <ReferencePath>$(MSBuildProjectDirectory)/.build/references</ReferencePath>
+    <OutputPath>$(MSBuildProjectDirectory)/dist/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="src/**/*.cs" />
+    <Reference Include="$(ReferencePath)/*.dll" Exclude="$(ReferencePath)/mscorlib.dll;$(ReferencePath)/System*.dll;$(ReferencePath)/Mono*.dll">
+      <Private>false</Private>
+    </Reference>
+    <EmbeddedResource Include="assets/setting-frame.png" LogicalName="Patice.setting-frame.png" />
+  </ItemGroup>
+</Project>

@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using AquaMai.Core.Helpers;
-using AquaMai.Mods.UX.PracticeMode.Domain;
+using Patice.Domain;
 using Manager;
 using TMPro;
 using UI;
@@ -11,7 +10,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace AquaMai.Mods.UX.PracticeMode.Libs;
+namespace Patice.Libs;
 
 // All positions are in the cabinet's 1080 x 1080 lower display, measured from its top left.
 public sealed class PracticeView : IDisposable
@@ -57,8 +56,8 @@ public sealed class PracticeView : IDisposable
             captureCamera.targetTexture = live;
             captureCamera.rect = new Rect(0, 0, 1, 1);
             captureCamera.Render();
-            var playerWidth = GuiSizes.PlayerWidth;
-            var center = GuiSizes.PlayerCenter + monitor * playerWidth;
+            var playerWidth = Screen.height / 1920f * 1080;
+            var center = Screen.width <= playerWidth * 1.1f ? Screen.width / 2f : Screen.width / 2f - playerWidth / 2 + monitor * playerWidth;
             crop = new Rect((center - playerWidth / 2) / Screen.width, 0, playerWidth / Screen.width, playerWidth / Screen.height);
 
             // Separate camera lets the original button particle systems render normally.

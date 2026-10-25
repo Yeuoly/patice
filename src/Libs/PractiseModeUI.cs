@@ -1,8 +1,8 @@
-using AquaMai.Mods.UX.PracticeMode.Domain;
+using Patice.Domain;
 using Manager;
 using UnityEngine;
 
-namespace AquaMai.Mods.UX.PracticeMode.Libs;
+namespace Patice.Libs;
 
 public sealed class PracticeModeUI : MonoBehaviour
 {

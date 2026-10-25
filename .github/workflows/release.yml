@@ -28,35 +28,32 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-      - name: Checkout AquaMai host
+      - name: Checkout build reference assemblies
         uses: actions/checkout@v4
         with:
           repository: MuNET-OSS/AquaMai
           ref: 5e384e6428e2b6b06fcbea4a03b88453855c838f
-          path: .build/AquaMai
+          path: .build/sdk
+          sparse-checkout: Libs
           persist-credentials: false
-      - name: Fetch build references
+      - name: Prepare game and loader references
         run: |
+          New-Item .build/references -ItemType Directory -Force | Out-Null
+          Copy-Item .build/sdk/Libs/*.dll .build/references
           Invoke-WebRequest https://res.mumur.net/aquamai-ci-reference.zip -OutFile .build/references.zip
-          Expand-Archive .build/references.zip .build/AquaMai/Libs -Force
-      - name: Apply host input integration
+          Expand-Archive .build/references.zip .build/references -Force
+      - name: Restore Patice
         run: |
-          git -C .build/AquaMai apply --check "$env:GITHUB_WORKSPACE/build/DebugFeature.patch"
+          dotnet restore Patice.csproj
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          git -C .build/AquaMai apply "$env:GITHUB_WORKSPACE/build/DebugFeature.patch"
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Restore
+      - name: Build Patice
         run: |
-          dotnet restore .build/AquaMai/AquaMai/AquaMai.csproj
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Build
-        run: |
-          dotnet build .build/AquaMai/AquaMai/AquaMai.csproj --no-restore -c Release "-p:CustomAfterMicrosoftCommonTargets=$env:GITHUB_WORKSPACE/build/Patice.targets" "-p:SourceRevisionId=$env:GITHUB_SHA" -p:ContinuousIntegrationBuild=true
+          dotnet build Patice.csproj --no-restore -c Release -p:ContinuousIntegrationBuild=true
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@v4
         with:
-          name: AquaMai
-          path: .build/AquaMai/Output/AquaMai.dll
+          name: Patice
+          path: dist/Patice.dll
           if-no-files-found: error
           retention-days: 7
 
@@ -69,7 +66,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: AquaMai
+          name: Patice
           path: release
       - name: Publish release asset
         env:
@@ -78,7 +75,7 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" release/AquaMai.dll --clobber
+            gh release upload "$RELEASE_TAG" release/Patice.dll --clobber
           else
-            gh release create "$RELEASE_TAG" release/AquaMai.dll --verify-tag --title "$RELEASE_TAG" --generate-notes
+            gh release create "$RELEASE_TAG" release/Patice.dll --verify-tag --title "$RELEASE_TAG" --generate-notes
           fi

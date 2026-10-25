@@ -1,22 +1,24 @@
 # Patice
 
-SDEZ 片段练习模块。基于 AquaMai 的原生暂停、跳转和变速能力，使用游戏 autoplay 预览当前谱面。
+SDEZ 独立练习 mod，通过 MelonLoader 加载 `Patice.dll`，使用 Harmony 接入游戏原生播放与 autoplay。没有 AquaMai 运行时依赖，不修改或替换 `AquaMai.dll`。
 
 - `src/`：练习状态、原生接口、界面和输入。
 - `assets/`：设置按钮空框；字体、其他按钮和特效使用机内资源。
 - `segments/`：片段格式和示例，只按谱面 ID + 难度匹配。
-- `build/`：MSBuild 源码引用与版本生成配置，以及上游按键处理补丁。
+- `Patice.csproj`：独立 .NET Framework 4.7.2 工程。
 - `.github/workflows/release.yml`：GitHub Actions 构建与发布。
 
-提交和 PR 自动构建 DLL；推送 `v*` 标签后，自动将 `AquaMai.dll` 上传到对应 GitHub Release。上游 AquaMai 和编译引用只在 Actions runner 的 `.build/` 目录获取，不放进本项目。当前仍替换 AquaMai 内的练习模块。
+提交和 PR 自动执行 `dotnet restore Patice.csproj` 和 `dotnet build Patice.csproj`；推送 `v*` 标签后，将 `Patice.dll` 上传到 GitHub Release。编译引用（游戏、Unity、MelonLoader、Harmony DLL）只下载到 Actions 的 `.build/` 目录。不会编译 AquaMai 项目，也不打源码补丁。
+
+将 Release 中的 `Patice.dll` 放入游戏 `Mods/` 目录。入口为机台 Test 键。已有的其他练习功能应关闭，避免同时控制游戏时钟。
 
 片段运行时路径：`UserData/PracticeSegments/{musicId}/{difficulty}.json`。毫秒区间为 `[startMs, endMs)`。示例的 `exampleOnly: true` 会阻止加载，尚未发布人工标记数据。
 
 6 / 3 切换，4 确认，7 调整倍速，8 切换循环/单次。预览静音；按钮使用原生选歌左右音效。单次结束或确认退出循环后，从当前位置继续正常游玩。
 
-目前仅完成本地构建，下面的游戏集成验收尚未执行。由于游戏时钟和 autoplay 是全局状态，目前只允许单玩家进入，使用 AquaMai 的练习成绩保护。
+目前仅完成本地构建，下面的游戏集成验收尚未执行。由于游戏时钟和 autoplay 是全局状态，目前只允许单玩家进入，由 Patice 自身阻止练习成绩写入。
 
-`LICENSE` 保留所复用 AquaMai 代码的上游许可。
+`LICENSE` 保留所参考和复用代码的上游许可。
 
 ## 核心行为集成验收
 

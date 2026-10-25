@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace AquaMai.Mods.UX.PracticeMode.Domain;
+namespace Patice.Domain;
 
 [Serializable]
 public sealed class ChartIdentity

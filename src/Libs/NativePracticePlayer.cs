@@ -1,12 +1,10 @@
 using System;
 using System.IO;
-using AquaMai.Core.Helpers;
-using AquaMai.Mods.Fix;
-using AquaMai.Mods.UX.PracticeMode.Domain;
+using Patice.Domain;
 using Manager;
 using UnityEngine;
 
-namespace AquaMai.Mods.UX.PracticeMode.Libs;
+namespace Patice.Libs;
 
 public sealed class NativePracticePlayer : IPracticePlayer
 {
@@ -21,9 +19,9 @@ public sealed class NativePracticePlayer : IPracticePlayer
     {
         position = PositionMs;
         rate = PracticeMode.speed;
-        paused = DebugFeature.Pause;
+        paused = Playback.Paused;
         autoplay = GameManager.AutoPlay;
-        DontRuinMyAccount.triggerForPracticeMode();
+        ScoreGuard.MarkPractice();
     }
 
     public void Preview(bool enabled)
@@ -35,7 +33,7 @@ public sealed class NativePracticePlayer : IPracticePlayer
 
     public void Pause(bool value)
     {
-        DebugFeature.Pause = value;
+        Playback.Pause(value);
         if (PreviewActive) SoundManager.PauseMusic(true);
     }
 
@@ -71,7 +69,7 @@ public sealed class NativePracticePlayer : IPracticePlayer
         var difficulties = new[] { "basic", "advanced", "expert", "master", "remaster", "utage" };
         if (difficulty < 0 || difficulty >= difficulties.Length) throw new InvalidDataException("Unknown chart difficulty.");
         var identity = new ChartIdentity { musicId = musicId, difficulty = difficulties[difficulty] };
-        var path = FileSystem.ResolvePath($"UserData/PracticeSegments/{musicId}/{identity.difficulty}.json");
+        var path = Path.Combine(Environment.CurrentDirectory, $"UserData/PracticeSegments/{musicId}/{identity.difficulty}.json");
         if (new FileInfo(path).Length > 256 * 1024) throw new InvalidDataException("Segment document exceeds 256 KiB.");
         var document = JsonUtility.FromJson<SegmentDocument>(File.ReadAllText(path));
         if (document == null) throw new InvalidDataException("Empty segment document.");
