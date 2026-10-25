@@ -42,7 +42,7 @@ public sealed class PracticeView : IDisposable
         this.monitor = monitor;
         try
         {
-            nativeText = gameMonitor.GameDispCtrl.transform.Find("UpperGauge/Base/Fast_Late/Title/FAST")
+            nativeText = gameMonitor.transform.Find("Canvas/Main/GameDispCtrl/UpperGauge/Base/Fast_Late/Title/FAST")
                 .GetComponent<TextMeshProUGUI>();
             var main = Camera.main;
             gameCamera = main;
