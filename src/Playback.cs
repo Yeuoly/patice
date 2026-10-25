@@ -7,7 +7,6 @@ using DB;
 using MAI2.Util;
 using Manager;
 using Monitor;
-using Monitor.Game;
 using Process;
 
 namespace Patice;
@@ -19,8 +18,6 @@ public sealed class Playback
     public const float MusicStartDelayMs = 91;
     private readonly GameProcess process;
     private readonly GameMonitor monitor;
-    private readonly GameCtrl controller;
-    private readonly Func<NoteData, bool> skipNote;
     private readonly MovieController movie;
     private readonly int monitorIndex;
     private readonly CriAtomExPlayer music;
@@ -40,9 +37,6 @@ public sealed class Playback
     {
         this.process = process;
         this.monitor = monitor;
-        controller = Traverse.Create(monitor).Field<GameCtrl>("GameController").Value;
-        skipNote = (Func<NoteData, bool>)Delegate.CreateDelegate(typeof(Func<NoteData, bool>), controller,
-            AccessTools.Method(typeof(GameCtrl), "SkipRegistNote"));
         this.movie = movie;
         this.monitorIndex = monitorIndex;
         var players = Traverse.Create(Singleton<SoundCtrl>.Instance).Field<IDictionary>("_players").Value;
@@ -94,22 +88,13 @@ public sealed class Playback
         try
         {
             var engineTime = (float)Math.Max(0, milliseconds) + MusicStartDelayMs;
-            // Initialize reloads this chart and clears the shared note clock.
-            // Restart the clock only after the native score reset has finished.
-            Singleton<GamePlayManager>.Instance.GetGameScore(monitorIndex, -1).Initialize(monitorIndex, false);
+            Singleton<GamePlayManager>.Instance.Initialize();
+            movie.SetSeekFrame(monitorIndex, milliseconds);
+            SoundManager.SeekMusic((int)milliseconds);
+            monitor.Seek((int)milliseconds);
             nativeAnchor = chartAnchor = lastNativeTime = engineTime;
             NotesManager.StartPlay(engineTime);
-            NotesManager.Pause(true);
-            NotesManager.UpdateTimer();
-            monitor.Seek((int)milliseconds);
-            // The native debug-skip pass marks notes used even when SkipRegistNote
-            // rejects them inside the judgment window. Keep those notes playable.
-            Traverse.Create(controller).Field("_debugSkipNow").SetValue(false);
-            foreach (var note in NotesManager.Instance(monitorIndex).getReader().GetNoteList())
-                if (note != null && note.end.msec < engineTime)
-                    note.isUsed = skipNote(note);
-            SoundManager.SeekMusic((int)milliseconds);
-            movie.SetSeekFrame(monitorIndex, milliseconds);
+            NotesManager.Pause(paused);
             process.UpdateNotes();
             mediaRatePending = true;
         }
