@@ -72,7 +72,7 @@ public sealed class PracticeSession : IDisposable
         }
         if (State == PracticeState.ExitPrompt)
         {
-            if (number != 6) return false;
+            if (number != 4) return false;
             Close(false);
             return true;
         }

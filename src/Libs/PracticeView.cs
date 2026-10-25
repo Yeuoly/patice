@@ -32,7 +32,7 @@ public sealed class PracticeView : IDisposable
     private float buttonSyncTimer;
     private readonly RectTransform preview;
     private readonly TextMeshProUGUI nativeText;
-    private readonly TextMeshProUGUI speed, seek, mode, name, range, page, count, exit;
+    private readonly TextMeshProUGUI speed, seek, mode, name, range, page, count;
     private readonly int monitor;
     private readonly Rect crop;
     private readonly Sprite circle;
@@ -95,9 +95,6 @@ public sealed class PracticeView : IDisposable
             AddButton(controls.transform, 4, true, false);
             AddButton(controls.transform, 5, true, false);
             buttons[5].SetSymbolSprite(ButtonControllerBase.GetFlatButtonParam(ButtonControllerBase.FlatButtonType.Cancel).Image, false);
-            exit = ButtonText(buttons[6]);
-            exit.text = "Exit";
-            exit.gameObject.SetActive(false);
             name = Text(selector.transform, "Segment", 260, 810, 560, 65, 40);
             range = Text(selector.transform, "Range", 330, 880, 420, 45, 28);
             page = Text(selector.transform, "Index", 440, 944, 200, 40, 26);
@@ -138,10 +135,8 @@ public sealed class PracticeView : IDisposable
         }
         dialog.UpdateView((long)(Time.unscaledDeltaTime * 1000));
         buttons[3].transform.parent.gameObject.SetActive(selecting || seeking);
-        buttons[4].transform.parent.gameObject.SetActive(selecting || seeking);
-        buttons[6].transform.parent.gameObject.SetActive(selecting || seeking || exiting);
-        Symbol(buttons[6]).enabled = !exiting;
-        exit.gameObject.SetActive(exiting);
+        buttons[4].transform.parent.gameObject.SetActive(selecting || seeking || exiting);
+        buttons[6].transform.parent.gameObject.SetActive(selecting || seeking);
         count.gameObject.SetActive(session.State == PracticeState.Countdown);
         count.text = session.Countdown.ToString();
         speed.text = session.Rate.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "X";
@@ -222,7 +217,7 @@ public sealed class PracticeView : IDisposable
         var slot = Slot(parent, number, "MusicSelect");
         var button = Object.Instantiate(flat ? CommonPrefab.GetFlatButtonObject() : CommonPrefab.GetCirclebuButtonObject(), slot, false);
         Configure(button, number);
-        button.SetSymbolSprite(flat ? ButtonControllerBase.GetFlatButtonParam(ButtonControllerBase.FlatButtonType.Set).Image
+        button.SetSymbolSprite(flat ? ButtonControllerBase.GetFlatButtonParam(ButtonControllerBase.FlatButtonType.Ok).Image
             : Resources.Load<Sprite>("Common/Sprites/Button/UI_CMN_Arrow"), flip);
     }
 
