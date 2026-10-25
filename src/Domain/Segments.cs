@@ -1,36 +1,33 @@
 using System;
 using System.IO;
 using Manager;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Patice.Domain;
 
-[JsonObject(MemberSerialization.OptIn)]
 public sealed class ChartIdentity
 {
-    [JsonProperty] public int musicId;
-    [JsonProperty] public string difficulty;
+    public int musicId;
+    public string difficulty;
 }
 
-[JsonObject(MemberSerialization.OptIn)]
 public sealed class Segment
 {
-    [JsonProperty] public string id;
-    [JsonProperty] public string name;
-    [JsonProperty] public int startMs;
-    [JsonProperty] public int endMs;
+    public string id;
+    public string name;
+    public int startMs;
+    public int endMs;
 }
 
-[JsonObject(MemberSerialization.OptIn)]
 public sealed class SegmentDocument
 {
-    [JsonProperty] public int schemaVersion;
-    [JsonProperty] public string timeBase;
-    [JsonProperty] public bool exampleOnly;
-    [JsonProperty] public ChartIdentity chart;
-    [JsonProperty] public Segment[] segments;
+    public int schemaVersion;
+    public string timeBase;
+    public bool exampleOnly;
+    public ChartIdentity chart;
+    public Segment[] segments;
 
     public static SegmentDocument Load(int monitor)
     {
@@ -41,8 +38,27 @@ public sealed class SegmentDocument
         var identity = new ChartIdentity { musicId = musicId, difficulty = difficulties[difficulty] };
         var path = Path.Combine(Environment.CurrentDirectory, $"UserData/PracticeSegments/{musicId}/{identity.difficulty}.json");
         if (new FileInfo(path).Length > 256 * 1024) throw new InvalidDataException("Segment document exceeds 256 KiB.");
-        var document = JsonConvert.DeserializeObject<SegmentDocument>(File.ReadAllText(path));
-        if (document == null) throw new InvalidDataException("Empty segment document.");
+        // Read the fixed document shape directly; no runtime contract discovery.
+        var json = JObject.Parse(File.ReadAllText(path));
+        var entries = new List<Segment>();
+        foreach (var entry in (JArray)json["segments"])
+            entries.Add(new Segment
+            {
+                id = (string)entry["id"], name = (string)entry["name"],
+                startMs = (int)entry["startMs"], endMs = (int)entry["endMs"]
+            });
+        var document = new SegmentDocument
+        {
+            schemaVersion = (int)json["schemaVersion"],
+            timeBase = (string)json["timeBase"],
+            exampleOnly = (bool?)json["exampleOnly"] ?? false,
+            chart = new ChartIdentity
+            {
+                musicId = (int)json["chart"]["musicId"],
+                difficulty = (string)json["chart"]["difficulty"]
+            },
+            segments = entries.ToArray()
+        };
         document.Validate(identity, NotesManager.Instance().getPlayFinalMsec() - Playback.MusicStartDelayMs);
         return document;
     }
