@@ -24,7 +24,7 @@ public sealed class PracticeModeUI : MonoBehaviour
     }
 
     public bool PreventGameEnd => session != null && session.State != PracticeState.Closed &&
-        (session.State != PracticeState.Playing || session.Loop);
+        (session.State != PracticeState.Playing || session.Repeating);
 
     private void LateUpdate()
     {

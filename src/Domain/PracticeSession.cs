@@ -11,6 +11,7 @@ public sealed class PracticeSession : IDisposable
     private readonly float[] rates = { 1f, .5f, .75f, .9f };
     private int rateIndex;
     private double elapsed;
+    private bool playingSegment;
     public PracticeState State { get; private set; }
     public int Index { get; private set; }
     public double SeekPositionMs { get; private set; }
@@ -18,6 +19,7 @@ public sealed class PracticeSession : IDisposable
     public Segment Current => segments[Index];
     public bool Loop { get; private set; } = true;
     public bool ConfirmExit { get; private set; }
+    public bool Repeating => playingSegment && Loop;
     public float Rate => rates[rateIndex];
     public int Countdown => Math.Max(1, 3 - (int)elapsed);
     public float SelectionProgress => (float)Math.Min(1, elapsed / .4);
@@ -81,7 +83,15 @@ public sealed class PracticeSession : IDisposable
         }
         if (State == PracticeState.Seeking)
         {
-            if (number == 4) { Close(false); return true; }
+            if (number == 4)
+            {
+                player.Preview(false);
+                player.Seek(SeekPositionMs);
+                player.Pause(false);
+                playingSegment = false;
+                State = PracticeState.Playing;
+                return true;
+            }
             if (number != 3 && number != 6) return false;
             SeekPositionMs = Math.Max(0, Math.Min(player.DurationMs,
                 SeekPositionMs + (number == 3 ? 5000 : -5000)));
@@ -102,6 +112,7 @@ public sealed class PracticeSession : IDisposable
             case 8: Loop = !Loop; break;
             case 4:
                 player.Pause(true);
+                playingSegment = true;
                 State = PracticeState.Selected;
                 elapsed = 0;
                 break;
@@ -130,7 +141,7 @@ public sealed class PracticeSession : IDisposable
             player.Pause(false);
             State = PracticeState.Playing;
         }
-        else if (State == PracticeState.Playing && player.PositionMs >= Current.endMs)
+        else if (State == PracticeState.Playing && playingSegment && player.PositionMs >= Current.endMs)
         {
             if (Loop) player.Seek(Current.startMs);
             else Close(false);
