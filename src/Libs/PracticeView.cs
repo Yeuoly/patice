@@ -17,7 +17,6 @@ public sealed class PracticeView : IDisposable
 {
     private const int UiLayer = 31;
     private readonly GameObject root;
-    private readonly Camera captureCamera;
     private readonly Camera gameCamera;
     private readonly int originalUiLayerMask;
     private readonly Camera uiCamera;
@@ -48,14 +47,7 @@ public sealed class PracticeView : IDisposable
             main.cullingMask &= ~(1 << UiLayer);
             live = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.ARGB32);
             live.Create();
-            captureCamera = new GameObject("Patice capture").AddComponent<Camera>();
-            captureCamera.CopyFrom(main);
-            captureCamera.enabled = false;
-            captureCamera.cullingMask &= ~(1 << UiLayer);
-            captureCamera.transform.SetPositionAndRotation(main.transform.position, main.transform.rotation);
-            captureCamera.targetTexture = live;
-            captureCamera.rect = new Rect(0, 0, 1, 1);
-            captureCamera.Render();
+            CaptureGame();
             var playerWidth = Screen.height / 1920f * 1080;
             var center = Screen.width <= playerWidth * 1.1f ? Screen.width / 2f : Screen.width / 2f - playerWidth / 2 + monitor * playerWidth;
             crop = new Rect((center - playerWidth / 2) / Screen.width, 0, playerWidth / Screen.width, playerWidth / Screen.height);
@@ -100,10 +92,12 @@ public sealed class PracticeView : IDisposable
             name = Text(selector.transform, "Segment", 260, 810, 560, 65, 40);
             range = Text(selector.transform, "Range", 330, 880, 420, 45, 28);
             page = Text(selector.transform, "Index", 440, 944, 200, 40, 26);
+            name.color = range.color = page.color = Color.white;
             count = Text(board, "Countdown", 390, 390, 300, 300, 180);
+            count.color = Color.white;
             dialog = Rect("Exit", board, 180, 360, 720, 360).gameObject;
             var dialogImage = dialog.AddComponent<Image>();
-            dialogImage.sprite = Resources.Load<Sprite>("Common/Sprites/PerfectChallenge/UI_CMN_Dialog_03");
+            dialogImage.sprite = Resources.Load<Sprite>("Common/Sprites/Dialog/UI_CMN_GenericDialog");
             if (dialogImage.sprite == null) throw new InvalidOperationException("Native dialog sprite is unavailable.");
             question = Text(dialog.transform, "Question", 40, 55, 640, 90, 42);
             question.text = "要退出练习吗？";
@@ -134,7 +128,25 @@ public sealed class PracticeView : IDisposable
 
     public void RenderPreview(PracticeState state)
     {
-        if (state == PracticeState.Selecting || state == PracticeState.Selected) captureCamera.Render();
+        if (state == PracticeState.Selecting || state == PracticeState.Selected) CaptureGame();
+    }
+
+    private void CaptureGame()
+    {
+        // ScreenSpaceCamera canvases belong to the original camera, not a copy.
+        var target = gameCamera.targetTexture;
+        var viewport = gameCamera.rect;
+        try
+        {
+            gameCamera.targetTexture = live;
+            gameCamera.rect = new Rect(0, 0, 1, 1);
+            gameCamera.Render();
+        }
+        finally
+        {
+            gameCamera.targetTexture = target;
+            gameCamera.rect = viewport;
+        }
     }
 
     public void Press(int button)
@@ -182,6 +194,8 @@ public sealed class PracticeView : IDisposable
     {
         var rect = Rect(id, parent, x, y, w, h);
         var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
+        rect.sizeDelta = new Vector2(w, h);
+        text.enableWordWrapping = false;
         text.font = font;
         text.fontSize = size;
         text.alignment = TextAlignmentOptions.Center;
@@ -219,16 +233,17 @@ public sealed class PracticeView : IDisposable
 
     private Sprite MakeCircle()
     {
-        var texture = new Texture2D(256, 256, TextureFormat.RGBA32, false);
+        const int size = 1080;
+        var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
         owned.Add(texture);
-        var pixels = new Color32[256 * 256];
-        for (int y = 0; y < 256; y++) for (int x = 0; x < 256; x++)
+        var pixels = new Color32[size * size];
+        for (int y = 0; y < size; y++) for (int x = 0; x < size; x++)
         {
-            var distance = Math.Sqrt((x - 127.5) * (x - 127.5) + (y - 127.5) * (y - 127.5));
-            pixels[y * 256 + x] = new Color32(255, 255, 255, (byte)(Math.Max(0, Math.Min(1, 128 - distance)) * 255));
+            var distance = Math.Sqrt((x - (size - 1) / 2.0) * (x - (size - 1) / 2.0) + (y - (size - 1) / 2.0) * (y - (size - 1) / 2.0));
+            pixels[y * size + x] = new Color32(255, 255, 255, (byte)(Math.Max(0, Math.Min(1, size / 2.0 - distance)) * 255));
         }
         texture.SetPixels32(pixels); texture.Apply();
-        var sprite = Sprite.Create(texture, new Rect(0, 0, 256, 256), new Vector2(.5f, .5f));
+        var sprite = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(.5f, .5f));
         owned.Add(sprite); return sprite;
     }
 
@@ -282,7 +297,6 @@ public sealed class PracticeView : IDisposable
     public void Dispose()
     {
         if (gameCamera != null) gameCamera.cullingMask = (gameCamera.cullingMask & ~(1 << UiLayer)) | originalUiLayerMask;
-        if (captureCamera != null) Object.Destroy(captureCamera.gameObject);
         if (uiCamera != null) Object.Destroy(uiCamera.gameObject);
         if (root != null) { root.SetActive(false); Object.Destroy(root); }
         if (live != null) { live.Release(); Object.Destroy(live); }
