@@ -6,3 +6,5 @@ A standalone practice mod for SDEZ. Practice predefined chart segments with auto
 - `assets/` — UI assets.
 - `segments/` — Segment data format and examples.
 - `.github/` — Build and release workflows.
+
+Thanks to [AquaMai](https://github.com/MuNET-OSS/AquaMai) for providing a reference for this project.
