@@ -80,11 +80,8 @@ public static class PracticeMode
                 active = i;
             }
             if (active < 0) return;
-            var difficulties = new[] { "basic", "advanced", "expert", "master", "remaster", "utage" };
-            var difficulty = GameManager.SelectDifficultyID[active];
-            if (difficulty < 0 || difficulty >= difficulties.Length)
-                throw new InvalidOperationException("Unknown chart difficulty.");
-            var segments = Plugin.SegmentManagement.Get(GameManager.SelectMusicID[active], difficulties[difficulty]);
+            var difficulty = (Difficulty)GameManager.SelectDifficultyID[active];
+            var segments = Plugin.SegmentManagement.Get(GameManager.SelectMusicID[active], difficulty);
             if (segments.Length == 0) return;
             var duration = NotesManager.Instance().getPlayFinalMsec() - Playback.MusicStartDelayMs;
             foreach (var segment in segments)

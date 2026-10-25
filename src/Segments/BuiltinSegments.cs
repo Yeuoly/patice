@@ -7,11 +7,11 @@ namespace Patice.Segments;
 
 public sealed class BuiltinSegments : ISegmentStore
 {
-    private static readonly Dictionary<int, Dictionary<string, Segment[]>> charts = Load();
+    private static readonly Dictionary<int, Dictionary<Difficulty, Segment[]>> charts = Load();
 
-    private static Dictionary<int, Dictionary<string, Segment[]>> Load()
+    private static Dictionary<int, Dictionary<Difficulty, Segment[]>> Load()
     {
-        var result = new Dictionary<int, Dictionary<string, Segment[]>>();
+        var result = new Dictionary<int, Dictionary<Difficulty, Segment[]>>();
         var assembly = typeof(BuiltinSegments).Assembly;
         foreach (var resource in assembly.GetManifestResourceNames()
             .Where(name => name.StartsWith("Patice.Segments.", StringComparison.Ordinal))
@@ -19,16 +19,16 @@ public sealed class BuiltinSegments : ISegmentStore
         {
             using var stream = assembly.GetManifestResourceStream(resource);
             var document = SegmentStorage.ReadDocument(stream);
-            if (!result.TryGetValue(document.Id, out var levels))
-                result.Add(document.Id, levels = new Dictionary<string, Segment[]>());
-            var entries = levels.TryGetValue(document.Difficulty, out var existing)
+            if (!result.TryGetValue(document.Chart.MusicId, out var levels))
+                result.Add(document.Chart.MusicId, levels = new Dictionary<Difficulty, Segment[]>());
+            var entries = levels.TryGetValue(document.Chart.Difficulty, out var existing)
                 ? existing.Concat(document.Segments).ToArray() : document.Segments;
-            levels[document.Difficulty] = entries;
+            levels[document.Chart.Difficulty] = entries;
         }
         return result;
     }
 
-    public Segment[] Get(int id, string difficulty) =>
+    public Segment[] Get(int id, Difficulty difficulty) =>
         charts.TryGetValue(id, out var levels) && levels.TryGetValue(difficulty, out var segments)
             ? (Segment[])segments.Clone() : Array.Empty<Segment>();
 }

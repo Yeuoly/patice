@@ -6,7 +6,7 @@ namespace Patice.Segments;
 
 public interface ISegmentStore
 {
-    Segment[] Get(int id, string difficulty);
+    Segment[] Get(int id, Difficulty difficulty);
 }
 
 public sealed class SegmentManagement
@@ -19,7 +19,7 @@ public sealed class SegmentManagement
         if (!stores.Contains(store)) stores.Add(store);
     }
 
-    public Segment[] Get(int id, string difficulty)
+    public Segment[] Get(int id, Difficulty difficulty)
     {
         var result = new List<Segment>();
         foreach (var store in stores) result.AddRange(store.Get(id, difficulty));

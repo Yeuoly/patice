@@ -1,72 +1,57 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using Patice.Domain;
 
 namespace Patice.Segments;
 
 public interface ISegmentStorage
 {
-    Segment[] Read(int id, string difficulty);
-    void Write(int id, string difficulty, Segment[] segments);
+    Segment[] Read(int id, Difficulty difficulty);
+    void Write(int id, Difficulty difficulty, Segment[] segments);
 }
 
 public sealed class SegmentStorage : ISegmentStorage
 {
     private readonly string root;
-    private static readonly string[] difficulties = { "basic", "advanced", "expert", "master", "remaster", "utage" };
+    private static readonly JsonSerializerSettings jsonSettings = new()
+    {
+        MissingMemberHandling = MissingMemberHandling.Error,
+        Converters = { new StringEnumConverter(new CamelCaseNamingStrategy(), false) }
+    };
 
     public SegmentStorage(string path) => root = Path.GetFullPath(path);
 
-    public Segment[] Read(int id, string difficulty)
+    public Segment[] Read(int id, Difficulty difficulty)
     {
         var path = ChartPath(id, difficulty);
         if (!File.Exists(path)) return Array.Empty<Segment>();
         using var stream = File.OpenRead(path);
         var document = ReadDocument(stream);
         ValidateDocument(document);
-        if (document.Id != id || document.Difficulty != difficulty)
+        if (document.Chart.MusicId != id || document.Chart.Difficulty != difficulty)
             throw new InvalidDataException("Invalid segment document for the requested chart.");
         return document.Segments;
     }
 
-    internal sealed class Document
-    {
-        internal int SchemaVersion = 1;
-        internal string TimeBase = "music-start-ms";
-        internal bool ExampleOnly;
-        internal int Id;
-        internal string Difficulty;
-        internal Segment[] Segments;
-    }
-
-    internal static Document ReadDocument(Stream stream)
+    internal static SegmentDocument ReadDocument(Stream stream)
     {
         using var reader = new StreamReader(stream, Encoding.UTF8);
-        var json = JObject.Parse(reader.ReadToEnd());
-        var id = (int)json["chart"]["musicId"];
-        var difficulty = (string)json["chart"]["difficulty"];
-        var segments = ((JArray)json["segments"]).Select(entry => new Segment(
-            (string)entry["id"], (string)entry["name"],
-            (int)entry["startMs"], (int)entry["endMs"])).ToArray();
-        return new Document
-        {
-            SchemaVersion = (int)json["schemaVersion"], TimeBase = (string)json["timeBase"],
-            ExampleOnly = (bool?)json["exampleOnly"] ?? false,
-            Id = id, Difficulty = difficulty, Segments = segments
-        };
+        using var json = new JsonTextReader(reader);
+        return JsonSerializer.Create(jsonSettings).Deserialize<SegmentDocument>(json);
     }
 
     // External data is checked at the storage boundary; CI uses the same rules.
-    internal static void ValidateDocument(Document document)
+    internal static void ValidateDocument(SegmentDocument document)
     {
-        if (document.SchemaVersion != 1 || document.TimeBase != "music-start-ms" || document.ExampleOnly)
+        if (document == null || document.SchemaVersion != SegmentDocument.CurrentVersion ||
+            document.TimeBase != SegmentDocument.MusicTimeBase || document.ExampleOnly || document.Chart == null)
             throw new InvalidDataException("Invalid segment document.");
-        ValidateChart(document.Id, document.Difficulty);
+        ValidateChart(document.Chart.MusicId, document.Chart.Difficulty);
         var segments = document.Segments;
         if (segments == null || segments.Length == 0 || segments.Length > 256)
             throw new InvalidDataException("Invalid segment list.");
@@ -81,34 +66,32 @@ public sealed class SegmentStorage : ISegmentStorage
         }
     }
 
-    public void Write(int id, string difficulty, Segment[] segments)
+    public void Write(int id, Difficulty difficulty, Segment[] segments)
     {
-        ValidateDocument(new Document { Id = id, Difficulty = difficulty, Segments = segments });
-        var path = ChartPath(id, difficulty);
-        var json = new JObject
+        var document = new SegmentDocument
         {
-            ["schemaVersion"] = 1,
-            ["timeBase"] = "music-start-ms",
-            ["chart"] = new JObject { ["musicId"] = id, ["difficulty"] = difficulty },
-            ["segments"] = new JArray(segments.Select(segment => new JObject
-            {
-                ["id"] = segment.id, ["name"] = segment.name,
-                ["startMs"] = segment.startMs, ["endMs"] = segment.endMs
-            }))
+            SchemaVersion = SegmentDocument.CurrentVersion,
+            TimeBase = SegmentDocument.MusicTimeBase,
+            Chart = new ChartIdentity { MusicId = id, Difficulty = difficulty },
+            Segments = segments
         };
+        ValidateDocument(document);
+        var path = ChartPath(id, difficulty);
         Directory.CreateDirectory(Path.GetDirectoryName(path));
-        File.WriteAllText(path, json.ToString(Formatting.Indented), new UTF8Encoding(false));
+        using var writer = new StreamWriter(path, false, new UTF8Encoding(false));
+        using var json = new JsonTextWriter(writer) { Formatting = Formatting.Indented };
+        JsonSerializer.Create(jsonSettings).Serialize(json, document);
     }
 
-    private static void ValidateChart(int id, string difficulty)
+    private static void ValidateChart(int id, Difficulty difficulty)
     {
-        if (id <= 0 || Array.IndexOf(difficulties, difficulty) < 0)
+        if (id <= 0 || !Enum.IsDefined(typeof(Difficulty), difficulty))
             throw new ArgumentException("Invalid chart ID or difficulty.");
     }
 
-    private string ChartPath(int id, string difficulty)
+    private string ChartPath(int id, Difficulty difficulty)
     {
         ValidateChart(id, difficulty);
-        return Path.Combine(root, id.ToString(System.Globalization.CultureInfo.InvariantCulture), difficulty + ".json");
+        return Path.Combine(root, id.ToString(System.Globalization.CultureInfo.InvariantCulture), difficulty.ToString().ToLowerInvariant() + ".json");
     }
 }

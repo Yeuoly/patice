@@ -13,9 +13,9 @@ public sealed class LocalSegmentStore : ISegmentStore
     public LocalSegmentStore(ISegmentStorage storage) =>
         this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
 
-    public Segment[] Get(int id, string difficulty) => storage.Read(id, difficulty);
+    public Segment[] Get(int id, Difficulty difficulty) => storage.Read(id, difficulty);
 
-    public void Store(int id, string difficulty, Segment segment)
+    public void Store(int id, Difficulty difficulty, Segment segment)
     {
         if (segment == null) throw new ArgumentNullException(nameof(segment));
         var segments = new List<Segment>(Get(id, difficulty));
