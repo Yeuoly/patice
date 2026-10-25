@@ -15,9 +15,10 @@ public sealed class PracticeModeUI : MonoBehaviour
     {
         monitor = monitorIndex;
         player = playback;
+        session = new PracticeSession(player, segments);
+        player.Capture();
         // Snapshot the game before the preview seeks or enables autoplay.
         view = new PracticeView(monitor, GetComponent<Monitor.GameMonitor>());
-        session = new PracticeSession(player, segments);
         session.Open();
         view.Update(session);
     }
@@ -42,7 +43,7 @@ public sealed class PracticeModeUI : MonoBehaviour
     // Called before GameProcess.OnUpdate, not from an unordered MonoBehaviour.Update.
     public void Step()
     {
-        foreach (var number in new[] { 6, 3, 7, 8, 4 })
+        foreach (var number in new[] { 6, 3, 1, 2, 8, 4 })
         {
             if (!InputManager.GetButtonDown(monitor, (InputManager.ButtonSetting)(number - 1))) continue;
             if (session.Button(number)) view.Press(number);

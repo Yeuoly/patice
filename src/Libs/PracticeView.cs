@@ -32,7 +32,7 @@ public sealed class PracticeView : IDisposable
     private readonly Sprite confirmSymbol;
     private readonly RectTransform preview;
     private readonly TextMeshProUGUI nativeText;
-    private readonly TextMeshProUGUI speed, mode, name, range, page, count;
+    private readonly TextMeshProUGUI speed, move, mode, name, range, page, count;
     private readonly int monitor;
     private readonly Rect crop;
     private readonly Sprite circle;
@@ -85,7 +85,9 @@ public sealed class PracticeView : IDisposable
             Raw(background, frozen, new Rect(0, 0, 1, 1));
             preview = Circle("Native chart preview", selector.transform, 285, 290, 510);
             Raw(preview, live, crop);
-            speed = Setting(selector.transform, 7);
+            speed = Setting(selector.transform, 1);
+            move = Setting(selector.transform, 2);
+            move.text = "Move";
             mode = Setting(selector.transform, 8);
             controls = Rect("Controls", board, 0, 0, 1080, 1080).gameObject;
             AddButton(controls.transform, 6, false, true);
@@ -112,8 +114,9 @@ public sealed class PracticeView : IDisposable
     public void Update(PracticeSession session)
     {
         var selecting = session.State == PracticeState.Selecting || session.State == PracticeState.Selected;
-        selector.SetActive(selecting);
-        controls.SetActive(selecting || session.State == PracticeState.ExitPrompt);
+        var moving = session.State == PracticeState.Moving;
+        selector.SetActive(selecting || moving);
+        controls.SetActive(selecting || moving || session.State == PracticeState.ExitPrompt);
         var exiting = session.State == PracticeState.ExitPrompt;
         if (exiting != exitVisible)
         {
@@ -138,8 +141,14 @@ public sealed class PracticeView : IDisposable
         count.text = session.Countdown.ToString();
         speed.text = session.Rate.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "X";
         mode.text = session.Loop ? "LOOP" : "ONCE";
+        buttons[1].transform.parent.gameObject.SetActive(selecting);
+        buttons[2].transform.parent.gameObject.SetActive(selecting);
+        buttons[8].transform.parent.gameObject.SetActive(selecting);
+        name.gameObject.SetActive(!moving);
+        page.gameObject.SetActive(!moving);
         name.text = session.Current.name;
         range.text = $"{TimeSpan.FromMilliseconds(session.Current.startMs):mm\\:ss} — {TimeSpan.FromMilliseconds(session.Current.endMs):mm\\:ss}";
+        if (moving) range.text = TimeSpan.FromMilliseconds(session.MovePositionMs).ToString(@"mm\:ss");
         page.text = $"{session.Index + 1} / {session.Count}";
         preview.localScale = Vector3.one * (session.State == PracticeState.Selected ? 1 + .06f * session.SelectionProgress : 1);
         foreach (var button in buttons.Values) button.ViewUpdate(Time.unscaledDeltaTime * 1000);
@@ -148,7 +157,7 @@ public sealed class PracticeView : IDisposable
 
     public void RenderPreview(PracticeState state)
     {
-        if (state == PracticeState.Selecting || state == PracticeState.Selected) CaptureGame();
+        if (state == PracticeState.Selecting || state == PracticeState.Selected || state == PracticeState.Moving) CaptureGame();
     }
 
     private void CaptureGame()

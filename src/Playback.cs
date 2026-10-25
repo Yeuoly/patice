@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using HarmonyLib;
+using DB;
 using MAI2.Util;
 using Manager;
 using Monitor;
@@ -27,6 +28,8 @@ public sealed class Playback
     private GameManager.AutoPlayMode entryAutoplay;
     public bool Previewing { get; private set; }
     public float Rate { get; private set; } = 1;
+    public double EntryPositionMs => entryPosition;
+    public double DurationMs => NotesManager.Instance().getPlayFinalMsec() - MusicStartDelayMs;
     public double PositionMs => NotesManager.GetCurrentMsec() - MusicStartDelayMs;
     public bool Paused => !(Traverse.Create(typeof(NotesManager)).Field<Stopwatch>("_stopwatch").Value.IsRunning);
 
@@ -48,6 +51,7 @@ public sealed class Playback
         entryPosition = PositionMs;
         entryPaused = Paused;
         entryAutoplay = GameManager.AutoPlay;
+        Pause(true);
         nativeAnchor = chartAnchor = NotesManager.GetCurrentMsec();
         lastNativeTime = nativeAnchor;
         attached = true;
@@ -105,7 +109,8 @@ public sealed class Playback
         if (!attached) return;
         try
         {
-            if (rewind) Seek(entryPosition);
+            Preview(false);
+            Seek(rewind ? entryPosition : PositionMs);
         }
         finally
         {
@@ -132,6 +137,18 @@ public sealed class Playback
         music.UpdateAll();
         moviePlayer?.player?.SetSpeed(Rate);
         mediaRatePending = false;
+    }
+
+    [HarmonyPatch(typeof(GameManager), "GetNoteSpeed"), HarmonyPrefix]
+    private static void PreviewNoteSpeed(ref int __0)
+    {
+        if (PracticeMode.Player?.Previewing == true) __0 = (int)OptionNotespeedID.Speed_6_75;
+    }
+
+    [HarmonyPatch(typeof(GameManager), "GetTouchSpeed"), HarmonyPrefix]
+    private static void PreviewTouchSpeed(ref int __0)
+    {
+        if (PracticeMode.Player?.Previewing == true) __0 = (int)OptionTouchspeedID.Speed6_75;
     }
 
     [HarmonyPatch(typeof(SoundManager), "PlayExecute"), HarmonyPostfix]
