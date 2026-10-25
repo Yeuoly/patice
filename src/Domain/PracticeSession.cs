@@ -73,6 +73,12 @@ public sealed class PracticeSession : IDisposable
             else { State = PracticeState.Playing; player.Pause(false); }
             return true;
         }
+        if (number == 1 && (State == PracticeState.Selecting || State == PracticeState.Seeking))
+        {
+            rateIndex = (rateIndex + 1) % rates.Length;
+            player.SetRate(Rate);
+            return true;
+        }
         if (State == PracticeState.Seeking)
         {
             if (number == 4) { Close(false); return true; }
@@ -87,7 +93,6 @@ public sealed class PracticeSession : IDisposable
         {
             case 6: Index = (Index + Count - 1) % Count; StartPreview(); break;
             case 3: Index = (Index + 1) % Count; StartPreview(); break;
-            case 1: rateIndex = (rateIndex + 1) % rates.Length; player.SetRate(Rate); break;
             case 2:
                 player.Pause(true);
                 SeekPositionMs = player.EntryPositionMs;

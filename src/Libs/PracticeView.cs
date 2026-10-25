@@ -141,7 +141,7 @@ public sealed class PracticeView : IDisposable
         count.text = session.Countdown.ToString();
         speed.text = session.Rate.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "X";
         mode.text = session.Loop ? "LOOP" : "ONCE";
-        buttons[1].transform.parent.gameObject.SetActive(selecting);
+        buttons[1].transform.parent.gameObject.SetActive(selecting || seeking);
         buttons[2].transform.parent.gameObject.SetActive(selecting);
         buttons[8].transform.parent.gameObject.SetActive(selecting);
         name.gameObject.SetActive(!seeking);
