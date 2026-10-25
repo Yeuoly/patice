@@ -18,6 +18,7 @@ public static class PracticeMode
     public static Playback Player { get; private set; }
     private static bool entryHeld;
     private static GameProcess game;
+    private static bool testEntry = Environment.GetEnvironmentVariable("PATICE_TEST") == "1";
 
     private static void Close()
     {
@@ -61,7 +62,8 @@ public static class PracticeMode
         try
         {
             var held = InputManager.GetSystemInputPush(InputManager.SystemButtonSetting.ButtonTest);
-            var entry = held && !entryHeld;
+            var entry = testEntry || (held && !entryHeld);
+            testEntry = false;
             entryHeld = held;
             if (ui != null)
             {

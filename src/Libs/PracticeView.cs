@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HarmonyLib;
+using DB;
 using Patice.Domain;
 using Manager;
 using TMPro;
@@ -25,10 +27,14 @@ public sealed class PracticeView : IDisposable
     private readonly Dictionary<int, CommonButtonObject> buttons = new();
     private readonly GameObject selector;
     private readonly GameObject controls;
-    private readonly GameObject dialog;
+    private readonly CommonWindow dialog;
+    private readonly GenericMonitor messageMonitor;
+    private bool exitVisible;
+    private readonly TextMeshProUGUI exitChoice;
+    private readonly Sprite confirmSymbol;
     private readonly RectTransform preview;
     private readonly TMP_FontAsset font;
-    private readonly TextMeshProUGUI speed, mode, name, range, page, count, question, answer;
+    private readonly TextMeshProUGUI speed, mode, name, range, page, count;
     private readonly int monitor;
     private readonly Rect crop;
     private readonly Sprite circle;
@@ -83,25 +89,26 @@ public sealed class PracticeView : IDisposable
             Raw(background, frozen, new Rect(0, 0, 1, 1));
             preview = Circle("Native chart preview", selector.transform, 285, 290, 510);
             Raw(preview, live, crop);
-            speed = Setting(selector.transform, 7, 65, 260, 67.5f);
-            mode = Setting(selector.transform, 8, 247, 40, 22.5f);
+            speed = Setting(selector.transform, 7);
+            mode = Setting(selector.transform, 8);
             controls = Rect("Controls", board, 0, 0, 1080, 1080).gameObject;
-            AddButton(controls.transform, 6, 135, 775, false, true);
-            AddButton(controls.transform, 3, 945, 775, false, false);
-            AddButton(controls.transform, 4, 773, 940, true, false);
+            AddButton(controls.transform, 6, false, true);
+            AddButton(controls.transform, 3, false, false);
+            AddButton(controls.transform, 4, true, false);
+            confirmSymbol = Symbol(buttons[4]).sprite;
+            exitChoice = ButtonText(buttons[4], 40);
+            exitChoice.gameObject.SetActive(false);
             name = Text(selector.transform, "Segment", 260, 810, 560, 65, 40);
             range = Text(selector.transform, "Range", 330, 880, 420, 45, 28);
             page = Text(selector.transform, "Index", 440, 944, 200, 40, 26);
             name.color = range.color = page.color = Color.white;
             count = Text(board, "Countdown", 390, 390, 300, 300, 180);
             count.color = Color.white;
-            dialog = Rect("Exit", board, 180, 360, 720, 360).gameObject;
-            var dialogImage = dialog.AddComponent<Image>();
-            dialogImage.sprite = Resources.Load<Sprite>("Common/Sprites/Dialog/UI_CMN_GenericDialog");
-            if (dialogImage.sprite == null) throw new InvalidOperationException("Native dialog sprite is unavailable.");
-            question = Text(dialog.transform, "Question", 40, 55, 640, 90, 42);
-            question.text = "要退出练习吗？";
-            answer = Text(dialog.transform, "Choice", 40, 200, 640, 80, 40);
+            messageMonitor = Resources.FindObjectsOfTypeAll<GenericMonitor>()
+                .First(x => x.gameObject.scene.IsValid() && x.MonitorId == monitor);
+            var windowPrefab = Traverse.Create(messageMonitor).Field<CommonWindow>("_small").Value;
+            dialog = Object.Instantiate(windowPrefab, board, false);
+            dialog.SetVisible(false);
             Layer(root.transform);
         }
         catch { Dispose(); throw; }
@@ -112,7 +119,26 @@ public sealed class PracticeView : IDisposable
         var selecting = session.State == PracticeState.Selecting || session.State == PracticeState.Selected;
         selector.SetActive(selecting);
         controls.SetActive(selecting || session.State == PracticeState.ExitPrompt);
-        dialog.SetActive(session.State == PracticeState.ExitPrompt);
+        var exiting = session.State == PracticeState.ExitPrompt;
+        if (exiting != exitVisible)
+        {
+            exitVisible = exiting;
+            if (exiting)
+            {
+                dialog.Prepare(messageMonitor, WindowMessageID.EntryConfirmGuest, WindowPositionID.Middle,
+                    Vector3.zero, new Process.WindowParam { hideTitle = true, replaceText = true,
+                        text = "要退出练习吗？", changeSize = true, sizeID = WindowSizeID.Middle });
+                SetFrame(buttons[4]);
+            }
+            else
+            {
+                dialog.Close();
+                buttons[4].SetSymbolSprite(confirmSymbol, false);
+            }
+        }
+        dialog.UpdateView((long)(Time.unscaledDeltaTime * 1000));
+        exitChoice.gameObject.SetActive(exiting);
+        exitChoice.text = session.ConfirmExit ? "退出练习" : "继续练习";
         count.gameObject.SetActive(session.State == PracticeState.Countdown);
         count.text = session.Countdown.ToString();
         speed.text = session.Rate.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "X";
@@ -120,7 +146,6 @@ public sealed class PracticeView : IDisposable
         name.text = session.Current.name;
         range.text = $"{TimeSpan.FromMilliseconds(session.Current.startMs):mm\\:ss} — {TimeSpan.FromMilliseconds(session.Current.endMs):mm\\:ss}";
         page.text = $"{session.Index + 1} / {session.Count}";
-        answer.text = session.ConfirmExit ? "取消     <color=#F16FB7>确认</color>" : "<color=#F16FB7>取消</color>     确认";
         preview.localScale = Vector3.one * (session.State == PracticeState.Selected ? 1 + .06f * session.SelectionProgress : 1);
         foreach (var button in buttons.Values) button.ViewUpdate(Time.unscaledDeltaTime * 1000);
 
@@ -151,39 +176,64 @@ public sealed class PracticeView : IDisposable
 
     public void Press(int button) => buttons[button].Pressed();
 
-    private TextMeshProUGUI Setting(Transform parent, int number, float x, float y, float rotation)
+    // Clone the game's empty button anchors; preserve prefab offsets and animation transforms.
+    private static Transform Slot(Transform parent, int number, string process)
     {
-        var slot = Rect("Setting " + number, parent, x, y, 242, 170);
-        slot.localRotation = Quaternion.Euler(0, 0, rotation);
-        var button = Object.Instantiate(CommonPrefab.GetFlatButtonObject(), slot, false);
-        button.Initialize(monitor, (InputManager.ButtonSetting)(number - 1), CommonButtonObject.LedColors.Yellow);
-        button.SetSymbol(frame, false);
-        button.SetSE(Mai2.Mai2Cue.Cue.SE_SYS_CURSOR);
-        button.SetActiveImmediateButton(true);
-        buttons[number] = button;
-        var nativeRect = button.GetComponent<RectTransform>();
-        nativeRect.localScale = Vector3.one * (242f / 351);
-        nativeRect.anchoredPosition = Vector2.zero;
-        return Text(slot, "Value", 0, 0, 242, 170, 45);
+        var prefab = Resources.Load<GameObject>("Process/" + process + "/" + process + "Process");
+        var source = prefab.transform.Find("Canvas/Main/UI_Buttons/UI_Button" + number.ToString("00"));
+        return Object.Instantiate(source, parent, false);
     }
 
-    private void AddButton(Transform parent, int number, float x, float y, bool flat, bool flip)
+    private TextMeshProUGUI Setting(Transform parent, int number)
     {
-        var slot = Rect("Button " + number, parent, x - (flat ? 130 : 62.5f), y - (flat ? 78 : 66.5f), flat ? 260 : 125, flat ? 156 : 133);
-        if (flat) slot.localRotation = Quaternion.Euler(0, 0, 22.5f);
+        var slot = Slot(parent, number, "MusicSelectInfo");
+        var prefab = Resources.Load<TabButton>("Common/Prefabs/SelectorTab/Button_Tab");
+        var button = Object.Instantiate(prefab, slot, false);
+        Configure(button, number);
+        // These settings have values, not the native tab's left/right arrow decorations.
+        Traverse.Create(button).Field<Image>("_leftArrow").Value.enabled = false;
+        Traverse.Create(button).Field<Image>("_rightArrow").Value.enabled = false;
+        SetFrame(button);
+        return ButtonText(button, 28);
+    }
+
+    private void AddButton(Transform parent, int number, bool flat, bool flip)
+    {
+        var slot = Slot(parent, number, "MusicSelect");
         var button = Object.Instantiate(flat ? CommonPrefab.GetFlatButtonObject() : CommonPrefab.GetCirclebuButtonObject(), slot, false);
+        Configure(button, number);
+        button.SetSymbolSprite(flat ? ButtonControllerBase.GetFlatButtonParam(ButtonControllerBase.FlatButtonType.Set).Image
+            : Resources.Load<Sprite>("Common/Sprites/Button/UI_CMN_Arrow"), flip);
+    }
+
+    private void Configure(CommonButtonObject button, int number)
+    {
         button.Initialize(monitor, (InputManager.ButtonSetting)(number - 1), CommonButtonObject.LedColors.Yellow);
-        var spriteName = flat ? "UI_CMN_Btn_Set" : "UI_CMN_Arrow";
-        // The native table also contains any cabinet CustomButton replacements.
-        var sprite = flat ? ButtonControllerBase.GetFlatButtonParam(ButtonControllerBase.FlatButtonType.Set).Image
-            : Resources.Load<Sprite>("Common/Sprites/Button/" + spriteName);
-        if (sprite == null) throw new InvalidOperationException("Missing native button: " + spriteName);
-        button.SetSymbol(sprite, flip);
         button.SetSE(Mai2.Mai2Cue.Cue.SE_SYS_CURSOR);
         button.SetActiveImmediateButton(true);
-        button.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-        if (flat) button.transform.localScale = Vector3.one * (260f / 351);
         buttons[number] = button;
+    }
+
+    private static Image Symbol(CommonButtonObject button) =>
+        Traverse.Create(button).Field<Image>("_symbolImage").Value;
+
+    private void SetFrame(CommonButtonObject button)
+    {
+        var image = Symbol(button);
+        var size = image.rectTransform.sizeDelta;
+        button.SetSymbolSprite(frame, false);
+        image.rectTransform.sizeDelta = size;
+    }
+
+    private TextMeshProUGUI ButtonText(CommonButtonObject button, float size)
+    {
+        var image = Symbol(button).rectTransform;
+        var text = Text(image, "Value", 0, 0, image.rect.width, image.rect.height, size);
+        var rect = text.rectTransform;
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = rect.offsetMax = Vector2.zero;
+        return text;
     }
 
     private TextMeshProUGUI Text(Transform parent, string id, float x, float y, float w, float h, float size)
