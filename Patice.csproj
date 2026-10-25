@@ -4,7 +4,7 @@
     <LangVersion>12</LangVersion>
     <AssemblyName>Patice</AssemblyName>
     <RootNamespace>Patice</RootNamespace>
-    <Version>0.2.7</Version>
+    <Version>0.2.8</Version>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
@@ -30,7 +30,7 @@
   <UsingTask TaskName="ILRepack" AssemblyFile="$(PkgILRepack_Lib_MSBuild_Task)/build/ILRepack.Lib.MSBuild.Task.dll" />
   <Target Name="BundleJson" AfterTargets="Build">
     <ILRepack InputAssemblies="$(TargetPath);$(PkgNewtonsoft_Json)/lib/net20/Newtonsoft.Json.dll"
-              OutputFile="$(TargetPath)" LibraryPath="$(MSBuildProjectDirectory)/.build/references"
+              OutputFile="$(TargetPath)" LibraryPath="$(MSBuildProjectDirectory)/.build/references;$(PkgNewtonsoft_Json)/lib/net20"
               Internalize="true" TargetKind="Dll" DebugInfo="false" />
   </Target>
 </Project>

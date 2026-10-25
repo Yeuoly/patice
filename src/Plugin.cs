@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using MelonLoader;
 
-[assembly: MelonInfo(typeof(Patice.Plugin), "Patice", "0.2.7", "Yeuoly")]
+[assembly: MelonInfo(typeof(Patice.Plugin), "Patice", "0.2.8", "Yeuoly")]
 [assembly: MelonGame(null, "Sinmai")]
 [assembly: HarmonyDontPatchAll]
 
