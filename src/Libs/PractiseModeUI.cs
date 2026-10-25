@@ -16,7 +16,7 @@ public sealed class PracticeModeUI : MonoBehaviour
         monitor = monitorIndex;
         player = playback;
         // Snapshot the game before the preview seeks or enables autoplay.
-        view = new PracticeView(monitor);
+        view = new PracticeView(monitor, GetComponent<Monitor.GameMonitor>());
         session = new PracticeSession(player, segments);
         session.Open();
         view.Update(session);

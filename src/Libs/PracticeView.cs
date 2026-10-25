@@ -31,18 +31,19 @@ public sealed class PracticeView : IDisposable
     private bool exitVisible;
     private readonly Sprite confirmSymbol;
     private readonly RectTransform preview;
-    private readonly TMP_FontAsset font;
+    private readonly TextMeshProUGUI nativeText;
     private readonly TextMeshProUGUI speed, mode, name, range, page, count;
     private readonly int monitor;
     private readonly Rect crop;
     private readonly Sprite circle;
 
-    public PracticeView(int monitor)
+    public PracticeView(int monitor, Monitor.GameMonitor gameMonitor)
     {
         this.monitor = monitor;
         try
         {
-            font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+            nativeText = gameMonitor.GameDispCtrl.transform.Find("UpperGauge/Base/Fast_Late/Title/FAST")
+                .GetComponent<TextMeshProUGUI>();
             var main = Camera.main;
             gameCamera = main;
             originalUiLayerMask = main.cullingMask & (1 << UiLayer);
@@ -101,7 +102,7 @@ public sealed class PracticeView : IDisposable
                 .First(x => x.gameObject.scene.IsValid() && x.MonitorId == monitor);
             var windowPrefab = Traverse.Create(messageMonitor).Field<CommonWindow>("_small").Value;
             dialog = Object.Instantiate(windowPrefab, board, false);
-            foreach (var label in dialog.GetComponentsInChildren<TextMeshProUGUI>(true)) label.font = font;
+            foreach (var label in dialog.GetComponentsInChildren<TextMeshProUGUI>(true)) ApplyTypography(label);
             dialog.SetVisible(false);
             Layer(root.transform);
         }
@@ -188,8 +189,6 @@ public sealed class PracticeView : IDisposable
         var face = button.transform.Find("IMG_Top").GetComponent<RectTransform>();
         var text = Text(face, "Value", 0, 0, face.rect.width, face.rect.height, 28);
         text.color = Symbol(button).color;
-        text.fontStyle = FontStyles.Bold;
-        text.fontSharedMaterial = Resources.Load<Material>("Fonts & Materials/LiberationSans SDF - Outline");
         text.rectTransform.anchorMin = Vector2.zero;
         text.rectTransform.anchorMax = Vector2.one;
         text.rectTransform.offsetMin = text.rectTransform.offsetMax = Vector2.zero;
@@ -222,12 +221,19 @@ public sealed class PracticeView : IDisposable
         var text = rect.gameObject.AddComponent<TextMeshProUGUI>();
         rect.sizeDelta = new Vector2(w, h);
         text.enableWordWrapping = false;
-        text.font = font;
+        ApplyTypography(text);
         text.fontSize = size;
         text.alignment = TextAlignmentOptions.Center;
         text.color = Color.white;
         text.raycastTarget = false;
         return text;
+    }
+
+    private void ApplyTypography(TextMeshProUGUI text)
+    {
+        text.font = nativeText.font;
+        text.fontSharedMaterial = nativeText.fontSharedMaterial;
+        text.fontStyle = nativeText.fontStyle;
     }
 
     private static RectTransform Rect(string name, Transform parent, float x, float y, float w, float h)
