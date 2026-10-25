@@ -85,13 +85,13 @@ public static class PracticeMode
         }
     }
 
-    // GameMain checks this before updating GameProcess. Reserve Test for the
-    // active gameplay process; its held state remains available to our input.
-    [HarmonyPatch(typeof(InputManager), "GetSystemInputDown"), HarmonyPostfix]
-    private static void EntryInput(InputManager.SystemButtonSetting button, ref bool __result)
+    // Consume the Test edge after hardware polling and before GameMain checks it.
+    // Keep the held state intact for the practice session's own edge detection.
+    [HarmonyPatch(typeof(InputManager), "UpdateAmInput"), HarmonyPostfix]
+    private static void EntryInput(bool[] ___SystemButtonDown)
     {
-        if (game != null && button == InputManager.SystemButtonSetting.ButtonTest)
-            __result = false;
+        if (game != null)
+            ___SystemButtonDown[(int)InputManager.SystemButtonSetting.ButtonTest] = false;
     }
 
     [HarmonyPatch(typeof(SoundManager), "Play"), HarmonyPrefix]
