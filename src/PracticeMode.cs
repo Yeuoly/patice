@@ -103,10 +103,6 @@ public static class PracticeMode
             ___SystemButtonDown[(int)InputManager.SystemButtonSetting.ButtonTest] = false;
     }
 
-    [HarmonyPatch(typeof(SoundManager), "Play"), HarmonyPrefix]
-    private static bool PreviewSound(int __0, int __1, int __2) =>
-        Player?.Previewing != true || __1 == 2 || (__0 == 0 && __2 == (int)Mai2.Mai2Cue.Cue.SE_SYS_CURSOR);
-
     [HarmonyPatch(typeof(GameMonitor), "IsAllJudged"), HarmonyPrefix]
     private static bool SegmentEnd(ref bool __result)
     {

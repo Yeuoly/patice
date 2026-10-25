@@ -62,14 +62,14 @@ public sealed class Playback
     {
         Previewing = enabled;
         GameManager.AutoPlay = enabled ? GameManager.AutoPlayMode.Critical : GameManager.AutoPlayMode.None;
-        SoundManager.PauseMusic(Paused || Previewing);
+        SoundManager.PauseMusic(Paused);
     }
 
     public void Pause(bool paused)
     {
         NotesManager.Pause(paused);
         movie.Pause(monitorIndex, paused);
-        SoundManager.PauseMusic(paused || Previewing);
+        SoundManager.PauseMusic(paused);
     }
 
     public void SetRate(float rate)

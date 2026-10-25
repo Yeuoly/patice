@@ -29,6 +29,7 @@ public sealed class PracticeView : IDisposable
     private readonly CommonWindow dialog;
     private readonly GenericMonitor messageMonitor;
     private bool exitVisible;
+    private float buttonSyncTimer;
     private readonly Sprite confirmSymbol;
     private readonly RectTransform preview;
     private readonly TextMeshProUGUI nativeText;
@@ -151,7 +152,10 @@ public sealed class PracticeView : IDisposable
         if (seeking) range.text = TimeSpan.FromMilliseconds(session.SeekPositionMs).ToString(@"mm\:ss");
         page.text = $"{session.Index + 1} / {session.Count}";
         preview.localScale = Vector3.one * (session.State == PracticeState.Selected ? 1 + .06f * session.SelectionProgress : 1);
-        foreach (var button in buttons.Values) button.ViewUpdate(Time.unscaledDeltaTime * 1000);
+        // Native ButtonControllerBase passes a shared one-second animation phase.
+        buttonSyncTimer += Time.unscaledDeltaTime;
+        foreach (var button in buttons.Values) button.ViewUpdate(buttonSyncTimer);
+        if (buttonSyncTimer > 1f) buttonSyncTimer = 0f;
 
     }
 

@@ -56,7 +56,6 @@ public sealed class PracticeModeUI : MonoBehaviour
             Destroy(this);
             return;
         }
-        if (player.Previewing) SoundManager.PauseMusic(true);
         view.Update(session);
     }
 
