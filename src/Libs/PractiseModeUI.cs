@@ -9,13 +9,15 @@ public sealed class PracticeModeUI : MonoBehaviour
     private PracticeSession session;
     private PracticeView view;
     private int monitor;
+    private Playback player;
 
-    public void Initialize(int monitorIndex, Segment[] segments)
+    public void Initialize(int monitorIndex, Segment[] segments, Playback playback)
     {
         monitor = monitorIndex;
+        player = playback;
         // Snapshot the game before the preview seeks or enables autoplay.
         view = new PracticeView(monitor);
-        session = new PracticeSession(new NativePracticePlayer(), segments);
+        session = new PracticeSession(player, segments);
         session.Open();
         view.Update(session);
     }
@@ -54,7 +56,7 @@ public sealed class PracticeModeUI : MonoBehaviour
             Destroy(this);
             return;
         }
-        if (NativePracticePlayer.PreviewActive) SoundManager.PauseMusic(true);
+        if (player.Previewing) SoundManager.PauseMusic(true);
         view.Update(session);
     }
 

@@ -1,4 +1,7 @@
 using System;
+using System.IO;
+using Manager;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -28,6 +31,21 @@ public sealed class SegmentDocument
     public bool exampleOnly;
     public ChartIdentity chart;
     public Segment[] segments;
+
+    public static SegmentDocument Load(int monitor)
+    {
+        var musicId = GameManager.SelectMusicID[monitor];
+        var difficulty = GameManager.SelectDifficultyID[monitor];
+        var difficulties = new[] { "basic", "advanced", "expert", "master", "remaster", "utage" };
+        if (difficulty < 0 || difficulty >= difficulties.Length) throw new InvalidDataException("Unknown chart difficulty.");
+        var identity = new ChartIdentity { musicId = musicId, difficulty = difficulties[difficulty] };
+        var path = Path.Combine(Environment.CurrentDirectory, $"UserData/PracticeSegments/{musicId}/{identity.difficulty}.json");
+        if (new FileInfo(path).Length > 256 * 1024) throw new InvalidDataException("Segment document exceeds 256 KiB.");
+        var document = JsonUtility.FromJson<SegmentDocument>(File.ReadAllText(path));
+        if (document == null) throw new InvalidDataException("Empty segment document.");
+        document.Validate(identity, NotesManager.Instance().getPlayFinalMsec() - Playback.MusicStartDelayMs);
+        return document;
+    }
 
     public void Validate(ChartIdentity actual, double durationMs)
     {

@@ -4,21 +4,9 @@ namespace Patice.Domain;
 
 public enum PracticeState { Closed, Selecting, Selected, Countdown, Playing, ExitPrompt }
 
-// The native adapter owns the snapshot (autoplay, pause, rate, position and audio).
-public interface IPracticePlayer
-{
-    double PositionMs { get; }
-    void Capture();
-    void Preview(bool enabled);
-    void Pause(bool paused);
-    void Seek(double milliseconds);
-    void SetRate(float rate);
-    void Restore(bool rewind);
-}
-
 public sealed class PracticeSession : IDisposable
 {
-    private readonly IPracticePlayer player;
+    private readonly Playback player;
     private readonly Segment[] segments;
     private readonly float[] rates = { 1f, .5f, .75f, .9f };
     private int rateIndex;
@@ -34,7 +22,7 @@ public sealed class PracticeSession : IDisposable
     public int Countdown => Math.Max(1, 3 - (int)elapsed);
     public float SelectionProgress => (float)Math.Min(1, elapsed / .4);
 
-    public PracticeSession(IPracticePlayer player, Segment[] segments)
+    public PracticeSession(Playback player, Segment[] segments)
     {
         this.player = player ?? throw new ArgumentNullException(nameof(player));
         if (segments == null || segments.Length == 0) throw new ArgumentException(nameof(segments));
