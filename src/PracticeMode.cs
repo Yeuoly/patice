@@ -28,7 +28,6 @@ public static class PracticeMode
             if (closing != null) UnityEngine.Object.Destroy(closing);
             ui = null;
             Player = null;
-            entryHeld = false;
         }
     }
 
@@ -37,6 +36,7 @@ public static class PracticeMode
     {
         Close();
         game = __instance;
+        entryHeld = false;
         MelonLogger.Msg("Practice input attached to gameplay.");
     }
 
@@ -44,6 +44,7 @@ public static class PracticeMode
     private static void Release()
     {
         game = null;
+        entryHeld = false;
         Close();
     }
 

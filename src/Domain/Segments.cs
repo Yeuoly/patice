@@ -53,7 +53,7 @@ public sealed class SegmentDocument
             throw new ArgumentException("Unsupported segment document.");
         if (chart == null || actual == null || chart.musicId != actual.musicId ||
             chart.difficulty != actual.difficulty)
-            throw new ArgumentException("Segment chart identity does not match the loaded chart.");
+            throw new ArgumentException($"Segment chart {chart?.musicId}/{chart?.difficulty} does not match loaded chart {actual?.musicId}/{actual?.difficulty}.");
         if (segments == null || segments.Length == 0 || segments.Length > 256 || double.IsNaN(durationMs) || durationMs <= 0)
             throw new ArgumentException("Invalid segment list or chart duration.");
         var ids = new HashSet<string>(StringComparer.Ordinal);
