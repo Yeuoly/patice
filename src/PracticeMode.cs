@@ -17,6 +17,7 @@ public static class PracticeMode
     public static PracticeModeUI ui;
     public static Playback Player { get; private set; }
     private static bool entryHeld;
+    private static GameProcess game;
 
     private static void Close()
     {
@@ -32,10 +33,19 @@ public static class PracticeMode
     }
 
     [HarmonyPatch(typeof(GameProcess), "OnStart"), HarmonyPrefix]
-    private static void Start() => Close();
+    private static void Start(GameProcess __instance)
+    {
+        Close();
+        game = __instance;
+        MelonLogger.Msg("Practice input attached to gameplay.");
+    }
 
     [HarmonyPatch(typeof(GameProcess), "OnRelease"), HarmonyPrefix]
-    private static void Release() => Close();
+    private static void Release()
+    {
+        game = null;
+        Close();
+    }
 
     [HarmonyPatch(typeof(GameProcess), "OnUpdate"), HarmonyPrefix]
     private static void Update(GameProcess __instance, GameMonitor[] ____monitors, MovieController ____gameMovie, int ____sequence)
@@ -75,12 +85,13 @@ public static class PracticeMode
         }
     }
 
-    [HarmonyPatch(typeof(InputManager), "GetSystemInputDown"), HarmonyPrefix]
-    private static bool EntryInput(InputManager.SystemButtonSetting button, ref bool __result)
+    // GameMain checks this before updating GameProcess. Reserve Test for the
+    // active gameplay process; its held state remains available to our input.
+    [HarmonyPatch(typeof(InputManager), "GetSystemInputDown"), HarmonyPostfix]
+    private static void EntryInput(InputManager.SystemButtonSetting button, ref bool __result)
     {
-        if (!GameManager.IsInGame || button != InputManager.SystemButtonSetting.ButtonTest) return true;
-        __result = false;
-        return false;
+        if (game != null && button == InputManager.SystemButtonSetting.ButtonTest)
+            __result = false;
     }
 
     [HarmonyPatch(typeof(SoundManager), "Play"), HarmonyPrefix]
