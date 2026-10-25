@@ -103,9 +103,7 @@ public sealed class PracticeView : IDisposable
             count = Text(board, "Countdown", 390, 390, 300, 300, 180);
             dialog = Rect("Exit", board, 180, 360, 720, 360).gameObject;
             var dialogImage = dialog.AddComponent<Image>();
-            dialogImage.sprite = Resources.Load<Sprite>("Common/Sprites/UI_CMN_Dialog_03");
-            // Use an already loaded native dialog sprite if the resource is packed in an atlas.
-            if (dialogImage.sprite == null) dialogImage.sprite = Resources.FindObjectsOfTypeAll<Sprite>().FirstOrDefault(x => x.name == "UI_CMN_Dialog_03");
+            dialogImage.sprite = Resources.Load<Sprite>("Common/Sprites/PerfectChallenge/UI_CMN_Dialog_03");
             if (dialogImage.sprite == null) throw new InvalidOperationException("Native dialog sprite is unavailable.");
             question = Text(dialog.transform, "Question", 40, 55, 640, 90, 42);
             question.text = "要退出练习吗？";
