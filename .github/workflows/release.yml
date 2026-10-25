@@ -25,6 +25,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Checkout JSON library source
+        uses: actions/checkout@v4
+        with:
+          repository: JamesNK/Newtonsoft.Json
+          ref: 0a2e291c0d9c0c7675d445703e51750363a549ef
+          path: .build/json
+          sparse-checkout: Src/Newtonsoft.Json
+          persist-credentials: false
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
