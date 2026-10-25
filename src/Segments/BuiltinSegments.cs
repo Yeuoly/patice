@@ -11,21 +11,19 @@ public sealed class BuiltinSegments : ISegmentStore
 
     private static Dictionary<int, Dictionary<Difficulty, Segment[]>> Load()
     {
-        var result = new Dictionary<int, Dictionary<Difficulty, Segment[]>>();
+        var segments = new List<Segment>();
         var assembly = typeof(BuiltinSegments).Assembly;
         foreach (var resource in assembly.GetManifestResourceNames()
             .Where(name => name.StartsWith("Patice.Segments.", StringComparison.Ordinal))
             .OrderBy(name => name, StringComparer.Ordinal))
         {
             using var stream = assembly.GetManifestResourceStream(resource);
-            var document = SegmentStorage.ReadDocument(stream);
-            if (!result.TryGetValue(document.Chart.MusicId, out var levels))
-                result.Add(document.Chart.MusicId, levels = new Dictionary<Difficulty, Segment[]>());
-            var entries = levels.TryGetValue(document.Chart.Difficulty, out var existing)
-                ? existing.Concat(document.Segments).ToArray() : document.Segments;
-            levels[document.Chart.Difficulty] = entries;
+            segments.AddRange(SegmentStorage.ReadSegments(stream));
         }
-        return result;
+        return segments.GroupBy(segment => segment.musicId).ToDictionary(
+            chart => chart.Key,
+            chart => chart.GroupBy(segment => segment.difficulty)
+                .ToDictionary(level => level.Key, level => level.ToArray()));
     }
 
     public Segment[] Get(int id, Difficulty difficulty) =>

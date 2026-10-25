@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -31,56 +31,44 @@ public sealed class SegmentStorage : ISegmentStorage
         var path = ChartPath(id, difficulty);
         if (!File.Exists(path)) return Array.Empty<Segment>();
         using var stream = File.OpenRead(path);
-        var document = ReadDocument(stream);
-        ValidateDocument(document);
-        if (document.Chart.MusicId != id || document.Chart.Difficulty != difficulty)
-            throw new InvalidDataException("Invalid segment document for the requested chart.");
-        return document.Segments;
+        var segments = ReadSegments(stream);
+        ValidateSegments(segments);
+        return segments;
     }
 
-    internal static SegmentDocument ReadDocument(Stream stream)
+    internal static Segment[] ReadSegments(Stream stream)
     {
         using var reader = new StreamReader(stream, Encoding.UTF8);
         using var json = new JsonTextReader(reader);
-        return JsonSerializer.Create(jsonSettings).Deserialize<SegmentDocument>(json);
+        return JsonSerializer.Create(jsonSettings).Deserialize<Segment[]>(json);
     }
 
     // External data is checked at the storage boundary; CI uses the same rules.
-    internal static void ValidateDocument(SegmentDocument document)
+    internal static void ValidateSegments(Segment[] segments)
     {
-        if (document == null || document.SchemaVersion != SegmentDocument.CurrentVersion ||
-            document.TimeBase != SegmentDocument.MusicTimeBase || document.ExampleOnly || document.Chart == null)
-            throw new InvalidDataException("Invalid segment document.");
-        ValidateChart(document.Chart.MusicId, document.Chart.Difficulty);
-        var segments = document.Segments;
-        if (segments == null || segments.Length == 0 || segments.Length > 256)
+        if (segments == null || segments.Length == 0)
             throw new InvalidDataException("Invalid segment list.");
-        var ids = new System.Collections.Generic.HashSet<string>(StringComparer.Ordinal);
         foreach (var segment in segments)
         {
-            if (segment == null || string.IsNullOrWhiteSpace(segment.id) ||
-                !Regex.IsMatch(segment.id, "^[a-z0-9][a-z0-9-]{0,63}$") || !ids.Add(segment.id) ||
+            if (segment == null || segment.id == Guid.Empty ||
                 string.IsNullOrWhiteSpace(segment.name) || segment.name.Length > 40 ||
                 segment.startMs < 0 || segment.endMs <= segment.startMs)
                 throw new InvalidDataException("Invalid segment ID, name or range.");
+            ValidateChart(segment.musicId, segment.difficulty);
         }
+        if (segments.GroupBy(segment => new { segment.musicId, segment.difficulty, segment.id })
+            .Any(group => group.Count() > 1))
+            throw new InvalidDataException("Duplicate segment identity.");
     }
 
     public void Write(int id, Difficulty difficulty, Segment[] segments)
     {
-        var document = new SegmentDocument
-        {
-            SchemaVersion = SegmentDocument.CurrentVersion,
-            TimeBase = SegmentDocument.MusicTimeBase,
-            Chart = new ChartIdentity { MusicId = id, Difficulty = difficulty },
-            Segments = segments
-        };
-        ValidateDocument(document);
+        ValidateSegments(segments);
         var path = ChartPath(id, difficulty);
         Directory.CreateDirectory(Path.GetDirectoryName(path));
         using var writer = new StreamWriter(path, false, new UTF8Encoding(false));
         using var json = new JsonTextWriter(writer) { Formatting = Formatting.Indented };
-        JsonSerializer.Create(jsonSettings).Serialize(json, document);
+        JsonSerializer.Create(jsonSettings).Serialize(json, segments);
     }
 
     private static void ValidateChart(int id, Difficulty difficulty)
