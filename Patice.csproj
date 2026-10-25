@@ -4,7 +4,7 @@
     <LangVersion>12</LangVersion>
     <AssemblyName>Patice</AssemblyName>
     <RootNamespace>Patice</RootNamespace>
-    <Version>0.2.15</Version>
+    <Version>0.2.16</Version>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
@@ -27,7 +27,6 @@
     <Reference Include="$(ReferencePath)/*.dll" Exclude="$(ReferencePath)/mscorlib.dll;$(ReferencePath)/System*.dll;$(ReferencePath)/Mono*.dll">
       <Private>false</Private>
     </Reference>
-    <EmbeddedResource Include="assets/setting-frame.png" LogicalName="Patice.setting-frame.png" />
   </ItemGroup>
   <UsingTask TaskName="ILRepack" AssemblyFile="$(PkgILRepack_Lib_MSBuild_Task)/build/ILRepack.Lib.MSBuild.Task.dll" />
   <Target Name="BundleJson" AfterTargets="Build">

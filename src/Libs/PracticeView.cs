@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using HarmonyLib;
 using DB;
 using Patice.Domain;
@@ -30,7 +29,6 @@ public sealed class PracticeView : IDisposable
     private readonly CommonWindow dialog;
     private readonly GenericMonitor messageMonitor;
     private bool exitVisible;
-    private readonly TextMeshProUGUI exitChoice;
     private readonly Sprite confirmSymbol;
     private readonly RectTransform preview;
     private readonly TMP_FontAsset font;
@@ -38,7 +36,6 @@ public sealed class PracticeView : IDisposable
     private readonly int monitor;
     private readonly Rect crop;
     private readonly Sprite circle;
-    private readonly Sprite frame;
 
     public PracticeView(int monitor)
     {
@@ -82,7 +79,6 @@ public sealed class PracticeView : IDisposable
             board.pivot = new Vector2(.5f, 0);
             board.anchoredPosition = Vector2.zero;
             circle = MakeCircle();
-            frame = LoadFrame();
             selector = Rect("Selector", board, 0, 0, 1080, 1080).gameObject;
             var background = Circle("Frozen background", selector.transform, 0, 0, 1080);
             var frozen = BlurSnapshot();
@@ -96,8 +92,6 @@ public sealed class PracticeView : IDisposable
             AddButton(controls.transform, 3, false, false);
             AddButton(controls.transform, 4, true, false);
             confirmSymbol = Symbol(buttons[4]).sprite;
-            exitChoice = ButtonText(buttons[4], 40);
-            exitChoice.gameObject.SetActive(false);
             name = Text(selector.transform, "Segment", 260, 810, 560, 65, 40);
             range = Text(selector.transform, "Range", 330, 880, 420, 45, 28);
             page = Text(selector.transform, "Index", 440, 944, 200, 40, 26);
@@ -128,7 +122,6 @@ public sealed class PracticeView : IDisposable
                 dialog.Prepare(messageMonitor, WindowMessageID.EntryConfirmGuest, WindowPositionID.Middle,
                     Vector3.zero, new Process.WindowParam { hideTitle = true, replaceText = true,
                         text = "要退出练习吗？", changeSize = true, sizeID = WindowSizeID.Middle });
-                SetFrame(buttons[4]);
             }
             else
             {
@@ -137,8 +130,9 @@ public sealed class PracticeView : IDisposable
             }
         }
         dialog.UpdateView((long)(Time.unscaledDeltaTime * 1000));
-        exitChoice.gameObject.SetActive(exiting);
-        exitChoice.text = session.ConfirmExit ? "退出练习" : "继续练习";
+        if (exiting)
+            buttons[4].SetSymbolSprite(ButtonControllerBase.GetFlatButtonParam(session.ConfirmExit
+                ? ButtonControllerBase.FlatButtonType.Yes : ButtonControllerBase.FlatButtonType.No).Image, false);
         count.gameObject.SetActive(session.State == PracticeState.Countdown);
         count.text = session.Countdown.ToString();
         speed.text = session.Rate.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "X";
@@ -186,17 +180,16 @@ public sealed class PracticeView : IDisposable
 
     private TextMeshProUGUI Setting(Transform parent, int number)
     {
-        // The eight cabinet keys are 45 degrees apart. Rotate the native flat
-        // button anchor around Main's centre, including its animation direction.
-        var slot = Slot(parent, 4, "MusicSelect");
-        var turn = Quaternion.AngleAxis(-45 * (number - 4), Vector3.forward);
-        slot.localPosition = turn * slot.localPosition;
-        slot.localRotation = turn * slot.localRotation;
-        var button = Object.Instantiate(CommonPrefab.GetFlatButtonObject(), slot, false);
+        var slot = Slot(parent, number, "MusicSelectInfo");
+        var button = Object.Instantiate(CommonPrefab.GetCirclebuButtonObject(), slot, false);
         Configure(button, number);
-        SetFrame(button);
-        var text = ButtonText(button, 40);
-        text.rectTransform.localRotation = Quaternion.Euler(0, 0, 180);
+        Symbol(button).enabled = false;
+        // Keep the native circle background, particles and press animation.
+        var face = button.transform.Find("IMG_Top").GetComponent<RectTransform>();
+        var text = Text(face, "Value", 0, 0, face.rect.width, face.rect.height, 28);
+        text.rectTransform.anchorMin = Vector2.zero;
+        text.rectTransform.anchorMax = Vector2.one;
+        text.rectTransform.offsetMin = text.rectTransform.offsetMax = Vector2.zero;
         return text;
     }
 
@@ -219,25 +212,6 @@ public sealed class PracticeView : IDisposable
 
     private static Image Symbol(CommonButtonObject button) =>
         Traverse.Create(button).Field<Image>("_symbolImage").Value;
-
-    private void SetFrame(CommonButtonObject button)
-    {
-        var image = Symbol(button);
-        var size = image.rectTransform.sizeDelta;
-        button.SetSymbolSprite(frame, false);
-        image.rectTransform.sizeDelta = size;
-    }
-
-    private TextMeshProUGUI ButtonText(CommonButtonObject button, float size)
-    {
-        var image = Symbol(button).rectTransform;
-        var text = Text(image, "Value", 0, 0, image.rect.width, image.rect.height, size);
-        var rect = text.rectTransform;
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-        rect.offsetMin = rect.offsetMax = Vector2.zero;
-        return text;
-    }
 
     private TextMeshProUGUI Text(Transform parent, string id, float x, float y, float w, float h, float size)
     {
@@ -293,16 +267,6 @@ public sealed class PracticeView : IDisposable
         }
         texture.SetPixels32(pixels); texture.Apply();
         var sprite = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(.5f, .5f));
-        owned.Add(sprite); return sprite;
-    }
-
-    private Sprite LoadFrame()
-    {
-        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Patice.setting-frame.png");
-        using var reader = new System.IO.BinaryReader(stream);
-        var texture = new Texture2D(2, 2); owned.Add(texture);
-        texture.LoadImage(reader.ReadBytes((int)stream.Length));
-        var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
         owned.Add(sprite); return sprite;
     }
 
