@@ -42,8 +42,7 @@ public sealed class PracticeView : IDisposable
         this.monitor = monitor;
         try
         {
-            font = Resources.FindObjectsOfTypeAll<TMP_FontAsset>().FirstOrDefault(x => x.name == "LiberationSans SDF")
-                ?? throw new InvalidOperationException("Native LiberationSans SDF font is not loaded.");
+            font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
             var main = Camera.main;
             gameCamera = main;
             originalUiLayerMask = main.cullingMask & (1 << UiLayer);
@@ -190,6 +189,7 @@ public sealed class PracticeView : IDisposable
         var text = Text(face, "Value", 0, 0, face.rect.width, face.rect.height, 28);
         text.color = Symbol(button).color;
         text.fontStyle = FontStyles.Bold;
+        text.fontSharedMaterial = Resources.Load<Material>("Fonts & Materials/LiberationSans SDF - Outline");
         text.rectTransform.anchorMin = Vector2.zero;
         text.rectTransform.anchorMax = Vector2.one;
         text.rectTransform.offsetMin = text.rectTransform.offsetMax = Vector2.zero;
