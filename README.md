@@ -16,7 +16,7 @@ Hey, please help me install Patice into my SDEZ game. Check the project at https
 
 ## Acknowledgments
 
-Built with [MelonLoader](https://github.com/LavaGang/MelonLoader), [Harmony](https://github.com/pardeike/Harmony), and [LitJSON](https://github.com/LitJSON/litjson).
+Built with [MelonLoader](https://github.com/LavaGang/MelonLoader) and [Harmony](https://github.com/pardeike/Harmony).
 
 Thanks to [AquaMai](https://github.com/MuNET-OSS/AquaMai) for providing a reference for this project.
 
