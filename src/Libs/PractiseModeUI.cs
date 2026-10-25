@@ -43,7 +43,7 @@ public sealed class PracticeModeUI : MonoBehaviour
     // Called before GameProcess.OnUpdate, not from an unordered MonoBehaviour.Update.
     public void Step()
     {
-        foreach (var number in new[] { 6, 3, 1, 2, 8, 4 })
+        foreach (var number in new[] { 5, 6, 3, 1, 2, 8, 4 })
         {
             if (!InputManager.GetButtonDown(monitor, (InputManager.ButtonSetting)(number - 1))) continue;
             if (session.Button(number)) view.Press(number);

@@ -18,7 +18,6 @@ public sealed class PracticeSession : IDisposable
     public int Count => segments.Length;
     public Segment Current => segments[Index];
     public bool Loop { get; private set; } = true;
-    public bool ConfirmExit { get; private set; }
     public bool Repeating => playingSegment && Loop;
     public float Rate => rates[rateIndex];
     public int Countdown => Math.Max(1, 3 - (int)elapsed);
@@ -55,7 +54,6 @@ public sealed class PracticeSession : IDisposable
             case PracticeState.Countdown: StartPreview(); break;
             case PracticeState.Playing:
                 player.Pause(true);
-                ConfirmExit = false;
                 State = PracticeState.ExitPrompt;
                 break;
             case PracticeState.ExitPrompt:
@@ -67,12 +65,15 @@ public sealed class PracticeSession : IDisposable
 
     public bool Button(int number)
     {
+        if (number == 5 && State != PracticeState.Closed && State != PracticeState.Playing)
+        {
+            Entry();
+            return true;
+        }
         if (State == PracticeState.ExitPrompt)
         {
-            if (number == 3 || number == 6) { ConfirmExit = !ConfirmExit; return true; }
-            if (number != 4) return false;
-            if (ConfirmExit) Close(false);
-            else { State = PracticeState.Playing; player.Pause(false); }
+            if (number != 6) return false;
+            Close(false);
             return true;
         }
         if (number == 1 && (State == PracticeState.Selecting || State == PracticeState.Seeking))

@@ -30,10 +30,9 @@ public sealed class PracticeView : IDisposable
     private readonly GenericMonitor messageMonitor;
     private bool exitVisible;
     private float buttonSyncTimer;
-    private readonly Sprite confirmSymbol;
     private readonly RectTransform preview;
     private readonly TextMeshProUGUI nativeText;
-    private readonly TextMeshProUGUI speed, seek, mode, name, range, page, count;
+    private readonly TextMeshProUGUI speed, seek, mode, name, range, page, count, exit;
     private readonly int monitor;
     private readonly Rect crop;
     private readonly Sprite circle;
@@ -94,7 +93,11 @@ public sealed class PracticeView : IDisposable
             AddButton(controls.transform, 6, false, true);
             AddButton(controls.transform, 3, false, false);
             AddButton(controls.transform, 4, true, false);
-            confirmSymbol = Symbol(buttons[4]).sprite;
+            AddButton(controls.transform, 5, true, false);
+            buttons[5].SetSymbolSprite(ButtonControllerBase.GetFlatButtonParam(ButtonControllerBase.FlatButtonType.Cancel).Image, false);
+            exit = ButtonText(buttons[6]);
+            exit.text = "Exit";
+            exit.gameObject.SetActive(false);
             name = Text(selector.transform, "Segment", 260, 810, 560, 65, 40);
             range = Text(selector.transform, "Range", 330, 880, 420, 45, 28);
             page = Text(selector.transform, "Index", 440, 944, 200, 40, 26);
@@ -117,7 +120,7 @@ public sealed class PracticeView : IDisposable
         var selecting = session.State == PracticeState.Selecting || session.State == PracticeState.Selected;
         var seeking = session.State == PracticeState.Seeking;
         selector.SetActive(selecting || seeking);
-        controls.SetActive(selecting || seeking || session.State == PracticeState.ExitPrompt);
+        controls.SetActive(session.State != PracticeState.Playing && session.State != PracticeState.Closed);
         var exiting = session.State == PracticeState.ExitPrompt;
         if (exiting != exitVisible)
         {
@@ -131,13 +134,14 @@ public sealed class PracticeView : IDisposable
             else
             {
                 dialog.Close();
-                buttons[4].SetSymbolSprite(confirmSymbol, false);
             }
         }
         dialog.UpdateView((long)(Time.unscaledDeltaTime * 1000));
-        if (exiting)
-            buttons[4].SetSymbolSprite(ButtonControllerBase.GetFlatButtonParam(session.ConfirmExit
-                ? ButtonControllerBase.FlatButtonType.Yes : ButtonControllerBase.FlatButtonType.No).Image, false);
+        buttons[3].transform.parent.gameObject.SetActive(selecting || seeking);
+        buttons[4].transform.parent.gameObject.SetActive(selecting || seeking);
+        buttons[6].transform.parent.gameObject.SetActive(selecting || seeking || exiting);
+        Symbol(buttons[6]).enabled = !exiting;
+        exit.gameObject.SetActive(exiting);
         count.gameObject.SetActive(session.State == PracticeState.Countdown);
         count.text = session.Countdown.ToString();
         speed.text = session.Rate.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "X";
@@ -198,6 +202,11 @@ public sealed class PracticeView : IDisposable
         var button = Object.Instantiate(CommonPrefab.GetCirclebuButtonObject(), slot, false);
         Configure(button, number);
         Symbol(button).enabled = false;
+        return ButtonText(button);
+    }
+
+    private TextMeshProUGUI ButtonText(CommonButtonObject button)
+    {
         // Keep the native circle background, particles and press animation.
         var face = button.transform.Find("IMG_Top").GetComponent<RectTransform>();
         var text = Text(face, "Value", 0, 0, face.rect.width, face.rect.height, 28);
