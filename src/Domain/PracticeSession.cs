@@ -11,7 +11,6 @@ public sealed class PracticeSession : IDisposable
     private readonly float[] rates = { 1f, .5f, .75f, .9f };
     private int rateIndex;
     private double elapsed;
-    private bool captured;
     public PracticeState State { get; private set; }
     public int Index { get; private set; }
     public int Count => segments.Length;
@@ -24,16 +23,13 @@ public sealed class PracticeSession : IDisposable
 
     public PracticeSession(Playback player, Segment[] segments)
     {
-        this.player = player ?? throw new ArgumentNullException(nameof(player));
-        if (segments == null || segments.Length == 0) throw new ArgumentException(nameof(segments));
+        this.player = player;
         this.segments = segments;
     }
 
     public void Open()
     {
-        if (State != PracticeState.Closed) return;
         player.Capture();
-        captured = true;
         StartPreview();
     }
 
@@ -95,7 +91,6 @@ public sealed class PracticeSession : IDisposable
 
     public void Tick(double seconds)
     {
-        if (double.IsNaN(seconds) || double.IsInfinity(seconds) || seconds < 0) throw new ArgumentOutOfRangeException(nameof(seconds));
         if (State == PracticeState.Selecting && player.PositionMs >= Current.endMs)
             player.Seek(Current.startMs);
         else if (State == PracticeState.Selected)
@@ -124,8 +119,6 @@ public sealed class PracticeSession : IDisposable
     private void Close(bool rewind)
     {
         State = PracticeState.Closed;
-        if (!captured) return;
-        captured = false;
         player.Restore(rewind);
     }
 

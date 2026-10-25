@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Patice.Domain;
 
@@ -13,11 +12,7 @@ public sealed class SegmentManagement
 {
     private readonly List<ISegmentStore> stores = new();
 
-    public void RegisterStore(ISegmentStore store)
-    {
-        if (store == null) throw new ArgumentNullException(nameof(store));
-        if (!stores.Contains(store)) stores.Add(store);
-    }
+    public void RegisterStore(ISegmentStore store) => stores.Add(store);
 
     public Segment[] Get(int id, Difficulty difficulty)
     {

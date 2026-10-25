@@ -28,7 +28,7 @@ public sealed class Playback
     public bool Previewing { get; private set; }
     public float Rate { get; private set; } = 1;
     public double PositionMs => NotesManager.GetCurrentMsec() - MusicStartDelayMs;
-    public bool Paused => !(Traverse.Create(typeof(NotesManager)).Field<Stopwatch>("_stopwatch").Value?.IsRunning ?? false);
+    public bool Paused => !(Traverse.Create(typeof(NotesManager)).Field<Stopwatch>("_stopwatch").Value.IsRunning);
 
     public Playback(GameProcess process, GameMonitor monitor, MovieController movie, int monitorIndex)
     {
@@ -44,7 +44,6 @@ public sealed class Playback
 
     public void Capture()
     {
-        if (attached) throw new InvalidOperationException("Playback is already owned by practice.");
         NotesManager.UpdateTimer();
         entryPosition = PositionMs;
         entryPaused = Paused;
@@ -71,7 +70,6 @@ public sealed class Playback
 
     public void SetRate(float rate)
     {
-        if (rate <= 0 || float.IsNaN(rate) || float.IsInfinity(rate)) throw new ArgumentOutOfRangeException(nameof(rate));
         NotesManager.UpdateTimer();
         chartAnchor = NotesManager.GetCurrentMsec();
         nativeAnchor = lastNativeTime;
@@ -81,7 +79,6 @@ public sealed class Playback
 
     public void Seek(double milliseconds)
     {
-        if (!attached) throw new InvalidOperationException("Practice does not own playback.");
         var paused = Paused;
         Pause(true);
         try

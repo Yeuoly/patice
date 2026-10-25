@@ -41,7 +41,7 @@ public sealed class PracticeView : IDisposable
         {
             font = Resources.FindObjectsOfTypeAll<TMP_FontAsset>().FirstOrDefault(x => x.name == "SEGA_MaruGothicDB SDF")
                 ?? throw new InvalidOperationException("Native SEGA_MaruGothicDB SDF font is not loaded.");
-            var main = Camera.main ?? throw new InvalidOperationException("Game camera is unavailable.");
+            var main = Camera.main;
             gameCamera = main;
             originalUiLayerMask = main.cullingMask & (1 << UiLayer);
             main.cullingMask &= ~(1 << UiLayer);
@@ -149,11 +149,7 @@ public sealed class PracticeView : IDisposable
         }
     }
 
-    public void Press(int button)
-    {
-        if (buttons.TryGetValue(button, out var native) && native.gameObject.activeInHierarchy) native.Pressed();
-        else SoundManager.PlaySE(Mai2.Mai2Cue.Cue.SE_SYS_CURSOR, monitor);
-    }
+    public void Press(int button) => buttons[button].Pressed();
 
     private TextMeshProUGUI Setting(Transform parent, int number, float x, float y, float rotation)
     {
@@ -250,12 +246,9 @@ public sealed class PracticeView : IDisposable
     private Sprite LoadFrame()
     {
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Patice.setting-frame.png");
-        if (stream == null) throw new InvalidOperationException("Setting frame resource is missing.");
-        var bytes = new byte[stream.Length];
-        int read = 0;
-        while (read < bytes.Length) { var n = stream.Read(bytes, read, bytes.Length - read); if (n == 0) throw new System.IO.EndOfStreamException(); read += n; }
+        using var reader = new System.IO.BinaryReader(stream);
         var texture = new Texture2D(2, 2); owned.Add(texture);
-        if (!texture.LoadImage(bytes)) throw new InvalidOperationException("Invalid setting frame.");
+        texture.LoadImage(reader.ReadBytes((int)stream.Length));
         var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
         owned.Add(sprite); return sprite;
     }

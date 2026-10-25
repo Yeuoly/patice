@@ -83,10 +83,6 @@ public static class PracticeMode
             var difficulty = (Difficulty)GameManager.SelectDifficultyID[active];
             var segments = Plugin.SegmentManagement.Get(GameManager.SelectMusicID[active], difficulty);
             if (segments.Length == 0) return;
-            var duration = NotesManager.Instance().getPlayFinalMsec() - Playback.MusicStartDelayMs;
-            foreach (var segment in segments)
-                if (segment.endMs > duration)
-                    throw new InvalidOperationException($"Segment {segment.id} exceeds the chart duration.");
             Player = new Playback(__instance, ____monitors[active], ____gameMovie, active);
             ui = ____monitors[active].gameObject.AddComponent<PracticeModeUI>();
             ui.Initialize(active, segments, Player);

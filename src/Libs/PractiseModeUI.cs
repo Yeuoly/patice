@@ -37,12 +37,11 @@ public sealed class PracticeModeUI : MonoBehaviour
         }
     }
 
-    public void Entry() => session?.Entry();
+    public void Entry() => session.Entry();
 
     // Called before GameProcess.OnUpdate, not from an unordered MonoBehaviour.Update.
     public void Step()
     {
-        if (session == null) return;
         foreach (var number in new[] { 6, 3, 7, 8, 4 })
         {
             if (!InputManager.GetButtonDown(monitor, (InputManager.ButtonSetting)(number - 1))) continue;
