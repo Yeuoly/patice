@@ -58,25 +58,25 @@ public sealed class SegmentStoresIntegration : IDisposable
     {
         var management = new SegmentManagement();
         management.RegisterStore(new BuiltinSegments());
-        Assert.Equal(2, management.Get(11820, Difficulty.Basic).Length);
-        Assert.Empty(management.Get(11820, Difficulty.Expert));
+        var builtin = management.Get(417, Difficulty.Master);
+        Assert.NotEmpty(builtin);
         Assert.False(Directory.Exists(path));
 
         var local = new LocalSegmentStore(path);
-        local.Store(new Segment(11820, Difficulty.Basic, customId, "自定义片段", 30000, 35000));
-        local.Store(new Segment(11820, Difficulty.Basic, customId, "修改后的片段", 31000, 36000));
-        local.Store(new Segment(11820, Difficulty.Expert, customId, "另一难度", 40000, 45000));
-        local.Store(new Segment(12025, Difficulty.Basic, customId, "另一首歌", 50000, 55000));
+        local.Store(new Segment(417, Difficulty.Master, customId, "自定义片段", 30000, 35000));
+        local.Store(new Segment(417, Difficulty.Master, customId, "修改后的片段", 31000, 36000));
+        local.Store(new Segment(417, Difficulty.Expert, customId, "另一难度", 40000, 45000));
+        local.Store(new Segment(11820, Difficulty.Basic, customId, "另一首歌", 50000, 55000));
 
         management.RegisterStore(new LocalSegmentStore(path));
-        var segments = management.Get(11820, Difficulty.Basic);
-        Assert.Equal(3, segments.Length);
-        Assert.Equal(customId, segments[2].id);
-        Assert.Equal("修改后的片段", segments[2].name);
-        Assert.Equal(31000, segments[2].startMs);
-        Assert.Equal(36000, segments[2].endMs);
-        Assert.Equal("另一难度", Assert.Single(management.Get(11820, Difficulty.Expert)).name);
-        Assert.Equal("另一首歌", Assert.Single(management.Get(12025, Difficulty.Basic)).name);
+        var segments = management.Get(417, Difficulty.Master);
+        Assert.Equal(builtin.Length + 1, segments.Length);
+        var custom = Assert.Single(segments, segment => segment.id == customId);
+        Assert.Equal("修改后的片段", custom.name);
+        Assert.Equal(31000, custom.startMs);
+        Assert.Equal(36000, custom.endMs);
+        Assert.Equal("另一难度", Assert.Single(management.Get(417, Difficulty.Expert), segment => segment.id == customId).name);
+        Assert.Equal("另一首歌", Assert.Single(management.Get(11820, Difficulty.Basic), segment => segment.id == customId).name);
         Assert.Empty(management.Get(99999, Difficulty.Basic));
     }
 

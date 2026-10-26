@@ -29,7 +29,7 @@ public sealed class PracticeView : IPracticeView
     private float buttonSyncTimer;
     private readonly RectTransform preview;
     private readonly TextMeshProUGUI nativeText;
-    private readonly TextMeshProUGUI speed, seek, mode, name, range, page, count;
+    private readonly TextMeshProUGUI speed, mode, name, range, page, count;
     private readonly int monitor;
     private readonly Sprite circle;
 
@@ -75,8 +75,7 @@ public sealed class PracticeView : IPracticeView
             preview = Circle("Native chart preview", selector.transform, 285, 290, 510);
             Raw(preview, renderer.Live, renderer.Crop);
             speed = Setting(selector.transform, 1);
-            seek = Setting(selector.transform, 2);
-            seek.text = "Seek";
+            Setting(selector.transform, 2).text = "Seek";
             mode = Setting(selector.transform, 8);
             controls = Rect("Controls", board, 0, 0, 1080, 1080).gameObject;
             AddButton(controls.transform, 6, false, true);
@@ -87,9 +86,7 @@ public sealed class PracticeView : IPracticeView
             name = Text(selector.transform, "Segment", 260, 810, 560, 65, 40);
             range = Text(selector.transform, "Range", 330, 880, 420, 45, 28);
             page = Text(selector.transform, "Index", 440, 944, 200, 40, 26);
-            name.color = range.color = page.color = Color.white;
             count = Text(board, "Countdown", 390, 390, 300, 300, 180);
-            count.color = Color.white;
             messageMonitor = Resources.FindObjectsOfTypeAll<GenericMonitor>()
                 .First(x => x.gameObject.scene.IsValid() && x.MonitorId == monitor);
             var windowPrefab = Traverse.Create(messageMonitor).Field<CommonWindow>("_small").Value;
