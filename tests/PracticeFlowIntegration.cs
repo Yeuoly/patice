@@ -57,12 +57,15 @@ public sealed class PracticeFlowIntegration
         Assert.Equal(1, flow.Controller.Session.Countdown);
         flow.Controller.Tick(1);
         Assert.Equal(PracticeState.Playing, flow.Controller.Session.State);
-        Assert.Equal(new[] { "pause:True", "preview:False", "seek:104000", "pause:False" }, flow.PlaybackEvents);
+        Assert.Equal(new[] { "pause:True", "preview:False", "seek:103000", "pause:False" }, flow.PlaybackEvents);
         Assert.True(flow.Controller.PreventGameEnd);
 
         flow.Player.PositionMs = 115000;
         flow.Controller.Tick(0);
-        Assert.Equal(104000, flow.Player.PositionMs);
+        Assert.Equal(115000, flow.Player.PositionMs);
+        flow.Player.PositionMs = 116000;
+        flow.Controller.Tick(0);
+        Assert.Equal(103000, flow.Player.PositionMs);
         flow.Controller.Entry();
         Assert.Equal(PracticeState.ExitPrompt, flow.Controller.Session.State);
         flow.Press(PracticeAction.Cancel, 5);
@@ -85,10 +88,13 @@ public sealed class PracticeFlowIntegration
         flow.StartPlaying();
         Assert.False(flow.Controller.PreventGameEnd);
         flow.Player.PositionMs = 76001;
+        flow.Controller.Tick(0);
+        Assert.Equal(PracticeState.Playing, flow.Controller.Session.State);
+        flow.Player.PositionMs = 77001;
         flow.Events.Clear();
         flow.Controller.Tick(0);
         Assert.Equal(new[] { "restore:ContinueFromCurrentPosition", "view.dispose" }, flow.Events);
-        Assert.Equal(76001, flow.Player.PositionMs);
+        Assert.Equal(77001, flow.Player.PositionMs);
         Assert.Equal(1, flow.Player.Rate);
         Assert.False(flow.Player.Paused);
     }
@@ -194,6 +200,43 @@ public sealed class PracticeFlowIntegration
         Assert.Equal(new[] { "capture", "restore:ReturnToEntryPosition" }, flow.Events);
         Assert.Equal(30000, flow.Player.PositionMs);
         Assert.False(flow.Player.Paused);
+    }
+
+    [Theory]
+    [InlineData(60000, 76000, 59000, 77000)]
+    [InlineData(0, 133559, 1, 133558)]
+    [InlineData(500, 133000, 1, 133558)]
+    public void OnlyPracticePadsTheSegmentAndStaysStrictlyInsideTheTrack(
+        int start, int end, int practiceStart, int practiceEnd)
+    {
+        var player = new Playback(new List<string>());
+        var segment = new Segment(417, Difficulty.Master, Guid.NewGuid(), "S1", start, end);
+        var session = new PracticeSession(player, new[] { segment });
+        session.Open();
+        Assert.Equal(start, player.PositionMs);
+        player.PositionMs = end;
+        session.Tick(0);
+        Assert.Equal(start, player.PositionMs);
+
+        session.Handle(PracticeAction.Confirm);
+        session.Tick(.4);
+        Assert.Equal(practiceStart, player.PositionMs);
+        session.Tick(3);
+        player.PositionMs = practiceEnd - 1;
+        session.Tick(0);
+        Assert.Equal(practiceEnd - 1, player.PositionMs);
+        player.PositionMs = practiceEnd;
+        session.Tick(0);
+        Assert.Equal(practiceStart, player.PositionMs);
+        Assert.True(player.PositionMs > 0);
+        Assert.True(practiceEnd < player.DurationMs);
+
+        session.Entry();
+        session.Handle(PracticeAction.Confirm);
+        session.Open();
+        Assert.Equal(start, player.PositionMs);
+        Assert.Equal(start, segment.startMs);
+        Assert.Equal(end, segment.endMs);
     }
 
     private sealed class Flow : IDisposable
