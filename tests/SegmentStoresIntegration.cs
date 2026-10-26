@@ -16,29 +16,24 @@ public sealed class SegmentStoresIntegration : IDisposable
     public void CompiledCatalogMatchesAllSourceSegmentsWithoutEmbeddedJson()
     {
         var assembly = typeof(BuiltinSegments).Assembly;
-        Assert.Empty(assembly.GetManifestResourceNames());
-        var files = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "segments"), "*.json", SearchOption.AllDirectories);
+        Assert.DoesNotContain(assembly.GetManifestResourceNames(), name =>
+            name.StartsWith("Patice.Segments.", StringComparison.Ordinal) || name.EndsWith(".json", StringComparison.Ordinal));
+        var files = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "segments"), "*.json", SearchOption.AllDirectories)
+            .OrderBy(file => file, StringComparer.Ordinal).ToArray();
         Assert.NotEmpty(files);
-        var ids = new HashSet<(int, Difficulty, Guid)>();
         var management = new SegmentManagement();
         management.RegisterStore(new BuiltinSegments());
         var expected = new List<Segment>();
         foreach (var file in files)
         {
-            using var stream = File.OpenRead(file);
-            var segments = SegmentStorage.ReadSegments(stream);
-            SegmentStorage.ValidateSegments(segments);
-            foreach (var segment in segments)
-            {
-                Assert.True(ids.Add((segment.musicId, segment.difficulty, segment.id)), file);
-                expected.Add(segment);
-                Assert.Contains(management.Get(segment.musicId, segment.difficulty),
-                    entry => entry.id == segment.id && entry.name == segment.name &&
-                             entry.startMs == segment.startMs && entry.endMs == segment.endMs);
-            }
+            using var reader = File.OpenText(file);
+            expected.AddRange(SegmentJson.Read(reader));
         }
         foreach (var chart in expected.GroupBy(segment => (segment.musicId, segment.difficulty)))
-            Assert.Equal(chart.Count(), management.Get(chart.Key.musicId, chart.Key.difficulty).Length);
+            Assert.Equal(
+                chart.Select(segment => (segment.musicId, segment.difficulty, segment.id, segment.name, segment.startMs, segment.endMs)),
+                management.Get(chart.Key.musicId, chart.Key.difficulty)
+                    .Select(segment => (segment.musicId, segment.difficulty, segment.id, segment.name, segment.startMs, segment.endMs)));
     }
 
     [Fact]

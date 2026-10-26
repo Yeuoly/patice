@@ -37,9 +37,8 @@ public sealed class SegmentGenerator : IIncrementalGenerator
         {
             try
             {
-                using var stream = new MemoryStream(Encoding.UTF8.GetBytes(file.Text));
-                var entries = SegmentStorage.ReadSegments(stream);
-                SegmentStorage.ValidateSegments(entries);
+                using var reader = new StringReader(file.Text);
+                var entries = SegmentJson.Read(reader);
                 foreach (var entry in entries)
                 {
                     if (entry.musicId <= 0 || !Enum.IsDefined(typeof(Difficulty), entry.difficulty))
@@ -76,7 +75,7 @@ public sealed class SegmentGenerator : IIncrementalGenerator
                 foreach (var segment in level)
                 {
                     var bytes = segment.id.ToByteArray();
-                    var guid = new[] { (int)BitConverter.ToInt32(bytes, 0), BitConverter.ToInt16(bytes, 4), BitConverter.ToInt16(bytes, 6) }
+                    var guid = new[] { BitConverter.ToInt32(bytes, 0), BitConverter.ToInt16(bytes, 4), BitConverter.ToInt16(bytes, 6) }
                         .Concat(bytes.Skip(8).Select(value => (int)value));
                     source.AppendLine(FormattableString.Invariant(
                         $"new Segment({segment.musicId}, Difficulty.{segment.difficulty}, new Guid({string.Join(", ", guid.Select(value => value.ToString(CultureInfo.InvariantCulture)))}), {SymbolDisplay.FormatLiteral(segment.name, true)}, {segment.startMs}, {segment.endMs}),"));
