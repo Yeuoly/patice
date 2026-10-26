@@ -1,0 +1,58 @@
+[
+  {
+    "musicId": 834,
+    "difficulty": "remaster",
+    "id": "cce97702-d982-4ef9-a3e6-52adc93f59a0",
+    "name": "天苍苍野茫茫",
+    "startMs": 50000,
+    "endMs": 60000
+  },
+  {
+    "musicId": 834,
+    "difficulty": "remaster",
+    "id": "eeb92ea3-fc63-4672-a8bc-89b5e516eda9",
+    "name": "白潘圈1",
+    "startMs": 70000,
+    "endMs": 77000
+  },
+  {
+    "musicId": 834,
+    "difficulty": "remaster",
+    "id": "f10bbbaa-176d-4393-a607-3e74accf2536",
+    "name": "白潘圈2",
+    "startMs": 78000,
+    "endMs": 83000
+  },
+  {
+    "musicId": 834,
+    "difficulty": "remaster",
+    "id": "bd6bd538-6412-4bed-853d-9e592e841645",
+    "name": "白潘尾杀散打段",
+    "startMs": 129000,
+    "endMs": 134000
+  },
+  {
+    "musicId": 834,
+    "difficulty": "remaster",
+    "id": "1fff03a3-3558-4388-a43a-8effef63b24d",
+    "name": "白潘尾杀双压段",
+    "startMs": 134000,
+    "endMs": 137000
+  },
+  {
+    "musicId": 834,
+    "difficulty": "remaster",
+    "id": "f0e26979-0485-45f4-8609-9656dd71cbf1",
+    "name": "白潘尾杀籼米交互",
+    "startMs": 137000,
+    "endMs": 139000
+  },
+  {
+    "musicId": 834,
+    "difficulty": "remaster",
+    "id": "1d275f32-9df6-4dda-b49f-b2d3037c8fba",
+    "name": "完整尾杀",
+    "startMs": 130000,
+    "endMs": 140000
+  }
+]

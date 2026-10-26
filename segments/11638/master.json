@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11638,
+    "difficulty": "master",
+    "id": "c9e14984-d5bf-4a86-ae06-3a0d92c8b3d3",
+    "name": "拍滑1",
+    "startMs": 26000,
+    "endMs": 35000
+  },
+  {
+    "musicId": 11638,
+    "difficulty": "master",
+    "id": "4eecd19c-50ee-481b-8dde-a975ce4193a5",
+    "name": "拍滑2",
+    "startMs": 49000,
+    "endMs": 62000
+  }
+]

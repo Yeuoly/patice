@@ -1,0 +1,50 @@
+[
+  {
+    "musicId": 143,
+    "difficulty": "remaster",
+    "id": "6070f2f2-75e7-4ae1-93bc-88b9ee5491db",
+    "name": "鼓动星星",
+    "startMs": 18000,
+    "endMs": 20000
+  },
+  {
+    "musicId": 143,
+    "difficulty": "remaster",
+    "id": "3cce9e83-5677-418a-bdbf-2af57769c6a9",
+    "name": "单双单拍滑",
+    "startMs": 40000,
+    "endMs": 50000
+  },
+  {
+    "musicId": 143,
+    "difficulty": "remaster",
+    "id": "ae6db5ab-f8e3-419f-ad1b-484df1e9c43f",
+    "name": "echo段1",
+    "startMs": 51000,
+    "endMs": 56000
+  },
+  {
+    "musicId": 143,
+    "difficulty": "remaster",
+    "id": "4eaa3c95-72f6-40bd-b415-4d272b69d36f",
+    "name": "echo段2",
+    "startMs": 57000,
+    "endMs": 61000
+  },
+  {
+    "musicId": 143,
+    "difficulty": "remaster",
+    "id": "f9279e81-e70b-44e0-ab07-9e737931a28a",
+    "name": "错位接双扫",
+    "startMs": 63000,
+    "endMs": 67000
+  },
+  {
+    "musicId": 143,
+    "difficulty": "remaster",
+    "id": "1eef1602-8cff-4e23-868f-4fdbfd931fea",
+    "name": "方向盘接双扫",
+    "startMs": 68000,
+    "endMs": 73000
+  }
+]

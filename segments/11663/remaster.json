@@ -1,0 +1,74 @@
+[
+  {
+    "musicId": 11663,
+    "difficulty": "remaster",
+    "id": "399f471f-dd6e-4ef1-b7a9-368e0424ebaf",
+    "name": "solips扫键",
+    "startMs": 32000,
+    "endMs": 38000
+  },
+  {
+    "musicId": 11663,
+    "difficulty": "remaster",
+    "id": "4a1f8241-4f44-4ab3-9f1d-99123a738b2a",
+    "name": "白系圈1",
+    "startMs": 68000,
+    "endMs": 73000
+  },
+  {
+    "musicId": 11663,
+    "difficulty": "remaster",
+    "id": "9fc6d18c-7f3b-4887-b2cb-51f641792f7e",
+    "name": "白系圈2",
+    "startMs": 74000,
+    "endMs": 78000
+  },
+  {
+    "musicId": 11663,
+    "difficulty": "remaster",
+    "id": "74abb2a2-4de8-4cff-b7b5-db01d9dfd094",
+    "name": "白系圈3",
+    "startMs": 79000,
+    "endMs": 85000
+  },
+  {
+    "musicId": 11663,
+    "difficulty": "remaster",
+    "id": "7d540945-7230-42cb-a363-aaab98253e14",
+    "name": "白系绝赞接穿心段",
+    "startMs": 100000,
+    "endMs": 112000
+  },
+  {
+    "musicId": 11663,
+    "difficulty": "remaster",
+    "id": "fa5d87f6-3559-4a45-8a94-3a5920860a84",
+    "name": "纵连接大摆锤",
+    "startMs": 121000,
+    "endMs": 128000
+  },
+  {
+    "musicId": 11663,
+    "difficulty": "remaster",
+    "id": "44706a06-3c0d-4e52-acc7-1ba9f1247a1d",
+    "name": "对拍段",
+    "startMs": 129000,
+    "endMs": 133000
+  },
+  {
+    "musicId": 11663,
+    "difficulty": "remaster",
+    "id": "21c082b8-4306-4291-9fc1-12af10264437",
+    "name": "康庄段",
+    "startMs": 143000,
+    "endMs": 148000
+  },
+  {
+    "musicId": 11663,
+    "difficulty": "remaster",
+    "id": "7bb33f14-3ec1-49f4-a866-e847a424a4bf",
+    "name": "尾杀",
+    "startMs": 150000,
+    "endMs": 155000
+  }
+]

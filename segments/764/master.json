@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 764,
+    "difficulty": "master",
+    "id": "63c6f551-77aa-4cdc-b3e2-442bc06e65c2",
+    "name": "错位1",
+    "startMs": 71000,
+    "endMs": 82000
+  },
+  {
+    "musicId": 764,
+    "difficulty": "master",
+    "id": "27c8b4e3-bb68-4436-97a7-ee9ecc706639",
+    "name": "错位2",
+    "startMs": 101000,
+    "endMs": 111000
+  },
+  {
+    "musicId": 764,
+    "difficulty": "master",
+    "id": "6afaa5ca-5059-4981-b20f-5aefb5971e3f",
+    "name": "错位3",
+    "startMs": 115000,
+    "endMs": 124000
+  }
+]

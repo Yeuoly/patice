@@ -1,0 +1,50 @@
+[
+  {
+    "musicId": 22,
+    "difficulty": "remaster",
+    "id": "b2edead1-170e-40bf-a763-5a9f26dd6c82",
+    "name": "第一声/第二声马叫",
+    "startMs": 7000,
+    "endMs": 20000
+  },
+  {
+    "musicId": 22,
+    "difficulty": "remaster",
+    "id": "b5ef0b92-d212-4e27-b35b-3dcd0dabd532",
+    "name": "第三声马叫",
+    "startMs": 21000,
+    "endMs": 34000
+  },
+  {
+    "musicId": 22,
+    "difficulty": "remaster",
+    "id": "c3e434d2-de47-468b-9159-ecd733a00074",
+    "name": "三叉戟",
+    "startMs": 40000,
+    "endMs": 55000
+  },
+  {
+    "musicId": 22,
+    "difficulty": "remaster",
+    "id": "f7f15fa3-57a2-4201-a73d-7765c1256ed2",
+    "name": "节奏拍滑",
+    "startMs": 69000,
+    "endMs": 81000
+  },
+  {
+    "musicId": 22,
+    "difficulty": "remaster",
+    "id": "b355ca8f-5545-4ad5-949d-a6a00f4b9b7a",
+    "name": "332扫键",
+    "startMs": 82000,
+    "endMs": 90000
+  },
+  {
+    "musicId": 22,
+    "difficulty": "remaster",
+    "id": "853cf98f-0974-41ad-bbec-2300180bef27",
+    "name": "如龙扫",
+    "startMs": 99000,
+    "endMs": 105000
+  }
+]

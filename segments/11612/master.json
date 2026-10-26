@@ -1,0 +1,50 @@
+[
+  {
+    "musicId": 11612,
+    "difficulty": "master",
+    "id": "a051d88b-6f4a-414f-b3d6-484b04b27b98",
+    "name": "提琴段结尾",
+    "startMs": 83000,
+    "endMs": 90000
+  },
+  {
+    "musicId": 11612,
+    "difficulty": "master",
+    "id": "8040f483-9b52-450b-9696-6676681238e0",
+    "name": "散打接高速18交互",
+    "startMs": 103000,
+    "endMs": 109000
+  },
+  {
+    "musicId": 11612,
+    "difficulty": "master",
+    "id": "ddfd2f3f-86b6-4ec8-aaee-acbd539ea4f2",
+    "name": "第二段副歌",
+    "startMs": 109000,
+    "endMs": 130000
+  },
+  {
+    "musicId": 11612,
+    "difficulty": "master",
+    "id": "cad20f9c-41b6-48a5-84a1-1a64acf41506",
+    "name": "交互接绝赞上扫",
+    "startMs": 134000,
+    "endMs": 138000
+  },
+  {
+    "musicId": 11612,
+    "difficulty": "master",
+    "id": "bd827c93-81ab-4ffa-88c2-8a4ce049d35c",
+    "name": "尾杀一阶段",
+    "startMs": 146000,
+    "endMs": 154000
+  },
+  {
+    "musicId": 11612,
+    "difficulty": "master",
+    "id": "68eee1e1-7d00-4d04-b516-8828d6673c11",
+    "name": "尾杀绝赞三角",
+    "startMs": 154000,
+    "endMs": 160000
+  }
+]

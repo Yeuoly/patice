@@ -1,0 +1,50 @@
+[
+  {
+    "musicId": 731,
+    "difficulty": "remaster",
+    "id": "187995a2-111b-47d9-b2aa-eef4f68d39a4",
+    "name": "跳拍",
+    "startMs": 34000,
+    "endMs": 53000
+  },
+  {
+    "musicId": 731,
+    "difficulty": "remaster",
+    "id": "8972488d-4772-43fc-9d98-29bf95617413",
+    "name": "海底谭1",
+    "startMs": 58000,
+    "endMs": 64000
+  },
+  {
+    "musicId": 731,
+    "difficulty": "remaster",
+    "id": "fe8dbb59-8ce1-46ef-8389-2d17d27a61e7",
+    "name": "海底谭2",
+    "startMs": 69000,
+    "endMs": 73000
+  },
+  {
+    "musicId": 731,
+    "difficulty": "remaster",
+    "id": "d3b041d2-472b-4322-b295-27509963f0ed",
+    "name": "海底谭3",
+    "startMs": 102000,
+    "endMs": 107000
+  },
+  {
+    "musicId": 731,
+    "difficulty": "remaster",
+    "id": "317a8dfa-ea18-4807-a1d6-f650d631fe6a",
+    "name": "海底谭4",
+    "startMs": 110000,
+    "endMs": 116000
+  },
+  {
+    "musicId": 731,
+    "difficulty": "remaster",
+    "id": "ff2aa540-e92a-4cd3-a5f2-35c2bc633f07",
+    "name": "啊咿呀咿呀",
+    "startMs": 120000,
+    "endMs": 136000
+  }
+]

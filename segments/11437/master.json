@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 11437,
+    "difficulty": "master",
+    "id": "6029c7c5-4fbe-41a9-89f9-0e7f14c42b13",
+    "name": "Say Ya!!! 1",
+    "startMs": 64000,
+    "endMs": 75000
+  },
+  {
+    "musicId": 11437,
+    "difficulty": "master",
+    "id": "089aab61-944b-4432-b373-614974671b08",
+    "name": "大币圈",
+    "startMs": 103000,
+    "endMs": 107000
+  },
+  {
+    "musicId": 11437,
+    "difficulty": "master",
+    "id": "8e65343f-8cea-42fa-920f-7e0d01bfea73",
+    "name": "Say Ya!!! 2",
+    "startMs": 124000,
+    "endMs": 134000
+  }
+]

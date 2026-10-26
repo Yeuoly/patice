@@ -1,0 +1,42 @@
+[
+  {
+    "musicId": 11358,
+    "difficulty": "master",
+    "id": "15707fea-011d-452e-bb1f-432ee89b2804",
+    "name": "跳拍",
+    "startMs": 42000,
+    "endMs": 44000
+  },
+  {
+    "musicId": 11358,
+    "difficulty": "master",
+    "id": "c412e717-af2f-4921-b581-537dbaa7daa3",
+    "name": "一笔画1",
+    "startMs": 44000,
+    "endMs": 60000
+  },
+  {
+    "musicId": 11358,
+    "difficulty": "master",
+    "id": "0c2cf7c1-7649-429b-bdba-0f4e3baf4fbf",
+    "name": "交互",
+    "startMs": 68000,
+    "endMs": 74000
+  },
+  {
+    "musicId": 11358,
+    "difficulty": "master",
+    "id": "88ae270d-ae4f-4a60-8162-ab7616952637",
+    "name": "一笔画2",
+    "startMs": 75000,
+    "endMs": 90000
+  },
+  {
+    "musicId": 11358,
+    "difficulty": "master",
+    "id": "64ff4aae-7f56-4918-a0dd-9401ac4b194b",
+    "name": "一笔画3",
+    "startMs": 90000,
+    "endMs": 105000
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "musicId": 1819,
+    "difficulty": "master",
+    "id": "f9a5e749-4f00-45da-94df-ad1ea6a236fd",
+    "name": "方向盘交互",
+    "startMs": 50000,
+    "endMs": 54000
+  },
+  {
+    "musicId": 1819,
+    "difficulty": "master",
+    "id": "8b551d34-b93b-4874-bdce-54a387ef47a0",
+    "name": "减速交互1",
+    "startMs": 72000,
+    "endMs": 84000
+  },
+  {
+    "musicId": 1819,
+    "difficulty": "master",
+    "id": "29118a32-205c-4024-8cdc-c808b6b7a972",
+    "name": "叠星星段",
+    "startMs": 84000,
+    "endMs": 102000
+  },
+  {
+    "musicId": 1819,
+    "difficulty": "master",
+    "id": "e57ba159-a9c7-4c32-a785-c02b2a750f90",
+    "name": "减速交互2",
+    "startMs": 127000,
+    "endMs": 136000
+  }
+]
