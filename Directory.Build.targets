@@ -1,0 +1,14 @@
+<Project>
+  <ItemGroup Condition="'$(MSBuildProjectName)' != 'Patice.SegmentGenerator'">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)generators/Patice.SegmentGenerator.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)segments/**/*.json"
+                     Exclude="$(MSBuildThisFileDirectory)segments/**/*.schema.json" />
+  </ItemGroup>
+  <Target Name="ResolveSegmentGeneratorDependencies" BeforeTargets="CoreCompile"
+          Condition="'$(MSBuildProjectName)' != 'Patice.SegmentGenerator'">
+    <ItemGroup>
+      <Analyzer Include="$(PkgLitJson)/lib/net20/LitJSON.dll" />
+    </ItemGroup>
+  </Target>
+</Project>

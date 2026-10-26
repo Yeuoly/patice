@@ -13,28 +13,32 @@ public sealed class SegmentStoresIntegration : IDisposable
     private readonly string path = Path.Combine(AppContext.BaseDirectory, "segment-test-data", Guid.NewGuid().ToString("N"));
 
     [Fact]
-    public void AllEmbeddedJsonPassesValidationBeforeTheCatalogIsUsed()
+    public void CompiledCatalogMatchesAllSourceSegmentsWithoutEmbeddedJson()
     {
         var assembly = typeof(BuiltinSegments).Assembly;
-        var resources = assembly.GetManifestResourceNames()
-            .Where(name => name.StartsWith("Patice.Segments.", StringComparison.Ordinal)).ToArray();
-        Assert.NotEmpty(resources);
+        Assert.Empty(assembly.GetManifestResourceNames());
+        var files = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "segments"), "*.json", SearchOption.AllDirectories);
+        Assert.NotEmpty(files);
         var ids = new HashSet<(int, Difficulty, Guid)>();
         var management = new SegmentManagement();
         management.RegisterStore(new BuiltinSegments());
-        foreach (var resource in resources)
+        var expected = new List<Segment>();
+        foreach (var file in files)
         {
-            using var stream = assembly.GetManifestResourceStream(resource);
+            using var stream = File.OpenRead(file);
             var segments = SegmentStorage.ReadSegments(stream);
             SegmentStorage.ValidateSegments(segments);
             foreach (var segment in segments)
             {
-                Assert.True(ids.Add((segment.musicId, segment.difficulty, segment.id)), resource);
+                Assert.True(ids.Add((segment.musicId, segment.difficulty, segment.id)), file);
+                expected.Add(segment);
                 Assert.Contains(management.Get(segment.musicId, segment.difficulty),
                     entry => entry.id == segment.id && entry.name == segment.name &&
                              entry.startMs == segment.startMs && entry.endMs == segment.endMs);
             }
         }
+        foreach (var chart in expected.GroupBy(segment => (segment.musicId, segment.difficulty)))
+            Assert.Equal(chart.Count(), management.Get(chart.Key.musicId, chart.Key.difficulty).Length);
     }
 
     [Fact]

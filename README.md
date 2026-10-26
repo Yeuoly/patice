@@ -4,6 +4,7 @@ A standalone practice mod for SDEZ. Practice predefined chart segments with auto
 
 - `src/` — Mod source code.
 - `segments/` — Built-in segment JSON files and their schema.
+- `generators/` — Compiles segment data into the mod.
 - `.github/` — Build and release workflows.
 
 ## Usage
