@@ -1,12 +1,13 @@
 using System;
+using Patice.Domain;
 
-namespace Patice.Domain;
+namespace Patice.Practice;
 
 public enum PracticeState { Closed, Selecting, Seeking, Selected, Countdown, Playing, ExitPrompt }
 
-public sealed class PracticeSession : IDisposable
+public sealed class PracticeSession
 {
-    private readonly Playback player;
+    private readonly IPlayback player;
     private readonly Segment[] segments;
     private readonly float[] rates = { 1f, .9f, .8f, .7f, .6f, .5f, 2f, 1.5f };
     private int rateIndex;
@@ -19,11 +20,14 @@ public sealed class PracticeSession : IDisposable
     public Segment Current => segments[Index];
     public bool Loop { get; private set; } = true;
     public bool Repeating => playingSegment && Loop;
+    public bool PreventGameEnd => State != PracticeState.Closed &&
+        (State != PracticeState.Playing || Repeating);
+    public ExitBehavior ExitBehavior { get; private set; }
     public float Rate => rates[rateIndex];
     public int Countdown => Math.Max(1, 3 - (int)elapsed);
     public float SelectionProgress => (float)Math.Min(1, elapsed / .4);
 
-    public PracticeSession(Playback player, Segment[] segments)
+    public PracticeSession(IPlayback player, Segment[] segments)
     {
         this.player = player;
         this.segments = segments;
@@ -48,7 +52,7 @@ public sealed class PracticeSession : IDisposable
     {
         switch (State)
         {
-            case PracticeState.Selecting: Close(true); break;
+            case PracticeState.Selecting: End(ExitBehavior.ReturnToEntryPosition); break;
             case PracticeState.Seeking: StartPreview(); break;
             case PracticeState.Selected:
             case PracticeState.Countdown: StartPreview(); break;
@@ -63,20 +67,20 @@ public sealed class PracticeSession : IDisposable
         }
     }
 
-    public bool Button(int number)
+    public bool Handle(PracticeAction action)
     {
-        if (number == 5 && State != PracticeState.Closed && State != PracticeState.Playing)
+        if (action == PracticeAction.Cancel && State != PracticeState.Closed && State != PracticeState.Playing)
         {
             Entry();
             return true;
         }
         if (State == PracticeState.ExitPrompt)
         {
-            if (number != 4) return false;
-            Close(false);
+            if (action != PracticeAction.Confirm) return false;
+            End(ExitBehavior.ContinueFromCurrentPosition);
             return true;
         }
-        if (number == 1 && (State == PracticeState.Selecting || State == PracticeState.Seeking))
+        if (action == PracticeAction.ChangeRate && (State == PracticeState.Selecting || State == PracticeState.Seeking))
         {
             rateIndex = (rateIndex + 1) % rates.Length;
             player.SetRate(Rate);
@@ -84,7 +88,7 @@ public sealed class PracticeSession : IDisposable
         }
         if (State == PracticeState.Seeking)
         {
-            if (number == 4)
+            if (action == PracticeAction.Confirm)
             {
                 player.Preview(false);
                 player.Seek(SeekPositionMs);
@@ -93,25 +97,25 @@ public sealed class PracticeSession : IDisposable
                 State = PracticeState.Playing;
                 return true;
             }
-            if (number != 3 && number != 6) return false;
+            if (action != PracticeAction.Next && action != PracticeAction.Previous) return false;
             SeekPositionMs = Math.Max(0, Math.Min(player.DurationMs,
-                SeekPositionMs + (number == 3 ? 5000 : -5000)));
+                SeekPositionMs + (action == PracticeAction.Next ? 5000 : -5000)));
             player.Seek(SeekPositionMs);
             return true;
         }
         if (State != PracticeState.Selecting) return false;
-        switch (number)
+        switch (action)
         {
-            case 6: Index = (Index + Count - 1) % Count; StartPreview(); break;
-            case 3: Index = (Index + 1) % Count; StartPreview(); break;
-            case 2:
+            case PracticeAction.Previous: Index = (Index + Count - 1) % Count; StartPreview(); break;
+            case PracticeAction.Next: Index = (Index + 1) % Count; StartPreview(); break;
+            case PracticeAction.Seek:
                 player.Pause(true);
                 SeekPositionMs = player.EntryPositionMs;
                 player.Seek(SeekPositionMs);
                 State = PracticeState.Seeking;
                 break;
-            case 8: Loop = !Loop; break;
-            case 4:
+            case PracticeAction.ToggleLoop: Loop = !Loop; break;
+            case PracticeAction.Confirm:
                 player.Pause(true);
                 playingSegment = true;
                 State = PracticeState.Selected;
@@ -145,16 +149,13 @@ public sealed class PracticeSession : IDisposable
         else if (State == PracticeState.Playing && playingSegment && player.PositionMs >= Current.endMs)
         {
             if (Loop) player.Seek(Current.startMs);
-            else Close(false);
+            else End(ExitBehavior.ContinueFromCurrentPosition);
         }
     }
 
-    private void Close(bool rewind)
+    internal void End(ExitBehavior behavior)
     {
         State = PracticeState.Closed;
-        player.Restore(rewind);
+        ExitBehavior = behavior;
     }
-
-    // Unexpected destruction must never leave autoplay or speed behind.
-    public void Dispose() => Close(State != PracticeState.Playing && State != PracticeState.ExitPrompt);
 }

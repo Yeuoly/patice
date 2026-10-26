@@ -12,5 +12,6 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" PrivateAssets="all" />
     <Compile Include="../src/Domain/Segments.cs;../src/Domain/Difficulty.cs" Link="Domain/%(Filename)%(Extension)" />
     <Compile Include="../src/Segments/*.cs" Link="Segments/%(Filename)%(Extension)" />
+    <Compile Include="../src/Practice/*.cs" Link="Practice/%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

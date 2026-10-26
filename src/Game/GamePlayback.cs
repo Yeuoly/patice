@@ -2,19 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection.Emit;
 using HarmonyLib;
-using DB;
 using MAI2.Util;
 using Manager;
 using Monitor;
-using Monitor.Game;
+using Patice.Practice;
 using Process;
 
-namespace Patice;
+namespace Patice.Game;
 
-[HarmonyPatch]
-public sealed class Playback
+public sealed class GamePlayback : IPlayback
 {
     // SDEZ 1.70 GameProcess starts the note clock, then waits 91ms before StartMusic.
     public const float MusicStartDelayMs = 91;
@@ -35,7 +32,7 @@ public sealed class Playback
     public double PositionMs => NotesManager.GetCurrentMsec() - MusicStartDelayMs;
     public bool Paused => !(Traverse.Create(typeof(NotesManager)).Field<Stopwatch>("_stopwatch").Value.IsRunning);
 
-    public Playback(GameProcess process, GameMonitor monitor, MovieController movie, int monitorIndex)
+    public GamePlayback(GameProcess process, GameMonitor monitor, MovieController movie, int monitorIndex)
     {
         this.process = process;
         this.monitor = monitor;
@@ -103,8 +100,9 @@ public sealed class Playback
         finally { Pause(paused); }
     }
 
-    public void Restore(bool rewind)
+    public void Restore(ExitBehavior behavior)
     {
+        var rewind = behavior == ExitBehavior.ReturnToEntryPosition;
         if (!attached) return;
         try
         {
@@ -138,52 +136,16 @@ public sealed class Playback
         mediaRatePending = false;
     }
 
-    [HarmonyPatch(typeof(GameCtrl), "UpdateCtrl"), HarmonyTranspiler]
-    private static IEnumerable<CodeInstruction> PreserveSkipResult(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    internal void ApplyQueuedAudioRate()
     {
-        // The debug seek branch discards failure and marks the note used anyway.
-        // Preserve the result, as the native track-skip branch already does.
-        var result = generator.DeclareLocal(typeof(bool));
-        var matcher = new CodeMatcher(instructions).MatchForward(false,
-            new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(GameCtrl), "SkipRegistNote")),
-            new CodeMatch(OpCodes.Pop),
-            new CodeMatch(instruction => instruction.IsLdloc()),
-            new CodeMatch(OpCodes.Ldc_I4_1),
-            new CodeMatch(instruction => instruction.opcode == OpCodes.Stfld &&
-                Equals(instruction.operand, AccessTools.Field(typeof(NoteData), "isUsed"))));
-        matcher.ThrowIfInvalid("Native seek note assignment was not found.");
-        matcher.Advance(1).Set(OpCodes.Stloc, result);
-        matcher.Advance(2).Set(OpCodes.Ldloc, result);
-        return matcher.InstructionEnumeration();
+        if (mediaRatePending) ApplyMediaRate();
     }
 
-    [HarmonyPatch(typeof(GameManager), "GetNoteSpeed"), HarmonyPrefix]
-    private static void PreviewNoteSpeed(ref int __0)
+    internal void MapChartTime(ref float current)
     {
-        if (PracticeMode.Player?.Previewing == true) __0 = (int)OptionNotespeedID.Speed_6_75;
-    }
-
-    [HarmonyPatch(typeof(GameManager), "GetTouchSpeed"), HarmonyPrefix]
-    private static void PreviewTouchSpeed(ref int __0)
-    {
-        if (PracticeMode.Player?.Previewing == true) __0 = (int)OptionTouchspeedID.Speed6_75;
-    }
-
-    [HarmonyPatch(typeof(SoundManager), "PlayExecute"), HarmonyPostfix]
-    private static void ApplyQueuedAudioRate()
-    {
-        var playback = PracticeMode.Player;
-        if (playback?.mediaRatePending == true) playback.ApplyMediaRate();
-    }
-
-    [HarmonyPatch(typeof(NotesManager), "UpdateTimer"), HarmonyPostfix]
-    private static void MapChartTime(ref float ____curMSec)
-    {
-        var playback = PracticeMode.Player;
-        if (playback == null) return;
-        playback.lastNativeTime = ____curMSec;
-        if (playback.attached)
-            ____curMSec = (float)(playback.chartAnchor + (____curMSec - playback.nativeAnchor) * playback.Rate);
-        // The original UpdateTimer still owns its stopwatch, previous time and abandoned timer.
+        lastNativeTime = current;
+        if (attached)
+            current = (float)(chartAnchor + (current - nativeAnchor) * Rate);
+        // The original timer still owns its stopwatch and previous time.
     }
 }

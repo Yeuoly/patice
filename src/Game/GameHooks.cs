@@ -5,31 +5,30 @@ using Manager;
 using MelonLoader;
 using Monitor;
 using Patice.Domain;
-using Patice.Libs;
+using Patice.Practice;
 using Process;
 using UnityEngine;
 
-namespace Patice;
+namespace Patice.Game;
 
 [HarmonyPatch]
-public static class PracticeMode
+public static class GameHooks
 {
-    public static PracticeModeUI ui;
-    public static Playback Player { get; private set; }
+    private static PracticeDriver driver;
+    internal static GamePlayback Playback { get; private set; }
+    internal static bool PreventGameEnd => driver != null && driver.Controller.PreventGameEnd;
     private static bool entryHeld;
     private static GameProcess game;
-    private static bool practiced;
-    private static float nextEndReport;
 
-    private static void Close()
+    internal static void Close()
     {
-        var closing = ui;
+        var closing = driver;
         try { if (closing != null) closing.Close(); }
         finally
         {
             if (closing != null) UnityEngine.Object.Destroy(closing);
-            ui = null;
-            Player = null;
+            driver = null;
+            Playback = null;
         }
     }
 
@@ -44,8 +43,7 @@ public static class PracticeMode
             game = __instance;
             entryHeld = false;
             ScoreGuard.BeginTrack();
-            practiced = false;
-            nextEndReport = 0;
+            GameDiagnostics.BeginTrack();
             MelonLogger.Msg("Practice input attached to gameplay.");
         }
 
@@ -74,10 +72,10 @@ public static class PracticeMode
             var held = InputManager.GetSystemInputPush(InputManager.SystemButtonSetting.ButtonTest);
             var entry = held && !entryHeld;
             entryHeld = held;
-            if (ui != null)
+            if (driver != null)
             {
-                if (entry) ui.Entry();
-                ui.Step();
+                if (entry) driver.Controller.Entry();
+                driver.Step();
                 return;
             }
             if (!entry) return;
@@ -94,47 +92,15 @@ public static class PracticeMode
             var difficulty = (Difficulty)GameManager.SelectDifficultyID[active];
             var segments = Plugin.SegmentManagement.Get(GameManager.SelectMusicID[active], difficulty);
             if (segments.Length == 0) return;
-            Player = new Playback(__instance, ____monitors[active], ____gameMovie, active);
-            practiced = true;
-            ui = ____monitors[active].gameObject.AddComponent<PracticeModeUI>();
-            ui.Initialize(active, segments, Player);
+            Playback = new GamePlayback(__instance, ____monitors[active], ____gameMovie, active);
+            GameDiagnostics.MarkPractice();
+            driver = ____monitors[active].gameObject.AddComponent<PracticeDriver>();
+            driver.Initialize(active, new PracticeController(Playback, segments));
         }
         catch (Exception exception)
         {
             MelonLogger.Error($"[Patice] {exception}");
             Close();
-        }
-    }
-
-    [HarmonyPatch(typeof(GameProcess), "OnUpdate"), HarmonyPostfix]
-    private static void ReportEndState(GameMonitor[] ____monitors, int ____sequence)
-    {
-        if (!practiced || Time.unscaledTime < nextEndReport) return;
-        var position = NotesManager.GetCurrentMsec();
-        var end = NotesManager.Instance().getPlayFinalMsec();
-        if (____sequence < 5 && position < end) return;
-        nextEndReport = Time.unscaledTime + 15;
-        MelonLogger.Msg($"Practice end: sequence={____sequence}, time={position:F0}/{end:F0}, " +
-            $"musicEnded={SoundManager.IsEndMusic()}, blockingEnd={ui != null && ui.PreventGameEnd}");
-        for (var i = 0; i < ____monitors.Length; i++)
-        {
-            var score = Singleton<GamePlayManager>.Instance.GetGameScore(i, -1);
-            MelonLogger.Msg($"Practice end P{i + 1}: judged={score.IsAllJudged()}, " +
-                $"monitorEnded={____monitors[i].IsAllJudged()}, playEnded={____monitors[i].IsPlayEnd()}");
-            if (score.IsAllJudged()) continue;
-            var results = Traverse.Create(score).Field<Array>("_judgeResultList").Value;
-            var notes = NotesManager.Instance(i).getReader().GetNoteList();
-            var pending = 0;
-            for (var index = 0; index < results.Length; index++)
-            {
-                if (Traverse.Create(results.GetValue(index)).Field<bool>("Judged").Value) continue;
-                pending++;
-                if (pending > 16) continue;
-                var note = notes[index];
-                MelonLogger.Msg($"Pending note {index}: type={note.type.getEnum()}, " +
-                    $"start={note.time.msec}, end={note.end.msec}, used={note.isUsed}, judged={note.isJudged}");
-            }
-            MelonLogger.Msg($"Pending total: {pending}/{results.Length}");
         }
     }
 
@@ -150,7 +116,7 @@ public static class PracticeMode
     [HarmonyPatch(typeof(GameMonitor), "IsAllJudged"), HarmonyPrefix]
     private static bool SegmentEnd(ref bool __result)
     {
-        if (ui == null || !ui.PreventGameEnd) return true;
+        if (!PreventGameEnd) return true;
         __result = false;
         return false;
     }

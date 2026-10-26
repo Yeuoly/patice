@@ -1,6 +1,7 @@
 using System.Linq;
 using MelonLoader;
 using Patice.Segments;
+using Patice.Game;
 
 [assembly: MelonInfo(typeof(Patice.Plugin), "Patice", "0.2.38", "Yeuoly")]
 [assembly: MelonGame(null, "Sinmai")]
@@ -18,7 +19,7 @@ public sealed class Plugin : MelonMod
     {
         instance = this;
         SegmentManagement.RegisterStore(new BuiltinSegments());
-        HarmonyInstance.PatchAll(typeof(PracticeMode.Lifecycle));
+        HarmonyInstance.PatchAll(typeof(GameHooks.Lifecycle));
         MelonLogger.Msg("Patice loaded; waiting for gameplay.");
     }
 
@@ -31,9 +32,10 @@ public sealed class Plugin : MelonMod
 
     private void InstallHooks()
     {
-        HarmonyInstance.PatchAll(typeof(PracticeMode));
-        HarmonyInstance.PatchAll(typeof(Playback));
+        HarmonyInstance.PatchAll(typeof(GameHooks));
+        HarmonyInstance.PatchAll(typeof(PlaybackHooks));
         HarmonyInstance.PatchAll(typeof(ScoreGuard));
+        HarmonyInstance.PatchAll(typeof(GameDiagnostics));
         var count = HarmonyInstance.GetPatchedMethods().Count();
         MelonLogger.Msg($"Practice ready: {count} game hooks registered.");
     }

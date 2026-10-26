@@ -2,7 +2,7 @@ using HarmonyLib;
 using MAI2.Util;
 using Manager;
 
-namespace Patice;
+namespace Patice.Game;
 
 // Practice invalidates record updates for this player's current track, not the whole session.
 // Keep native judgment/result data intact instead of overwriting private score fields later.

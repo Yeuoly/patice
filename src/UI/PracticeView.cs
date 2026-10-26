@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using DB;
-using Patice.Domain;
+using Patice.Practice;
 using Manager;
 using TMPro;
 using UI;
@@ -11,18 +11,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace Patice.Libs;
+namespace Patice.UI;
 
 // All positions are in the cabinet's 1080 x 1080 lower display, measured from its top left.
-public sealed class PracticeView : IDisposable
+public sealed class PracticeView : IPracticeView
 {
     private const int UiLayer = 31;
     private readonly GameObject root;
-    private readonly Camera gameCamera;
-    private readonly int originalUiLayerMask;
+    private readonly PreviewRenderer renderer;
     private readonly Camera uiCamera;
-    private readonly RenderTexture live;
-    private readonly List<Object> owned = new();
     private readonly Dictionary<int, CommonButtonObject> buttons = new();
     private readonly GameObject selector;
     private readonly GameObject controls;
@@ -34,7 +31,6 @@ public sealed class PracticeView : IDisposable
     private readonly TextMeshProUGUI nativeText;
     private readonly TextMeshProUGUI speed, seek, mode, name, range, page, count;
     private readonly int monitor;
-    private readonly Rect crop;
     private readonly Sprite circle;
 
     public PracticeView(int monitor, Monitor.GameMonitor gameMonitor)
@@ -45,15 +41,8 @@ public sealed class PracticeView : IDisposable
             nativeText = gameMonitor.transform.Find("Canvas/Main/GameDispCtrl/UpperGauge/Base/Fast_Late/Title/FAST")
                 .GetComponent<TextMeshProUGUI>();
             var main = Camera.main;
-            gameCamera = main;
-            originalUiLayerMask = main.cullingMask & (1 << UiLayer);
-            main.cullingMask &= ~(1 << UiLayer);
-            live = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.ARGB32);
-            live.Create();
-            CaptureGame();
-            var playerWidth = Screen.height / 1920f * 1080;
-            var center = Screen.width <= playerWidth * 1.1f ? Screen.width / 2f : Screen.width / 2f - playerWidth / 2 + monitor * playerWidth;
-            crop = new Rect((center - playerWidth / 2) / Screen.width, 0, playerWidth / Screen.width, playerWidth / Screen.height);
+            renderer = new PreviewRenderer(monitor, UiLayer);
+            var center = renderer.Center;
 
             // Separate camera lets the original button particle systems render normally.
             uiCamera = new GameObject("Patice UI camera").AddComponent<Camera>();
@@ -78,13 +67,13 @@ public sealed class PracticeView : IDisposable
             board.anchorMin = board.anchorMax = new Vector2(center / Screen.width, 0);
             board.pivot = new Vector2(.5f, 0);
             board.anchoredPosition = Vector2.zero;
-            circle = MakeCircle();
+            circle = renderer.MakeCircle();
             selector = Rect("Selector", board, 0, 0, 1080, 1080).gameObject;
             var background = Circle("Frozen background", selector.transform, 0, 0, 1080);
-            var frozen = BlurSnapshot();
+            var frozen = renderer.BlurSnapshot();
             Raw(background, frozen, new Rect(0, 0, 1, 1));
             preview = Circle("Native chart preview", selector.transform, 285, 290, 510);
-            Raw(preview, live, crop);
+            Raw(preview, renderer.Live, renderer.Crop);
             speed = Setting(selector.transform, 1);
             seek = Setting(selector.transform, 2);
             seek.text = "Seek";
@@ -158,28 +147,7 @@ public sealed class PracticeView : IDisposable
 
     }
 
-    public void RenderPreview(PracticeState state)
-    {
-        if (state == PracticeState.Selecting || state == PracticeState.Selected || state == PracticeState.Seeking) CaptureGame();
-    }
-
-    private void CaptureGame()
-    {
-        // ScreenSpaceCamera canvases belong to the original camera, not a copy.
-        var target = gameCamera.targetTexture;
-        var viewport = gameCamera.rect;
-        try
-        {
-            gameCamera.targetTexture = live;
-            gameCamera.rect = new Rect(0, 0, 1, 1);
-            gameCamera.Render();
-        }
-        finally
-        {
-            gameCamera.targetTexture = target;
-            gameCamera.rect = viewport;
-        }
-    }
+    public void RenderPreview(PracticeState state) => renderer.Render(state);
 
     public void Press(int button) => buttons[button].Pressed();
 
@@ -280,50 +248,6 @@ public sealed class PracticeView : IDisposable
         raw.raycastTarget = false;
     }
 
-    private Sprite MakeCircle()
-    {
-        const int size = 1080;
-        var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
-        owned.Add(texture);
-        var pixels = new Color32[size * size];
-        for (int y = 0; y < size; y++) for (int x = 0; x < size; x++)
-        {
-            var distance = Math.Sqrt((x - (size - 1) / 2.0) * (x - (size - 1) / 2.0) + (y - (size - 1) / 2.0) * (y - (size - 1) / 2.0));
-            pixels[y * size + x] = new Color32(255, 255, 255, (byte)(Math.Max(0, Math.Min(1, size / 2.0 - distance)) * 255));
-        }
-        texture.SetPixels32(pixels); texture.Apply();
-        var sprite = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(.5f, .5f));
-        owned.Add(sprite); return sprite;
-    }
-
-    private Texture2D BlurSnapshot()
-    {
-        var small = RenderTexture.GetTemporary(180, 180, 0);
-        var previous = RenderTexture.active;
-        var texture = new Texture2D(180, 180, TextureFormat.RGB24, false); owned.Add(texture);
-        try
-        {
-            Graphics.Blit(live, small, new Vector2(crop.width, crop.height), new Vector2(crop.x, crop.y));
-            RenderTexture.active = small;
-            texture.ReadPixels(new Rect(0, 0, 180, 180), 0, 0);
-            var source = texture.GetPixels();
-            // Separable box blur, captured once; no per-frame CPU readback and no added tint.
-            for (int pass = 0; pass < 3; pass++) for (int axis = 0; axis < 2; axis++)
-            {
-                var target = new Color[source.Length];
-                for (int y = 0; y < 180; y++) for (int x = 0; x < 180; x++)
-                {
-                    Color sum = Color.clear;
-                    for (int k = -4; k <= 4; k++) sum += source[Mathf.Clamp(y + (axis == 1 ? k : 0), 0, 179) * 180 + Mathf.Clamp(x + (axis == 0 ? k : 0), 0, 179)];
-                    target[y * 180 + x] = sum / 9;
-                }
-                source = target;
-            }
-            texture.SetPixels(source); texture.Apply(); return texture;
-        }
-        finally { RenderTexture.active = previous; RenderTexture.ReleaseTemporary(small); }
-    }
-
     private static void Layer(Transform transform)
     {
         transform.gameObject.layer = UiLayer;
@@ -332,11 +256,8 @@ public sealed class PracticeView : IDisposable
 
     public void Dispose()
     {
-        if (gameCamera != null) gameCamera.cullingMask = (gameCamera.cullingMask & ~(1 << UiLayer)) | originalUiLayerMask;
+        renderer?.Dispose();
         if (uiCamera != null) Object.Destroy(uiCamera.gameObject);
         if (root != null) { root.SetActive(false); Object.Destroy(root); }
-        if (live != null) { live.Release(); Object.Destroy(live); }
-        foreach (var item in owned) if (item != null) Object.Destroy(item);
-        owned.Clear();
     }
 }
