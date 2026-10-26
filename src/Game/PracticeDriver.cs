@@ -52,9 +52,8 @@ public sealed class PracticeDriver : MonoBehaviour
 
     public void Close()
     {
-        var closing = Controller;
-        Controller = null;
-        closing?.Dispose();
+        try { Controller?.Dispose(); }
+        finally { Controller = null; }
     }
 
     private void OnDestroy() => Close();
