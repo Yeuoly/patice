@@ -1,4 +1,3 @@
-using System.Linq;
 using MelonLoader;
 using Patice.Segments;
 using Patice.Game;
@@ -35,8 +34,5 @@ public sealed class Plugin : MelonMod
         HarmonyInstance.PatchAll(typeof(GameHooks));
         HarmonyInstance.PatchAll(typeof(PlaybackHooks));
         HarmonyInstance.PatchAll(typeof(ScoreGuard));
-        HarmonyInstance.PatchAll(typeof(GameDiagnostics));
-        var count = HarmonyInstance.GetPatchedMethods().Count();
-        MelonLogger.Msg($"Practice ready: {count} game hooks registered.");
     }
 }

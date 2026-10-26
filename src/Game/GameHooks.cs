@@ -7,7 +7,6 @@ using Monitor;
 using Patice.Domain;
 using Patice.Practice;
 using Process;
-using UnityEngine;
 
 namespace Patice.Game;
 
@@ -43,8 +42,6 @@ public static class GameHooks
             game = __instance;
             entryHeld = false;
             ScoreGuard.BeginTrack();
-            GameDiagnostics.BeginTrack();
-            MelonLogger.Msg("Practice input attached to gameplay.");
         }
 
         [HarmonyPatch(typeof(GameProcess), "OnRelease"), HarmonyPrefix]
@@ -93,7 +90,6 @@ public static class GameHooks
             var segments = Plugin.SegmentManagement.Get(GameManager.SelectMusicID[active], difficulty);
             if (segments.Length == 0) return;
             Playback = new GamePlayback(__instance, ____monitors[active], ____gameMovie, active);
-            GameDiagnostics.MarkPractice();
             driver = ____monitors[active].gameObject.AddComponent<PracticeDriver>();
             driver.Initialize(active, new PracticeController(Playback, segments));
         }
