@@ -18,8 +18,8 @@ public sealed class PracticeSession
     public double SeekPositionMs { get; private set; }
     public int Count => segments.Length;
     public Segment Current => segments[Index];
-    private double PracticeStartMs => Math.Max(1, Current.startMs - 1000d);
-    private double PracticeEndMs => Math.Min(player.DurationMs - 1, Current.endMs + 1000d);
+    private double PracticeStartMs => Math.Max(1, Current.startMs - 2000d);
+    private double PracticeEndMs => Math.Min(player.DurationMs - 1, Current.endMs + 2000d);
     public bool Loop { get; private set; } = true;
     public bool Repeating => playingSegment && Loop;
     public bool PreventGameEnd => State != PracticeState.Closed &&
@@ -46,7 +46,7 @@ public sealed class PracticeSession
         player.Pause(true);
         player.Preview(true);
         player.SetRate(Rate);
-        player.Seek(Current.startMs);
+        player.Seek(PracticeStartMs);
         player.Pause(false);
     }
 
@@ -130,8 +130,8 @@ public sealed class PracticeSession
 
     public void Tick(double seconds)
     {
-        if (State == PracticeState.Selecting && player.PositionMs >= Current.endMs)
-            player.Seek(Current.startMs);
+        if (State == PracticeState.Selecting && player.PositionMs >= PracticeEndMs)
+            player.Seek(PracticeStartMs);
         else if (State == PracticeState.Selected)
         {
             elapsed += seconds;
