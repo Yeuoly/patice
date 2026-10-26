@@ -2,11 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection.Emit;
 using HarmonyLib;
 using DB;
 using MAI2.Util;
 using Manager;
 using Monitor;
+using Monitor.Game;
 using Process;
 
 namespace Patice;
@@ -134,6 +136,25 @@ public sealed class Playback
         music.UpdateAll();
         moviePlayer?.player?.SetSpeed(Rate);
         mediaRatePending = false;
+    }
+
+    [HarmonyPatch(typeof(GameCtrl), "UpdateCtrl"), HarmonyTranspiler]
+    private static IEnumerable<CodeInstruction> PreserveSkipResult(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        // The debug seek branch discards failure and marks the note used anyway.
+        // Preserve the result, as the native track-skip branch already does.
+        var result = generator.DeclareLocal(typeof(bool));
+        var matcher = new CodeMatcher(instructions).MatchForward(false,
+            new CodeMatch(OpCodes.Call, AccessTools.Method(typeof(GameCtrl), "SkipRegistNote")),
+            new CodeMatch(OpCodes.Pop),
+            new CodeMatch(instruction => instruction.IsLdloc()),
+            new CodeMatch(OpCodes.Ldc_I4_1),
+            new CodeMatch(instruction => instruction.opcode == OpCodes.Stfld &&
+                Equals(instruction.operand, AccessTools.Field(typeof(NoteData), "isUsed"))));
+        matcher.ThrowIfInvalid("Native seek note assignment was not found.");
+        matcher.Advance(1).Set(OpCodes.Stloc, result);
+        matcher.Advance(2).Set(OpCodes.Ldloc, result);
+        return matcher.InstructionEnumeration();
     }
 
     [HarmonyPatch(typeof(GameManager), "GetNoteSpeed"), HarmonyPrefix]
