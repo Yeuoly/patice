@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 11553,
+    "difficulty": "master",
+    "id": "c50aceb7-9bb9-4c30-bac6-c1341a2a7459",
+    "name": "S1",
+    "startMs": 32000,
+    "endMs": 59000
+  },
+  {
+    "musicId": 11553,
+    "difficulty": "master",
+    "id": "6ef6b77c-71ae-497a-9494-437e15802a45",
+    "name": "S2",
+    "startMs": 88000,
+    "endMs": 100000
+  },
+  {
+    "musicId": 11553,
+    "difficulty": "master",
+    "id": "483ea9b0-cea5-4c72-a27c-af56f42e01f8",
+    "name": "S3",
+    "startMs": 133000,
+    "endMs": 141000
+  }
+]

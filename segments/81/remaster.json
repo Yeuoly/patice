@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 81,
+    "difficulty": "remaster",
+    "id": "8d24dd38-4a2e-4661-9b7a-1a8676935b8a",
+    "name": "S1",
+    "startMs": 25000,
+    "endMs": 51000
+  },
+  {
+    "musicId": 81,
+    "difficulty": "remaster",
+    "id": "443ec70a-c665-44ed-a85a-47e9668b2341",
+    "name": "S2",
+    "startMs": 87000,
+    "endMs": 108000
+  }
+]

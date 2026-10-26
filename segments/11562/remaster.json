@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 11562,
+    "difficulty": "remaster",
+    "id": "18fbe820-2b2f-49c2-affa-6a42494d3cfc",
+    "name": "S1",
+    "startMs": 16000,
+    "endMs": 62000
+  },
+  {
+    "musicId": 11562,
+    "difficulty": "remaster",
+    "id": "e722c064-8566-43bf-a82f-c9156f8de311",
+    "name": "S2",
+    "startMs": 75000,
+    "endMs": 90000
+  },
+  {
+    "musicId": 11562,
+    "difficulty": "remaster",
+    "id": "0560509a-6754-488d-ab89-4a7a1f58509c",
+    "name": "S3",
+    "startMs": 120000,
+    "endMs": 132000
+  }
+]
