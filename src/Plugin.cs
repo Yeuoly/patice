@@ -2,7 +2,7 @@ using MelonLoader;
 using Patice.Segments;
 using Patice.Game;
 
-[assembly: MelonInfo(typeof(Patice.Plugin), "Patice", "0.2.43", "Yeuoly")]
+[assembly: MelonInfo(typeof(Patice.Plugin), "Patice", "0.2.44", "Yeuoly")]
 [assembly: MelonGame(null, "Sinmai")]
 [assembly: HarmonyDontPatchAll]
 

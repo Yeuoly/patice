@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 799,
+    "difficulty": "remaster",
+    "id": "2e9e62fb-02a4-43f1-b247-0f797d557dd8",
+    "name": "加速圈",
+    "startMs": 73000,
+    "endMs": 81000
+  },
+  {
+    "musicId": 799,
+    "difficulty": "remaster",
+    "id": "b1725b8b-dd91-4d60-a5c8-cd372b3b35e6",
+    "name": "拍星星",
+    "startMs": 115000,
+    "endMs": 130000
+  },
+  {
+    "musicId": 799,
+    "difficulty": "remaster",
+    "id": "4271cfcb-a582-454b-a9a3-9f3e3337a3d3",
+    "name": "尾杀",
+    "startMs": 130000,
+    "endMs": 137000
+  }
+]

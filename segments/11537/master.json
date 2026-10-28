@@ -1,0 +1,50 @@
+[
+  {
+    "musicId": 11537,
+    "difficulty": "master",
+    "id": "132c1d7c-54d5-44b9-be54-f40936e3065d",
+    "name": "S1",
+    "startMs": 28000,
+    "endMs": 51000
+  },
+  {
+    "musicId": 11537,
+    "difficulty": "master",
+    "id": "8ffdf147-951f-432c-954d-038762fff9fe",
+    "name": "加速圈",
+    "startMs": 50000,
+    "endMs": 55000
+  },
+  {
+    "musicId": 11537,
+    "difficulty": "master",
+    "id": "dc57335f-ebec-493d-80c6-c03d269328ae",
+    "name": "S2",
+    "startMs": 54000,
+    "endMs": 71000
+  },
+  {
+    "musicId": 11537,
+    "difficulty": "master",
+    "id": "bb531e1f-6ef6-4095-9bf0-f11e133d5782",
+    "name": "S3",
+    "startMs": 82000,
+    "endMs": 98000
+  },
+  {
+    "musicId": 11537,
+    "difficulty": "master",
+    "id": "039da814-aacb-4315-8866-4fc58722a443",
+    "name": "S4",
+    "startMs": 104000,
+    "endMs": 128000
+  },
+  {
+    "musicId": 11537,
+    "difficulty": "master",
+    "id": "f7b411da-7191-4255-ab8b-572694d99198",
+    "name": "尾杀",
+    "startMs": 145000,
+    "endMs": 154000
+  }
+]

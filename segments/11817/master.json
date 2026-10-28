@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11817,
+    "difficulty": "master",
+    "id": "1b82b3f6-7331-4557-a48f-763ceb59f1a4",
+    "name": "开头绝赞",
+    "startMs": 28000,
+    "endMs": 34000
+  },
+  {
+    "musicId": 11817,
+    "difficulty": "master",
+    "id": "cd84953e-f4da-4c17-9b43-2c1c0db0acdf",
+    "name": "尾杀嵌套",
+    "startMs": 152000,
+    "endMs": 159000
+  }
+]
