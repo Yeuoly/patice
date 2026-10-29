@@ -42,11 +42,11 @@ public sealed class PracticeFlowIntegration
     {
         using var flow = new Flow();
         flow.Press(PracticeAction.Previous, 6);
-        Assert.Equal("Final", flow.Controller.Session.Current.name);
+        Assert.Equal("Final", flow.View.Latest.Segment.Name);
         flow.Press(PracticeAction.Next, 3);
-        Assert.Equal("S1", flow.Controller.Session.Current.name);
+        Assert.Equal("S1", flow.View.Latest.Segment.Name);
         flow.Press(PracticeAction.Next, 3);
-        Assert.Equal("S2", flow.Controller.Session.Current.name);
+        Assert.Equal("S2", flow.View.Latest.Segment.Name);
 
         flow.Events.Clear();
         flow.Press(PracticeAction.Confirm, 4);
@@ -117,12 +117,14 @@ public sealed class PracticeFlowIntegration
         flow.Press(PracticeAction.Next, 3);
         flow.Press(PracticeAction.Next, 3);
         flow.Press(PracticeAction.Previous, 6);
-        Assert.Equal(35000, flow.Controller.Session.SeekPositionMs);
+        Assert.Equal(31000, flow.Controller.Session.SeekPositionMs);
         flow.Press(PracticeAction.ChangeRate, 1);
         Assert.Equal(.9f, flow.Player.Rate);
         flow.Events.Clear();
         flow.Press(PracticeAction.Confirm, 4);
-        Assert.Equal(new[] { "preview:False", "seek:35000", "pause:False" }, flow.PlaybackEvents);
+        Assert.Equal(PracticeState.Countdown, flow.Controller.Session.State);
+        flow.Controller.Tick(3);
+        Assert.Equal(new[] { "preview:False", "seek:31000", "pause:False" }, flow.PlaybackEvents);
         Assert.False(flow.Controller.PreventGameEnd);
         Assert.False(flow.Controller.Session.Repeating);
         flow.Player.PositionMs = 80000;
@@ -141,9 +143,9 @@ public sealed class PracticeFlowIntegration
         using var flow = new Flow();
         flow.Press(PracticeAction.Next, 3);
         flow.Press(PracticeAction.Seek, 2);
-        for (var i = 0; i < 8; i++) flow.Press(PracticeAction.Previous, 6);
+        for (var i = 0; i < 35; i++) flow.Press(PracticeAction.Previous, 6);
         Assert.Equal(0, flow.Player.PositionMs);
-        for (var i = 0; i < 30; i++) flow.Press(PracticeAction.Next, 3);
+        for (var i = 0; i < 140; i++) flow.Press(PracticeAction.Next, 3);
         Assert.Equal(flow.Player.DurationMs, flow.Player.PositionMs);
         flow.Press(PracticeAction.Cancel, 5);
         Assert.Equal(PracticeState.Selecting, flow.Controller.Session.State);
@@ -213,37 +215,283 @@ public sealed class PracticeFlowIntegration
     public void PreviewAndPracticeUseTheSamePaddedSegmentStrictlyInsideTheTrack(
         int start, int end, int practiceStart, int practiceEnd)
     {
-        var player = new Playback(new List<string>());
         var segment = new Segment(417, Difficulty.Master, Guid.NewGuid(), "S1", start, end);
-        var session = new PracticeSession(player, new[] { segment });
-        session.Open();
+        using var flow = new Flow(segments: new[] { segment });
+        var player = flow.Player;
         Assert.Equal(practiceStart, player.PositionMs);
         player.PositionMs = practiceEnd - 1;
-        session.Tick(0);
+        flow.Controller.Tick(0);
         Assert.Equal(practiceEnd - 1, player.PositionMs);
         player.PositionMs = practiceEnd;
-        session.Tick(0);
+        flow.Controller.Tick(0);
         Assert.Equal(practiceStart, player.PositionMs);
 
-        session.Handle(PracticeAction.Confirm);
-        session.Tick(.4);
+        flow.Press(PracticeAction.Confirm, 4);
+        flow.Controller.Tick(.4);
         Assert.Equal(practiceStart, player.PositionMs);
-        session.Tick(3);
+        flow.Controller.Tick(3);
         player.PositionMs = practiceEnd - 1;
-        session.Tick(0);
+        flow.Controller.Tick(0);
         Assert.Equal(practiceEnd - 1, player.PositionMs);
         player.PositionMs = practiceEnd;
-        session.Tick(0);
+        flow.Controller.Tick(0);
         Assert.Equal(practiceStart, player.PositionMs);
         Assert.True(player.PositionMs > 0);
         Assert.True(practiceEnd < player.DurationMs);
 
-        session.Entry();
-        session.Handle(PracticeAction.Confirm);
-        session.Open();
-        Assert.Equal(practiceStart, player.PositionMs);
+        flow.Controller.Entry();
+        flow.Press(PracticeAction.Confirm, 4);
+        using var reopened = new Flow(segments: new[] { segment });
+        Assert.Equal(practiceStart, reopened.Player.PositionMs);
         Assert.Equal(start, segment.startMs);
         Assert.Equal(end, segment.endMs);
+    }
+
+    [Fact]
+    public void EmptyCatalogOpensSeekAndCancelRestoresOnceWithoutAnySegmentPreview()
+    {
+        using var flow = new Flow(segments: Array.Empty<Segment>());
+        Assert.Equal(PracticeState.Seeking, flow.View.Latest.State);
+        Assert.Null(flow.View.Latest.Segment);
+        Assert.Equal(30000, flow.View.Latest.Seek.PositionMs);
+        Assert.False(flow.View.Latest.Seek.CanLoop);
+        Assert.True(flow.Player.Paused);
+        Assert.True(flow.Player.Previewing);
+        Assert.True(flow.Controller.PreventGameEnd);
+        flow.Press(PracticeAction.ToggleLoop, 8);
+        Assert.DoesNotContain("press:8", flow.Events);
+        flow.Press(PracticeAction.Next, 3);
+        flow.Press(PracticeAction.ChangeRate, 1);
+        flow.Events.Clear();
+        flow.Press(PracticeAction.Cancel, 5);
+        flow.Controller.Dispose();
+        Assert.Equal(new[] { "restore:ReturnToEntryPosition", "press:5", "view.dispose" }, flow.Events);
+        Assert.Equal(30000, flow.Player.PositionMs);
+        Assert.Equal(1, flow.Player.Rate);
+    }
+
+    [Fact]
+    public void ManualLoopUsesExactEndpointsAndExistingCountdownPlaybackAndExit()
+    {
+        using var flow = new Flow(segments: Array.Empty<Segment>());
+        flow.Press(PracticeAction.SetLoopStart, 2);
+        flow.Press(PracticeAction.Next, 3);
+        flow.Press(PracticeAction.Next, 3);
+        flow.Press(PracticeAction.SetLoopEnd, 7);
+        flow.Press(PracticeAction.ChangeRate, 1);
+        Assert.True(flow.View.Latest.Seek.Loop);
+        flow.Events.Clear();
+        flow.Press(PracticeAction.Confirm, 4);
+        Assert.Equal(PracticeState.Countdown, flow.View.Latest.State);
+        Assert.Null(flow.View.Latest.Segment);
+        Assert.True(flow.Player.Paused);
+        flow.Controller.Tick(2.9);
+        Assert.True(flow.Player.Paused);
+        flow.Controller.Tick(.1);
+        Assert.Equal(new[] { "preview:False", "seek:30000", "pause:False" }, flow.PlaybackEvents);
+        Assert.True(flow.Controller.PreventGameEnd);
+        Assert.Equal(.9f, flow.Player.Rate);
+        for (var repeat = 0; repeat < 3; repeat++)
+        {
+            flow.Player.PositionMs = 31999;
+            flow.Controller.Tick(0);
+            Assert.Equal(31999, flow.Player.PositionMs);
+            flow.Player.PositionMs = 32000;
+            flow.Controller.Tick(0);
+            Assert.Equal(30000, flow.Player.PositionMs);
+        }
+        flow.Controller.Entry();
+        flow.Press(PracticeAction.Cancel, 5);
+        Assert.Equal(PracticeState.Playing, flow.View.Latest.State);
+        flow.Player.PositionMs = 31500;
+        flow.Controller.Entry();
+        flow.Events.Clear();
+        flow.Press(PracticeAction.Confirm, 4);
+        Assert.Equal(new[] { "restore:ContinueFromCurrentPosition", "press:4", "view.dispose" }, flow.Events);
+        Assert.Equal(31500, flow.Player.PositionMs);
+        Assert.False(flow.Controller.PreventGameEnd);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void ClearingEitherEndpointDisablesLoopAndPreservesTheOther(bool clearStart)
+    {
+        using var flow = new Flow(segments: Array.Empty<Segment>());
+        // End may be set first and cleared even before a start exists.
+        flow.Press(PracticeAction.SetLoopEnd, 7);
+        flow.Press(PracticeAction.SetLoopEnd, 7);
+        Assert.Null(flow.View.Latest.Seek.EndMs);
+        flow.Press(PracticeAction.SetLoopStart, 2);
+        flow.Press(PracticeAction.Next, 3);
+        flow.Press(PracticeAction.SetLoopEnd, 7);
+        flow.Events.Clear();
+        flow.Press(clearStart ? PracticeAction.SetLoopStart : PracticeAction.SetLoopEnd, clearStart ? 2 : 7);
+        Assert.Empty(flow.PlaybackEvents);
+        Assert.False(flow.View.Latest.Seek.CanLoop);
+        Assert.False(flow.View.Latest.Seek.Loop);
+        Assert.Equal(clearStart ? null : (double?)30000, flow.View.Latest.Seek.StartMs);
+        Assert.Equal(clearStart ? (double?)31000 : null, flow.View.Latest.Seek.EndMs);
+        flow.Press(PracticeAction.ToggleLoop, 8);
+        Assert.False(flow.View.Latest.Seek.Loop);
+        if (clearStart) flow.Press(PracticeAction.Previous, 6);
+        flow.Press(clearStart ? PracticeAction.SetLoopStart : PracticeAction.SetLoopEnd, clearStart ? 2 : 7);
+        Assert.True(flow.View.Latest.Seek.Loop);
+    }
+
+    [Fact]
+    public void InvalidEndpointIsRejectedAndMessageExpiresWithoutChangingPlayback()
+    {
+        using var flow = new Flow(segments: Array.Empty<Segment>());
+        flow.Press(PracticeAction.SetLoopEnd, 7);
+        flow.Events.Clear();
+        flow.Press(PracticeAction.SetLoopStart, 2);
+        Assert.Null(flow.View.Latest.Seek.StartMs);
+        Assert.Equal("End must be after start", flow.View.Latest.Message);
+        Assert.Empty(flow.PlaybackEvents);
+        Assert.DoesNotContain("press:2", flow.Events);
+        flow.Controller.Tick(1.8);
+        Assert.Null(flow.View.Latest.Message);
+        flow.Press(PracticeAction.Previous, 6);
+        flow.Press(PracticeAction.SetLoopStart, 2);
+        Assert.True(flow.View.Latest.Seek.CanLoop);
+    }
+
+    [Fact]
+    public void ManualOnceKeepsMarkersAndPlaysFromCursorWithoutStoppingAtTheRangeEnd()
+    {
+        using var flow = new Flow(segments: Array.Empty<Segment>());
+        flow.Press(PracticeAction.SetLoopStart, 2);
+        flow.Press(PracticeAction.Next, 3);
+        flow.Press(PracticeAction.SetLoopEnd, 7);
+        flow.Press(PracticeAction.ToggleLoop, 8);
+        flow.Press(PracticeAction.Next, 3);
+        flow.Press(PracticeAction.ChangeRate, 1);
+        flow.Press(PracticeAction.Confirm, 4);
+        flow.Controller.Tick(3);
+        Assert.Equal(32000, flow.Player.PositionMs);
+        Assert.False(flow.Controller.PreventGameEnd);
+        flow.Player.PositionMs = 80000;
+        flow.Controller.Tick(0);
+        Assert.Equal(80000, flow.Player.PositionMs);
+        Assert.Equal(.9f, flow.Player.Rate);
+        flow.Controller.Entry();
+        flow.Press(PracticeAction.Seek, 2);
+        Assert.Equal(80000, flow.View.Latest.Seek.PositionMs);
+        Assert.Equal(30000, flow.View.Latest.Seek.StartMs);
+        Assert.Equal(31000, flow.View.Latest.Seek.EndMs);
+        Assert.False(flow.View.Latest.Seek.Loop);
+        flow.Press(PracticeAction.Cancel, 5);
+        Assert.Equal(80000, flow.Player.PositionMs);
+        Assert.Equal(1, flow.Player.Restores);
+    }
+
+    [Fact]
+    public void SegmentSelectionAndSeekHaveIndependentRangesAndLoopSettings()
+    {
+        using var flow = new Flow();
+        flow.Press(PracticeAction.Next, 3);
+        Assert.Equal("S2", flow.View.Latest.Segment.Name);
+        flow.Press(PracticeAction.Seek, 2);
+        Assert.Null(flow.View.Latest.Segment);
+        Assert.Null(flow.View.Latest.Seek.StartMs);
+        flow.Press(PracticeAction.SetLoopStart, 2);
+        flow.Press(PracticeAction.Next, 3);
+        flow.Press(PracticeAction.SetLoopEnd, 7);
+        flow.Press(PracticeAction.ToggleLoop, 8);
+        flow.Press(PracticeAction.Cancel, 5);
+        Assert.Null(flow.View.Latest.Seek);
+        Assert.Equal("S2", flow.View.Latest.Segment.Name);
+        Assert.True(flow.View.Latest.Segment.Loop);
+        Assert.Equal(104000, flow.View.Latest.Segment.StartMs);
+        Assert.Equal(102000, flow.Player.PositionMs);
+        flow.Press(PracticeAction.Seek, 2);
+        Assert.Equal(30000, flow.View.Latest.Seek.StartMs);
+        Assert.Equal(31000, flow.View.Latest.Seek.EndMs);
+        Assert.False(flow.View.Latest.Seek.Loop);
+        Assert.Equal(0, flow.Player.Restores);
+        Assert.Single(flow.Events, e => e == "capture");
+    }
+
+    [Fact]
+    public void ReturningFromALoopAndClearingItsEndReleasesTheOldPlaybackRange()
+    {
+        using var flow = new Flow(segments: Array.Empty<Segment>());
+        flow.Press(PracticeAction.SetLoopStart, 2);
+        flow.Press(PracticeAction.Next, 3);
+        flow.Press(PracticeAction.SetLoopEnd, 7);
+        flow.Press(PracticeAction.Confirm, 4);
+        flow.Controller.Tick(3);
+        Assert.True(flow.Controller.Session.Repeating);
+        flow.Controller.Entry();
+        flow.Press(PracticeAction.Seek, 2);
+        flow.Press(PracticeAction.SetLoopEnd, 7);
+        flow.Press(PracticeAction.Next, 3);
+        flow.Press(PracticeAction.Next, 3);
+        flow.Press(PracticeAction.Confirm, 4);
+        flow.Press(PracticeAction.Cancel, 5);
+        Assert.Equal(PracticeState.Seeking, flow.View.Latest.State);
+        Assert.Null(flow.View.Latest.Seek.EndMs);
+        flow.Press(PracticeAction.Confirm, 4);
+        flow.Controller.Tick(3);
+        Assert.False(flow.Controller.Session.Repeating);
+        Assert.False(flow.Controller.PreventGameEnd);
+        flow.Player.PositionMs = flow.Player.DurationMs;
+        flow.Controller.Tick(0);
+        Assert.Equal(flow.Player.DurationMs, flow.Player.PositionMs);
+        flow.Events.Clear();
+        // The native game owns completion; its release closes the same controller.
+        flow.Controller.Dispose();
+        Assert.Equal(new[] { "restore:ContinueFromCurrentPosition", "view.dispose" }, flow.Events);
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public void GameReleaseWhileSeekingOrCountingDownUsesPlaybackHistory(bool alreadyPlayed, bool countdown)
+    {
+        using var flow = new Flow(segments: Array.Empty<Segment>());
+        if (alreadyPlayed)
+        {
+            flow.Press(PracticeAction.Confirm, 4);
+            flow.Controller.Tick(3);
+            flow.Player.PositionMs = 80000;
+            flow.Controller.Entry();
+            flow.Press(PracticeAction.Seek, 2);
+        }
+        flow.Press(PracticeAction.Next, 3);
+        if (countdown) flow.Press(PracticeAction.Confirm, 4);
+        flow.Events.Clear();
+        flow.Controller.Dispose();
+        flow.Controller.Dispose();
+        var behavior = alreadyPlayed ? ExitBehavior.ContinueFromCurrentPosition : ExitBehavior.ReturnToEntryPosition;
+        Assert.Equal(new[] { "restore:" + behavior, "view.dispose" }, flow.Events);
+        Assert.Equal(alreadyPlayed ? 81000 : 30000, flow.Player.PositionMs);
+        Assert.False(flow.Player.Paused);
+        Assert.Equal(1, flow.Player.Rate);
+        Assert.False(flow.Controller.PreventGameEnd);
+    }
+
+    [Fact]
+    public void CancelManualCountdownReturnsToSeekAndEndpointsStayInsideTheTrack()
+    {
+        using var flow = new Flow(segments: Array.Empty<Segment>());
+        for (var i = 0; i < 35; i++) flow.Press(PracticeAction.Previous, 6);
+        flow.Press(PracticeAction.SetLoopStart, 2);
+        for (var i = 0; i < 140; i++) flow.Press(PracticeAction.Next, 3);
+        flow.Press(PracticeAction.SetLoopEnd, 7);
+        Assert.Equal(1, flow.View.Latest.Seek.StartMs);
+        Assert.Equal(flow.Player.DurationMs - 1, flow.View.Latest.Seek.EndMs);
+        flow.Press(PracticeAction.Confirm, 4);
+        flow.Press(PracticeAction.Cancel, 5);
+        Assert.Equal(PracticeState.Seeking, flow.View.Latest.State);
+        Assert.Equal(flow.Player.DurationMs, flow.View.Latest.Seek.PositionMs);
+        Assert.True(flow.View.Latest.Seek.Loop);
+        Assert.True(flow.Player.Paused);
+        Assert.True(flow.Player.Previewing);
+        Assert.Equal(0, flow.Player.Restores);
     }
 
     private sealed class Flow : IDisposable
@@ -254,11 +502,11 @@ public sealed class PracticeFlowIntegration
         public readonly PracticeController Controller;
         public IEnumerable<string> PlaybackEvents => Events.Where(e => !e.StartsWith("view:") && !e.StartsWith("press:"));
 
-        public Flow(bool open = true)
+        public Flow(bool open = true, Segment[] segments = null)
         {
             Player = new Playback(Events);
             View = new View(Events);
-            Controller = new PracticeController(Player, new[]
+            Controller = new PracticeController(Player, segments ?? new[]
             {
                 new Segment(417, Difficulty.Master, Guid.NewGuid(), "S1", 60000, 76000),
                 new Segment(417, Difficulty.Master, Guid.NewGuid(), "S2", 104000, 115000),
@@ -311,7 +559,8 @@ public sealed class PracticeFlowIntegration
     private sealed class View(List<string> events) : IPracticeView
     {
         public int Disposals { get; private set; }
-        public void Update(PracticeSession session) => events.Add("view:" + session.State);
+        public PracticeViewState Latest { get; private set; }
+        public void Update(PracticeViewState state) { Latest = state; events.Add("view:" + state.State); }
         public void Press(int button) => events.Add("press:" + button);
         public void RenderPreview(PracticeState state) => events.Add("render:" + state);
         public void Dispose() { events.Add("view.dispose"); Disposals++; }

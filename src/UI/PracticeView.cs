@@ -26,10 +26,12 @@ public sealed class PracticeView : IPracticeView
     private readonly CommonWindow dialog;
     private readonly GenericMonitor messageMonitor;
     private bool exitVisible;
+    private bool? loopHighlighted;
     private float buttonSyncTimer;
     private readonly RectTransform preview;
     private readonly TextMeshProUGUI nativeText;
-    private readonly TextMeshProUGUI speed, mode, name, range, page, count;
+    private readonly TextMeshProUGUI speed, mode, seek, end, name, range, page, count, message;
+    private readonly Color settingColor;
     private readonly int monitor;
     private readonly Sprite circle;
 
@@ -75,9 +77,11 @@ public sealed class PracticeView : IPracticeView
             preview = Circle("Native chart preview", selector.transform, 285, 290, 510);
             Raw(preview, renderer.Live, renderer.Crop);
             speed = Setting(selector.transform, 1);
-            Setting(selector.transform, 2).text = "Seek";
+            end = Setting(selector.transform, 7);
             mode = Setting(selector.transform, 8);
+            settingColor = mode.color;
             controls = Rect("Controls", board, 0, 0, 1080, 1080).gameObject;
+            seek = Setting(controls.transform, 2);
             AddButton(controls.transform, 6, false, true);
             AddButton(controls.transform, 3, false, false);
             AddButton(controls.transform, 4, true, false);
@@ -86,6 +90,7 @@ public sealed class PracticeView : IPracticeView
             name = Text(selector.transform, "Segment", 260, 810, 560, 65, 40);
             range = Text(selector.transform, "Range", 330, 880, 420, 45, 28);
             page = Text(selector.transform, "Index", 440, 944, 200, 40, 26);
+            message = Text(selector.transform, "Message", 240, 995, 600, 40, 26);
             count = Text(board, "Countdown", 390, 390, 300, 300, 180);
             messageMonitor = Resources.FindObjectsOfTypeAll<GenericMonitor>()
                 .First(x => x.gameObject.scene.IsValid() && x.MonitorId == monitor);
@@ -98,7 +103,7 @@ public sealed class PracticeView : IPracticeView
         catch { Dispose(); throw; }
     }
 
-    public void Update(PracticeSession session)
+    public void Update(PracticeViewState session)
     {
         var selecting = session.State == PracticeState.Selecting || session.State == PracticeState.Selected;
         var seeking = session.State == PracticeState.Seeking;
@@ -126,16 +131,34 @@ public sealed class PracticeView : IPracticeView
         count.gameObject.SetActive(session.State == PracticeState.Countdown);
         count.text = session.Countdown.ToString();
         speed.text = session.Rate.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "X";
-        mode.text = session.Loop ? "LOOP" : "ONCE";
+        mode.text = (session.Segment?.Loop ?? session.Seek?.Loop ?? false) ? "LOOP" : "ONCE";
+        mode.color = seeking && !session.Seek.CanLoop ? Color.gray : settingColor;
+        seek.text = seeking ? (session.Seek.StartMs.HasValue ? "Clear\nStart" : "Set\nStart") : "Seek";
+        end.text = seeking && session.Seek.EndMs.HasValue ? "Clear\nEnd" : "Set\nEnd";
         buttons[1].transform.parent.gameObject.SetActive(selecting || seeking);
-        buttons[2].transform.parent.gameObject.SetActive(selecting);
-        buttons[8].transform.parent.gameObject.SetActive(selecting);
-        name.gameObject.SetActive(!seeking);
-        page.gameObject.SetActive(!seeking);
-        name.text = session.Current.name;
-        range.text = $"{TimeSpan.FromMilliseconds(session.Current.startMs):mm\\:ss} — {TimeSpan.FromMilliseconds(session.Current.endMs):mm\\:ss}";
-        if (seeking) range.text = TimeSpan.FromMilliseconds(session.SeekPositionMs).ToString(@"mm\:ss");
-        page.text = $"{session.Index + 1} / {session.Count}";
+        buttons[2].transform.parent.gameObject.SetActive(selecting || seeking || exiting);
+        buttons[7].transform.parent.gameObject.SetActive(seeking);
+        buttons[8].transform.parent.gameObject.SetActive(selecting || seeking);
+        var highlight = !seeking || session.Seek.Loop;
+        if ((selecting || seeking) && loopHighlighted != highlight)
+        {
+            buttons[8].SetNonActive(highlight);
+            loopHighlighted = highlight;
+        }
+        name.gameObject.SetActive(selecting || seeking);
+        page.gameObject.SetActive(selecting);
+        if (session.Segment != null)
+        {
+            name.text = session.Segment.Name;
+            range.text = $"{FormatTime(session.Segment.StartMs)} — {FormatTime(session.Segment.EndMs)}";
+            page.text = $"{session.Segment.Page} / {session.Segment.Count}";
+        }
+        else if (session.Seek != null)
+        {
+            name.text = FormatTime(session.Seek.PositionMs);
+            range.text = $"{FormatTime(session.Seek.StartMs)} — {FormatTime(session.Seek.EndMs)}";
+        }
+        message.text = session.Message ?? "";
         preview.localScale = Vector3.one * (session.State == PracticeState.Selected ? 1 + .06f * session.SelectionProgress : 1);
         // Native ButtonControllerBase passes a shared one-second animation phase.
         buttonSyncTimer += Time.unscaledDeltaTime;
@@ -145,6 +168,9 @@ public sealed class PracticeView : IPracticeView
     }
 
     public void RenderPreview(PracticeState state) => renderer.Render(state);
+
+    private static string FormatTime(double? milliseconds) => milliseconds.HasValue
+        ? TimeSpan.FromMilliseconds(milliseconds.Value).ToString(@"mm\:ss") : "--:--";
 
     public void Press(int button) => buttons[button].Pressed();
 

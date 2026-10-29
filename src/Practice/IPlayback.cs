@@ -1,7 +1,7 @@
 namespace Patice.Practice;
 
 public enum ExitBehavior { ReturnToEntryPosition, ContinueFromCurrentPosition }
-public enum PracticeAction { Cancel, Previous, Next, ChangeRate, Seek, ToggleLoop, Confirm }
+public enum PracticeAction { Cancel, Previous, Next, ChangeRate, Seek, ToggleLoop, Confirm, SetLoopStart, SetLoopEnd }
 
 public interface IPlayback
 {

@@ -14,7 +14,7 @@ public sealed class PracticeDriver : MonoBehaviour
         (5, PracticeAction.Cancel), (6, PracticeAction.Previous),
         (3, PracticeAction.Next), (1, PracticeAction.ChangeRate),
         (2, PracticeAction.Seek), (8, PracticeAction.ToggleLoop),
-        (4, PracticeAction.Confirm)
+        (4, PracticeAction.Confirm), (7, PracticeAction.SetLoopEnd)
     };
     private int monitor;
     public PracticeController Controller { get; private set; }
@@ -32,7 +32,9 @@ public sealed class PracticeDriver : MonoBehaviour
         foreach (var binding in bindings)
         {
             if (!InputManager.GetButtonDown(monitor, (InputManager.ButtonSetting)(binding.Button - 1))) continue;
-            Controller.Handle(binding.Action, binding.Button);
+            var action = binding.Button == 2 && Controller.Session.State == PracticeState.Seeking
+                ? PracticeAction.SetLoopStart : binding.Action;
+            Controller.Handle(action, binding.Button);
             break;
         }
         Controller.Tick(Time.unscaledDeltaTime);

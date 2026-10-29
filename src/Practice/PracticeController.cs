@@ -24,7 +24,7 @@ public sealed class PracticeController : IDisposable
         // Capture the background before preview playback changes the game.
         view = createView();
         Session.Open();
-        view.Update(Session);
+        view.Update(Session.GetViewState());
     }
 
     public void Entry()
@@ -44,7 +44,7 @@ public sealed class PracticeController : IDisposable
     {
         Session.Tick(seconds);
         if (IsClosed) Dispose();
-        else view.Update(Session);
+        else view.Update(Session.GetViewState());
     }
 
     public void RenderPreview() => view?.RenderPreview(Session.State);
@@ -59,8 +59,7 @@ public sealed class PracticeController : IDisposable
     public void Dispose()
     {
         if (!IsClosed)
-            Session.End(Session.State == PracticeState.Playing || Session.State == PracticeState.ExitPrompt
-                ? ExitBehavior.ContinueFromCurrentPosition : ExitBehavior.ReturnToEntryPosition);
+            Session.End(Session.ExitBehavior);
         try { RestoreIfClosed(); }
         finally
         {

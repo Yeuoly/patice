@@ -8,56 +8,92 @@ public enum PracticeState { Closed, Selecting, Seeking, Selected, Countdown, Pla
 public sealed class PracticeSession
 {
     private readonly IPlayback player;
-    private readonly Segment[] segments;
+    private readonly SegmentSelection selection;
     private readonly float[] rates = { 1f, .9f, .8f, .7f, .6f, .5f, 2f, 1.5f };
     private int rateIndex;
-    private double elapsed;
-    private bool playingSegment;
+    private double elapsed, messageElapsed;
+    private SegmentPreview preview;
+    private PlaybackRequest playback;
+    private PracticeState seekOrigin, playbackOrigin;
+    private double? manualStartMs, manualEndMs;
+    private bool manualLoop;
+    private string message;
     public PracticeState State { get; private set; }
-    public int Index { get; private set; }
     public double SeekPositionMs { get; private set; }
-    public int Count => segments.Length;
-    public Segment Current => segments[Index];
-    private double PracticeStartMs => Math.Max(1, Current.startMs - 2000d);
-    private double PracticeEndMs => Math.Min(player.DurationMs - 1, Current.endMs + 2000d);
-    public bool Loop { get; private set; } = true;
-    public bool Repeating => playingSegment && Loop;
+    public bool Repeating => playback?.Loop == true;
     public bool PreventGameEnd => State != PracticeState.Closed &&
         (State != PracticeState.Playing || Repeating);
+    // Retained across page changes, including Playing -> Seeking -> Countdown.
     public ExitBehavior ExitBehavior { get; private set; }
     public float Rate => rates[rateIndex];
     public int Countdown => Math.Max(1, 3 - (int)elapsed);
-    public float SelectionProgress => (float)Math.Min(1, elapsed / .4);
+    private bool HasManualRange => manualStartMs.HasValue && manualEndMs.HasValue && manualEndMs > manualStartMs;
 
     public PracticeSession(IPlayback player, Segment[] segments)
     {
         this.player = player;
-        this.segments = segments;
+        selection = new SegmentSelection(segments);
     }
+
+    public PracticeViewState GetViewState() => new(State, Rate, Countdown, (float)Math.Min(1, elapsed / .4),
+        State == PracticeState.Selecting || State == PracticeState.Selected ? preview : null,
+        State == PracticeState.Seeking ? new SeekViewState(SeekPositionMs, manualStartMs, manualEndMs, manualLoop) : null,
+        message);
 
     public void Open()
     {
-        StartPreview();
+        if (selection.HasSegments) StartPreview(selection.GetPreview(player.DurationMs));
+        else StartSeek(player.EntryPositionMs, PracticeState.Closed);
     }
 
-    private void StartPreview()
+    private void StartPreview(SegmentPreview selected)
     {
+        preview = selected;
         State = PracticeState.Selecting;
+        message = null;
         player.Pause(true);
         player.Preview(true);
         player.SetRate(Rate);
-        player.Seek(PracticeStartMs);
+        player.Seek(preview.PlaybackRange.StartMs);
         player.Pause(false);
+    }
+
+    private void StartSeek(double positionMs, PracticeState origin)
+    {
+        seekOrigin = origin;
+        State = PracticeState.Seeking;
+        message = null;
+        player.Pause(true);
+        player.Preview(true);
+        player.SetRate(Rate);
+        SeekPositionMs = Math.Max(0, Math.Min(player.DurationMs, positionMs));
+        player.Seek(SeekPositionMs);
+    }
+
+    // Both entry points use the same native playback preparation and countdown.
+    private void BeginPlayback(PlaybackRequest request)
+    {
+        playback = request;
+        player.Preview(false);
+        player.Seek(request.StartMs);
+        State = PracticeState.Countdown;
+        elapsed = 0;
     }
 
     public void Entry()
     {
         switch (State)
         {
-            case PracticeState.Selecting: End(ExitBehavior.ReturnToEntryPosition); break;
-            case PracticeState.Seeking: StartPreview(); break;
+            case PracticeState.Selecting: End(ExitBehavior); break;
+            case PracticeState.Seeking:
+                if (seekOrigin == PracticeState.Selecting) StartPreview(selection.GetPreview(player.DurationMs));
+                else End(ExitBehavior);
+                break;
             case PracticeState.Selected:
-            case PracticeState.Countdown: StartPreview(); break;
+            case PracticeState.Countdown:
+                if (playbackOrigin == PracticeState.Selecting) StartPreview(selection.GetPreview(player.DurationMs));
+                else StartSeek(SeekPositionMs, seekOrigin);
+                break;
             case PracticeState.Playing:
                 player.Pause(true);
                 State = PracticeState.ExitPrompt;
@@ -71,6 +107,7 @@ public sealed class PracticeSession
 
     public bool Handle(PracticeAction action)
     {
+        message = null;
         if (action == PracticeAction.Cancel && State != PracticeState.Closed && State != PracticeState.Playing)
         {
             Entry();
@@ -78,6 +115,11 @@ public sealed class PracticeSession
         }
         if (State == PracticeState.ExitPrompt)
         {
+            if (action == PracticeAction.Seek)
+            {
+                StartSeek(player.PositionMs, PracticeState.Playing);
+                return true;
+            }
             if (action != PracticeAction.Confirm) return false;
             End(ExitBehavior.ContinueFromCurrentPosition);
             return true;
@@ -88,38 +130,24 @@ public sealed class PracticeSession
             player.SetRate(Rate);
             return true;
         }
-        if (State == PracticeState.Seeking)
-        {
-            if (action == PracticeAction.Confirm)
-            {
-                player.Preview(false);
-                player.Seek(SeekPositionMs);
-                player.Pause(false);
-                playingSegment = false;
-                State = PracticeState.Playing;
-                return true;
-            }
-            if (action != PracticeAction.Next && action != PracticeAction.Previous) return false;
-            SeekPositionMs = Math.Max(0, Math.Min(player.DurationMs,
-                SeekPositionMs + (action == PracticeAction.Next ? 5000 : -5000)));
-            player.Seek(SeekPositionMs);
-            return true;
-        }
+        if (State == PracticeState.Seeking) return HandleSeek(action);
         if (State != PracticeState.Selecting) return false;
         switch (action)
         {
-            case PracticeAction.Previous: Index = (Index + Count - 1) % Count; StartPreview(); break;
-            case PracticeAction.Next: Index = (Index + 1) % Count; StartPreview(); break;
-            case PracticeAction.Seek:
-                player.Pause(true);
-                SeekPositionMs = player.EntryPositionMs;
-                player.Seek(SeekPositionMs);
-                State = PracticeState.Seeking;
+            case PracticeAction.Previous:
+            case PracticeAction.Next:
+                selection.Move(action == PracticeAction.Next ? 1 : -1);
+                StartPreview(selection.GetPreview(player.DurationMs));
                 break;
-            case PracticeAction.ToggleLoop: Loop = !Loop; break;
+            case PracticeAction.Seek: StartSeek(player.EntryPositionMs, PracticeState.Selecting); break;
+            case PracticeAction.ToggleLoop:
+                selection.Loop = !selection.Loop;
+                preview = selection.GetPreview(player.DurationMs);
+                break;
             case PracticeAction.Confirm:
                 player.Pause(true);
-                playingSegment = true;
+                playbackOrigin = PracticeState.Selecting;
+                playback = new PlaybackRequest(preview.PlaybackRange.StartMs, preview.PlaybackRange, preview.Loop);
                 State = PracticeState.Selected;
                 elapsed = 0;
                 break;
@@ -128,29 +156,73 @@ public sealed class PracticeSession
         return true;
     }
 
+    private bool HandleSeek(PracticeAction action)
+    {
+        switch (action)
+        {
+            case PracticeAction.Confirm:
+                playbackOrigin = PracticeState.Seeking;
+                var range = manualLoop && HasManualRange
+                    ? new PlaybackRange(manualStartMs.Value, manualEndMs.Value) : (PlaybackRange?)null;
+                BeginPlayback(new PlaybackRequest(range?.StartMs ?? SeekPositionMs, range, manualLoop));
+                return true;
+            case PracticeAction.Next:
+            case PracticeAction.Previous:
+                SeekPositionMs = Math.Max(0, Math.Min(player.DurationMs,
+                    SeekPositionMs + (action == PracticeAction.Next ? 1000 : -1000)));
+                player.Seek(SeekPositionMs);
+                return true;
+            case PracticeAction.SetLoopStart:
+            case PracticeAction.SetLoopEnd:
+                return SetEndpoint(action == PracticeAction.SetLoopStart);
+            case PracticeAction.ToggleLoop:
+                if (!HasManualRange) return false;
+                manualLoop = !manualLoop;
+                return true;
+            default: return false;
+        }
+    }
+
+    private bool SetEndpoint(bool start)
+    {
+        if (start && manualStartMs.HasValue) { manualStartMs = null; manualLoop = false; return true; }
+        if (!start && manualEndMs.HasValue) { manualEndMs = null; manualLoop = false; return true; }
+        var position = Math.Max(1, Math.Min(player.DurationMs - 1, SeekPositionMs));
+        if ((start && manualEndMs.HasValue && position >= manualEndMs.Value) ||
+            (!start && manualStartMs.HasValue && position <= manualStartMs.Value))
+        {
+            message = "End must be after start";
+            messageElapsed = 0;
+            return false;
+        }
+        if (start) manualStartMs = position;
+        else manualEndMs = position;
+        manualLoop = HasManualRange;
+        return true;
+    }
+
     public void Tick(double seconds)
     {
-        if (State == PracticeState.Selecting && player.PositionMs >= PracticeEndMs)
-            player.Seek(PracticeStartMs);
+        if (message != null && (messageElapsed += seconds) >= 1.8) message = null;
+        if (State == PracticeState.Selecting && player.PositionMs >= preview.PlaybackRange.EndMs)
+            player.Seek(preview.PlaybackRange.StartMs);
         else if (State == PracticeState.Selected)
         {
             elapsed += seconds;
             if (elapsed < .4) return;
-            player.Preview(false);
-            player.Seek(PracticeStartMs);
-            State = PracticeState.Countdown;
-            elapsed = 0;
+            BeginPlayback(playback);
         }
         else if (State == PracticeState.Countdown)
         {
             elapsed += seconds;
             if (elapsed < 3) return;
+            ExitBehavior = ExitBehavior.ContinueFromCurrentPosition;
             player.Pause(false);
             State = PracticeState.Playing;
         }
-        else if (State == PracticeState.Playing && playingSegment && player.PositionMs >= PracticeEndMs)
+        else if (State == PracticeState.Playing && playback.Range is PlaybackRange range && player.PositionMs >= range.EndMs)
         {
-            if (Loop) player.Seek(PracticeStartMs);
+            if (playback.Loop) player.Seek(range.StartMs);
             else End(ExitBehavior.ContinueFromCurrentPosition);
         }
     }

@@ -88,7 +88,6 @@ public static class GameHooks
             if (active < 0) return;
             var difficulty = (Difficulty)GameManager.SelectDifficultyID[active];
             var segments = Plugin.SegmentManagement.Get(GameManager.SelectMusicID[active], difficulty);
-            if (segments.Length == 0) return;
             Playback = new GamePlayback(__instance, ____monitors[active], ____gameMovie, active);
             driver = ____monitors[active].gameObject.AddComponent<PracticeDriver>();
             driver.Initialize(active, new PracticeController(Playback, segments));
