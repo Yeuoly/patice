@@ -4,63 +4,63 @@
     "difficulty": "master",
     "id": "22f7e04c-d6d5-460d-9acc-9b78f877be82",
     "name": "星星四合院",
-    "startMs": 42000,
-    "endMs": 52000
+    "startMs": 46000,
+    "endMs": 56000
   },
   {
     "musicId": 11820,
     "difficulty": "master",
     "id": "254c653b-2884-4467-961f-e1a4cdf65bb6",
     "name": "纵连加圈",
-    "startMs": 73000,
-    "endMs": 85000
+    "startMs": 75000,
+    "endMs": 89000
   },
   {
     "musicId": 11820,
     "difficulty": "master",
     "id": "f9ed7c89-191d-466e-ba51-4739a2a70ed0",
     "name": "一阶段副歌",
-    "startMs": 104000,
-    "endMs": 130000
+    "startMs": 107000,
+    "endMs": 134000
   },
   {
     "musicId": 11820,
     "difficulty": "master",
     "id": "7458e842-bb3f-44f5-87a1-1121a0578e58",
     "name": "一阶段尾杀",
-    "startMs": 141000,
-    "endMs": 153000
+    "startMs": 143000,
+    "endMs": 157000
   },
   {
     "musicId": 11820,
     "difficulty": "master",
     "id": "371e4511-7389-49fa-9b39-73e71db7572f",
     "name": "焰霜211段",
-    "startMs": 213000,
-    "endMs": 216000
+    "startMs": 215000,
+    "endMs": 220000
   },
   {
     "musicId": 11820,
     "difficulty": "master",
     "id": "8ac62b57-e03f-4d7d-ae7a-3690a8f1f419",
     "name": "二阶段尾杀前半",
-    "startMs": 237000,
-    "endMs": 248000
+    "startMs": 238000,
+    "endMs": 251000
   },
   {
     "musicId": 11820,
     "difficulty": "master",
     "id": "0172c9bc-0a0d-4dcd-b52b-e198d4de635e",
     "name": "二阶段尾杀仅圈",
-    "startMs": 248000,
-    "endMs": 253000
+    "startMs": 249000,
+    "endMs": 256000
   },
   {
     "musicId": 11820,
     "difficulty": "master",
     "id": "18eaf5a2-2903-42ab-9de1-bee64406421b",
     "name": "二阶段完整尾杀",
-    "startMs": 237000,
-    "endMs": 256000
+    "startMs": 238000,
+    "endMs": 257000
   }
 ]

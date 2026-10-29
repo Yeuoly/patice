@@ -1,0 +1,34 @@
+[
+  {
+    "musicId": 11753,
+    "difficulty": "master",
+    "id": "587fa80a-c735-43c7-9342-84718511ad03",
+    "name": "白潘和ow段",
+    "startMs": 58000,
+    "endMs": 76000
+  },
+  {
+    "musicId": 11753,
+    "difficulty": "master",
+    "id": "8e3c3b33-e574-45f2-9108-84001830c8b9",
+    "name": "S2",
+    "startMs": 98000,
+    "endMs": 119000
+  },
+  {
+    "musicId": 11753,
+    "difficulty": "master",
+    "id": "c6401ae3-6e87-41d8-9159-d6eceaa1276f",
+    "name": "S3",
+    "startMs": 124000,
+    "endMs": 147000
+  },
+  {
+    "musicId": 11753,
+    "difficulty": "master",
+    "id": "636f3f80-18ba-4759-ab84-cc134e24d6c7",
+    "name": "S4",
+    "startMs": 147000,
+    "endMs": 158000
+  }
+]

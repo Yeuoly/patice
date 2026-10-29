@@ -1,0 +1,42 @@
+[
+  {
+    "musicId": 11394,
+    "difficulty": "master",
+    "id": "be409c02-cfa0-4ba5-8ec3-6151bd04495e",
+    "name": "轴交互",
+    "startMs": 41000,
+    "endMs": 46000
+  },
+  {
+    "musicId": 11394,
+    "difficulty": "master",
+    "id": "8baf0810-2ce3-4fc1-a1a5-00f7d45060b9",
+    "name": "S1",
+    "startMs": 55000,
+    "endMs": 63000
+  },
+  {
+    "musicId": 11394,
+    "difficulty": "master",
+    "id": "ba4aa661-e1a8-4a32-97e4-09fe4053645f",
+    "name": "S2",
+    "startMs": 85000,
+    "endMs": 105000
+  },
+  {
+    "musicId": 11394,
+    "difficulty": "master",
+    "id": "d64e3be5-e089-4797-912a-cb644e94f287",
+    "name": "S3",
+    "startMs": 107000,
+    "endMs": 115000
+  },
+  {
+    "musicId": 11394,
+    "difficulty": "master",
+    "id": "be834212-800c-4760-bcbe-3a3cdd5d7b0e",
+    "name": "S4",
+    "startMs": 119000,
+    "endMs": 145000
+  }
+]

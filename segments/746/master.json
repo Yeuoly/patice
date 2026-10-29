@@ -1,0 +1,50 @@
+[
+  {
+    "musicId": 746,
+    "difficulty": "master",
+    "id": "d23f4458-b30c-4fd5-b444-f6e7c62e8065",
+    "name": "S1",
+    "startMs": 17000,
+    "endMs": 31000
+  },
+  {
+    "musicId": 746,
+    "difficulty": "master",
+    "id": "f5a395de-beba-4267-ba7d-9224e738cde8",
+    "name": "S2",
+    "startMs": 38000,
+    "endMs": 46000
+  },
+  {
+    "musicId": 746,
+    "difficulty": "master",
+    "id": "704fa143-f0e2-4e1f-9b98-746d9d3e5489",
+    "name": "S3",
+    "startMs": 46000,
+    "endMs": 57000
+  },
+  {
+    "musicId": 746,
+    "difficulty": "master",
+    "id": "6e42d507-6bb4-452a-a87d-c5407e0ed43f",
+    "name": "S4",
+    "startMs": 74000,
+    "endMs": 89000
+  },
+  {
+    "musicId": 746,
+    "difficulty": "master",
+    "id": "353ff151-7f3e-40bd-bb16-2716122ae9db",
+    "name": "等号闪电",
+    "startMs": 106000,
+    "endMs": 112000
+  },
+  {
+    "musicId": 746,
+    "difficulty": "master",
+    "id": "e75a0713-4c5b-489b-a610-0a4554b0c1c1",
+    "name": "S5",
+    "startMs": 122000,
+    "endMs": 140000
+  }
+]

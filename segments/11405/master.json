@@ -14,5 +14,21 @@
     "name": "S2",
     "startMs": 139000,
     "endMs": 154000
+  },
+  {
+    "musicId": 11405,
+    "difficulty": "master",
+    "id": "522f0d0d-c0b9-4894-bf9a-9ff259ddc106",
+    "name": "跳拍交互",
+    "startMs": 68000,
+    "endMs": 75000
+  },
+  {
+    "musicId": 11405,
+    "difficulty": "master",
+    "id": "144e002a-7345-4183-af97-baa36f6e079d",
+    "name": "xxxxx xxx biu",
+    "startMs": 126000,
+    "endMs": 132000
   }
 ]

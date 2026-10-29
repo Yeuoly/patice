@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 643,
+    "difficulty": "master",
+    "id": "0640d448-b5fa-4ddc-acfe-4de8950b5be6",
+    "name": "三叉戟",
+    "startMs": 45000,
+    "endMs": 60000
+  },
+  {
+    "musicId": 643,
+    "difficulty": "master",
+    "id": "5893b68e-18ec-4df9-b0b0-a53da2514a2a",
+    "name": "47 ",
+    "startMs": 58000,
+    "endMs": 63000
+  }
+]

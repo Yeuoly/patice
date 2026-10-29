@@ -1,0 +1,50 @@
+[
+  {
+    "musicId": 11311,
+    "difficulty": "master",
+    "id": "db2a8e3f-3199-4573-82d6-322b20c7a02f",
+    "name": "S1",
+    "startMs": 56000,
+    "endMs": 63000
+  },
+  {
+    "musicId": 11311,
+    "difficulty": "master",
+    "id": "3c6b3c14-c56f-48ca-9609-fef30d75b039",
+    "name": "S2",
+    "startMs": 68000,
+    "endMs": 91000
+  },
+  {
+    "musicId": 11311,
+    "difficulty": "master",
+    "id": "f8f519b2-c83c-4770-9224-867346a53099",
+    "name": "S3",
+    "startMs": 88000,
+    "endMs": 110000
+  },
+  {
+    "musicId": 11311,
+    "difficulty": "master",
+    "id": "fac319ec-99eb-4c09-8cde-f03c179a5a7b",
+    "name": "扫扫扫扫高速交互",
+    "startMs": 105000,
+    "endMs": 112000
+  },
+  {
+    "musicId": 11311,
+    "difficulty": "master",
+    "id": "50f5ac9f-c4e4-44fd-a670-edd778b99a74",
+    "name": "S4",
+    "startMs": 112000,
+    "endMs": 126000
+  },
+  {
+    "musicId": 11311,
+    "difficulty": "master",
+    "id": "a96be0eb-00f4-4578-87f9-54b2e3c3858a",
+    "name": "守守の守守",
+    "startMs": 123000,
+    "endMs": 131000
+  }
+]

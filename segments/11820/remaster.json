@@ -4,55 +4,55 @@
     "difficulty": "remaster",
     "id": "cf234b63-da22-49aa-83f2-eb50e2619168",
     "name": "一阶段三扫段",
-    "startMs": 73000,
-    "endMs": 79000
+    "startMs": 75000,
+    "endMs": 83000
   },
   {
     "musicId": 11820,
     "difficulty": "remaster",
     "id": "e1d87e84-343f-49a4-babe-929f20968daa",
     "name": "一阶段副歌",
-    "startMs": 103000,
-    "endMs": 130000
+    "startMs": 106000,
+    "endMs": 134000
   },
   {
     "musicId": 11820,
     "difficulty": "remaster",
     "id": "1d2fef8c-34a2-47d8-966c-c1c15b878398",
     "name": "一阶段尾杀",
-    "startMs": 141000,
-    "endMs": 153000
+    "startMs": 142000,
+    "endMs": 156000
   },
   {
     "musicId": 11820,
     "difficulty": "remaster",
     "id": "8b538c01-ee74-49a8-a9f1-f4d3b5c380a7",
     "name": "对拍",
-    "startMs": 222000,
-    "endMs": 228000
+    "startMs": 225000,
+    "endMs": 231000
   },
   {
     "musicId": 11820,
     "difficulty": "remaster",
     "id": "f63d4c9d-24cc-41c9-a6c4-f0fa62503be1",
     "name": "二阶段掐密交互",
-    "startMs": 242000,
-    "endMs": 246000
+    "startMs": 244000,
+    "endMs": 249000
   },
   {
     "musicId": 11820,
     "difficulty": "remaster",
     "id": "b8047132-2c8c-439f-832f-5d144e1e8dbc",
     "name": "二阶段最后大圈",
-    "startMs": 248000,
-    "endMs": 253000
+    "startMs": 250000,
+    "endMs": 256000
   },
   {
     "musicId": 11820,
     "difficulty": "remaster",
     "id": "f18fd89d-8f14-4dd4-bd09-4612ba77d507",
     "name": "二阶段完整尾杀",
-    "startMs": 236000,
+    "startMs": 238000,
     "endMs": 256000
   }
 ]
