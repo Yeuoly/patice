@@ -1,0 +1,58 @@
+[
+  {
+    "musicId": 580,
+    "difficulty": "master",
+    "id": "c99bdaa0-0eeb-4462-8905-97f6cb709de6",
+    "name": "摇啊摇",
+    "startMs": 11000,
+    "endMs": 21000
+  },
+  {
+    "musicId": 580,
+    "difficulty": "master",
+    "id": "3e7e5e97-ac07-4479-873d-45659b81856e",
+    "name": "换手摇",
+    "startMs": 28000,
+    "endMs": 32000
+  },
+  {
+    "musicId": 580,
+    "difficulty": "master",
+    "id": "0af5d1fd-5580-4525-afbc-3c2afc56c625",
+    "name": "S1",
+    "startMs": 32000,
+    "endMs": 42000
+  },
+  {
+    "musicId": 580,
+    "difficulty": "master",
+    "id": "14afa8b0-79f8-41e6-aeea-dc6b5d619caa",
+    "name": "跳拍星星",
+    "startMs": 52000,
+    "endMs": 62000
+  },
+  {
+    "musicId": 580,
+    "difficulty": "master",
+    "id": "938249ea-9ef6-42f4-aed0-bbb4a8393816",
+    "name": "跳拍星星2",
+    "startMs": 61000,
+    "endMs": 68000
+  },
+  {
+    "musicId": 580,
+    "difficulty": "master",
+    "id": "744ecd50-e47c-4dbf-a34a-41c03e533cb3",
+    "name": "S2",
+    "startMs": 76000,
+    "endMs": 86000
+  },
+  {
+    "musicId": 580,
+    "difficulty": "master",
+    "id": "747a5eb5-7dcd-4904-b5b0-f2743f23d4f2",
+    "name": "S3",
+    "startMs": 129000,
+    "endMs": 136000
+  }
+]

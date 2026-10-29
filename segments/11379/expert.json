@@ -1,0 +1,50 @@
+[
+  {
+    "musicId": 11379,
+    "difficulty": "expert",
+    "id": "607396be-be10-4fe6-8e3d-aade92ffab73",
+    "name": "强制换手",
+    "startMs": 26000,
+    "endMs": 33000
+  },
+  {
+    "musicId": 11379,
+    "difficulty": "expert",
+    "id": "a0d5033f-8caa-40e3-bb3f-e7fd4e6953b8",
+    "name": "S1",
+    "startMs": 96000,
+    "endMs": 120000
+  },
+  {
+    "musicId": 11379,
+    "difficulty": "expert",
+    "id": "660f284a-0cfc-4943-8041-56930d068f85",
+    "name": "S2",
+    "startMs": 108000,
+    "endMs": 117000
+  },
+  {
+    "musicId": 11379,
+    "difficulty": "expert",
+    "id": "0c0e3131-a0cb-4fbb-a0d0-48fd21224405",
+    "name": "完整尾杀",
+    "startMs": 127000,
+    "endMs": 144000
+  },
+  {
+    "musicId": 11379,
+    "difficulty": "expert",
+    "id": "1eafa58e-7731-41e6-95ec-5a750b11a5cb",
+    "name": "四合院",
+    "startMs": 127000,
+    "endMs": 134000
+  },
+  {
+    "musicId": 11379,
+    "difficulty": "expert",
+    "id": "057bc950-1fc3-4db9-92c0-8b1f539c410a",
+    "name": "侧边扫键",
+    "startMs": 133000,
+    "endMs": 137000
+  }
+]

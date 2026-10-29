@@ -6,5 +6,45 @@
     "name": "海底船",
     "startMs": 116000,
     "endMs": 131000
+  },
+  {
+    "musicId": 705,
+    "difficulty": "master",
+    "id": "4503c42e-7d8b-4f5e-b59f-3b2d9c11e1b6",
+    "name": "只是因为好玩",
+    "startMs": 39000,
+    "endMs": 51000
+  },
+  {
+    "musicId": 705,
+    "difficulty": "master",
+    "id": "a8a51723-441c-471e-b625-68caf3d75091",
+    "name": "S1",
+    "startMs": 72000,
+    "endMs": 77000
+  },
+  {
+    "musicId": 705,
+    "difficulty": "master",
+    "id": "65b6c358-3c24-48f8-9320-4f9d7bbecab2",
+    "name": "管子阵",
+    "startMs": 79000,
+    "endMs": 90000
+  },
+  {
+    "musicId": 705,
+    "difficulty": "master",
+    "id": "6495405f-e355-4320-889b-0c30d7f8c7f9",
+    "name": "Cycle + 轴交互",
+    "startMs": 90000,
+    "endMs": 103000
+  },
+  {
+    "musicId": 705,
+    "difficulty": "master",
+    "id": "1110bd2d-1fe9-480a-825b-6d73efb434e5",
+    "name": "更好玩",
+    "startMs": 103000,
+    "endMs": 117000
   }
 ]

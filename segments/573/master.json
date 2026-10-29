@@ -4,23 +4,31 @@
     "difficulty": "master",
     "id": "a96ceebb-c96a-42ee-bf79-669d8f4611d8",
     "name": "蹭蹭蹭",
-    "startMs": 12000,
-    "endMs": 24000
+    "startMs": 15000,
+    "endMs": 29000
   },
   {
     "musicId": 573,
     "difficulty": "master",
     "id": "b8da6232-75d7-4fdd-81a7-e20cd384cef8",
     "name": "交互段",
-    "startMs": 91000,
-    "endMs": 104000
+    "startMs": 94000,
+    "endMs": 107000
   },
   {
     "musicId": 573,
     "difficulty": "master",
     "id": "e4742bb8-5c73-4d1f-9f93-45122cfacc25",
     "name": "卡手",
-    "startMs": 104000,
-    "endMs": 109000
+    "startMs": 107000,
+    "endMs": 114000
+  },
+  {
+    "musicId": 573,
+    "difficulty": "master",
+    "id": "62ee899c-b37c-4745-bca9-8f8797dccfe0",
+    "name": "最后的武士",
+    "startMs": 118000,
+    "endMs": 125000
   }
 ]

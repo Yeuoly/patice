@@ -1,0 +1,42 @@
+[
+  {
+    "musicId": 11418,
+    "difficulty": "master",
+    "id": "ee6fb0fd-70d7-4c02-929d-25345b52c5f9",
+    "name": "跳拍",
+    "startMs": 37000,
+    "endMs": 43000
+  },
+  {
+    "musicId": 11418,
+    "difficulty": "master",
+    "id": "44857bd2-9304-410a-8f52-f6732afcecd4",
+    "name": "S1",
+    "startMs": 44000,
+    "endMs": 59000
+  },
+  {
+    "musicId": 11418,
+    "difficulty": "master",
+    "id": "04ba77bc-dad7-4f7a-b874-5a812a57bd78",
+    "name": "S2",
+    "startMs": 64000,
+    "endMs": 69000
+  },
+  {
+    "musicId": 11418,
+    "difficulty": "master",
+    "id": "85208dea-7fc6-4290-a9b3-380a9c0a684f",
+    "name": "S3",
+    "startMs": 78000,
+    "endMs": 85000
+  },
+  {
+    "musicId": 11418,
+    "difficulty": "master",
+    "id": "00d2fffe-7269-40c9-a393-c3a1c38b2969",
+    "name": "S4",
+    "startMs": 89000,
+    "endMs": 109000
+  }
+]

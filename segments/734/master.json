@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 734,
+    "difficulty": "master",
+    "id": "a5873a9f-d5b8-4d9d-8355-be8d36cb7675",
+    "name": "S1",
+    "startMs": 81000,
+    "endMs": 86000
+  },
+  {
+    "musicId": 734,
+    "difficulty": "master",
+    "id": "63b9df0e-581a-433c-b8de-0af49606b4db",
+    "name": "健身来的",
+    "startMs": 86000,
+    "endMs": 96000
+  },
+  {
+    "musicId": 734,
+    "difficulty": "master",
+    "id": "198eb3d7-61c7-47e0-a114-983f76c6f8eb",
+    "name": "海底谭",
+    "startMs": 99000,
+    "endMs": 108000
+  }
+]

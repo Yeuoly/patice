@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 834,
+    "difficulty": "expert",
+    "id": "88624ba3-3c89-4be3-aab4-ceee4537a754",
+    "name": "轴交互",
+    "startMs": 21000,
+    "endMs": 25000
+  },
+  {
+    "musicId": 834,
+    "difficulty": "expert",
+    "id": "f77dd5f1-c535-47bb-a983-8ad3496f6195",
+    "name": "扫键",
+    "startMs": 63000,
+    "endMs": 73000
+  },
+  {
+    "musicId": 834,
+    "difficulty": "expert",
+    "id": "9ecfa7f5-d611-4dc1-8314-2eb30fd3f4ca",
+    "name": "尾杀",
+    "startMs": 131000,
+    "endMs": 144000
+  }
+]

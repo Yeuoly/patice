@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 11527,
+    "difficulty": "master",
+    "id": "d41311c6-420a-4b49-b86b-2f6168957f40",
+    "name": "啊啊啊",
+    "startMs": 37000,
+    "endMs": 40000
+  },
+  {
+    "musicId": 11527,
+    "difficulty": "master",
+    "id": "a5030af0-e967-4596-b388-afb452a07d03",
+    "name": "W",
+    "startMs": 101000,
+    "endMs": 102000
+  },
+  {
+    "musicId": 11527,
+    "difficulty": "master",
+    "id": "fd16aa52-dff9-440e-acde-0757fad9ef60",
+    "name": "S1",
+    "startMs": 124000,
+    "endMs": 136000
+  }
+]
