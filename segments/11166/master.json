@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11166,
+    "difficulty": "master",
+    "id": "10ec7187-bae9-51b2-ae02-6228008a9aa7",
+    "name": "穿心",
+    "startMs": 40115,
+    "endMs": 45250
+  },
+  {
+    "musicId": 11166,
+    "difficulty": "master",
+    "id": "5b1339d5-9726-5104-bc63-c99d0ec9b752",
+    "name": "海底谭",
+    "startMs": 112291,
+    "endMs": 115662
+  }
+]

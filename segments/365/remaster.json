@@ -1,0 +1,34 @@
+[
+  {
+    "musicId": 365,
+    "difficulty": "remaster",
+    "id": "cd183fd5-dc32-5453-a462-4e8ee7967882",
+    "name": "S1",
+    "startMs": 51700,
+    "endMs": 59425
+  },
+  {
+    "musicId": 365,
+    "difficulty": "remaster",
+    "id": "73e065a2-1a82-4a34-ac27-3da45e437238",
+    "name": "S2",
+    "startMs": 63000,
+    "endMs": 65000
+  },
+  {
+    "musicId": 365,
+    "difficulty": "remaster",
+    "id": "719c4c32-fd60-4099-8f68-09bfcf51d07d",
+    "name": "S3",
+    "startMs": 100000,
+    "endMs": 105000
+  },
+  {
+    "musicId": 365,
+    "difficulty": "remaster",
+    "id": "a8a3f2bb-5e1d-45af-ac4c-09f5dbab1111",
+    "name": "尾杀",
+    "startMs": 113000,
+    "endMs": 121000
+  }
+]

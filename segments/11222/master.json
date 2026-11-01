@@ -1,0 +1,42 @@
+[
+  {
+    "musicId": 11222,
+    "difficulty": "master",
+    "id": "42745702-44a5-4262-96cb-e16f7cafeba2",
+    "name": "S1",
+    "startMs": 27000,
+    "endMs": 38000
+  },
+  {
+    "musicId": 11222,
+    "difficulty": "master",
+    "id": "6d8624a2-de25-443f-a07d-f26d8d7844e7",
+    "name": "S2",
+    "startMs": 50000,
+    "endMs": 59000
+  },
+  {
+    "musicId": 11222,
+    "difficulty": "master",
+    "id": "5bdd6e3e-21b2-40be-9952-785805556085",
+    "name": "S3",
+    "startMs": 73000,
+    "endMs": 83000
+  },
+  {
+    "musicId": 11222,
+    "difficulty": "master",
+    "id": "8a7156ce-a7b3-4a93-941c-2ddda523d626",
+    "name": "BREaK! BREaK! BREaK!",
+    "startMs": 97000,
+    "endMs": 115000
+  },
+  {
+    "musicId": 11222,
+    "difficulty": "master",
+    "id": "a2057399-52a2-487a-965a-d8c6bf4049f5",
+    "name": "尾杀",
+    "startMs": 132000,
+    "endMs": 142000
+  }
+]

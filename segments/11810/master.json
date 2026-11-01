@@ -1,0 +1,42 @@
+[
+  {
+    "musicId": 11810,
+    "difficulty": "master",
+    "id": "e5dc4bec-3412-4815-b880-077408458197",
+    "name": "S1",
+    "startMs": 83000,
+    "endMs": 92000
+  },
+  {
+    "musicId": 11810,
+    "difficulty": "master",
+    "id": "4a5b7ee8-1d40-4e22-93b4-a7bb084ad4a8",
+    "name": "S2",
+    "startMs": 96000,
+    "endMs": 106000
+  },
+  {
+    "musicId": 11810,
+    "difficulty": "master",
+    "id": "f376afba-05e0-425b-ab6d-29923b7fd6af",
+    "name": "S4",
+    "startMs": 106000,
+    "endMs": 109000
+  },
+  {
+    "musicId": 11810,
+    "difficulty": "master",
+    "id": "2317fd56-f4e2-4d84-9103-3a80b32b78b4",
+    "name": "绝赞海",
+    "startMs": 120000,
+    "endMs": 127000
+  },
+  {
+    "musicId": 11810,
+    "difficulty": "master",
+    "id": "fc7dc1dc-cac5-4bf8-83b4-f73be84cb21b",
+    "name": "尾杀",
+    "startMs": 128000,
+    "endMs": 133000
+  }
+]

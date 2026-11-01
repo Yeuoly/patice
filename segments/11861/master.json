@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11861,
+    "difficulty": "master",
+    "id": "c88921cf-3abc-5d3d-9710-0ebb620adf57",
+    "name": "S1",
+    "startMs": 99023,
+    "endMs": 103536
+  },
+  {
+    "musicId": 11861,
+    "difficulty": "master",
+    "id": "117e0963-551e-5e26-9088-5de4f197cf24",
+    "name": "S2",
+    "startMs": 118370,
+    "endMs": 120740
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11956,
+    "difficulty": "master",
+    "id": "b1a43eb2-d5dd-5942-8777-fab24dac8179",
+    "name": "爽",
+    "startMs": 40539,
+    "endMs": 50034
+  },
+  {
+    "musicId": 11956,
+    "difficulty": "master",
+    "id": "c3c08d13-cc4f-5f4b-8d8e-bef86c9731ff",
+    "name": "S1",
+    "startMs": 113512,
+    "endMs": 118953
+  }
+]

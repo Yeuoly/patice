@@ -1,0 +1,50 @@
+[
+  {
+    "musicId": 100327,
+    "difficulty": "utage",
+    "id": "a1980c09-acb8-5da5-9c27-9ac6a7492b25",
+    "name": "纵连",
+    "startMs": 4150,
+    "endMs": 47750
+  },
+  {
+    "musicId": 100327,
+    "difficulty": "utage",
+    "id": "bc44aa02-669e-5eef-b7e6-27d3687453a0",
+    "name": "S1",
+    "startMs": 56950,
+    "endMs": 61850
+  },
+  {
+    "musicId": 100327,
+    "difficulty": "utage",
+    "id": "b51c2e94-dea1-5388-ab9d-553fdd18a5a9",
+    "name": "S2",
+    "startMs": 66550,
+    "endMs": 83450
+  },
+  {
+    "musicId": 100327,
+    "difficulty": "utage",
+    "id": "9ff5117b-ebb8-5c2d-a5a4-552fb20c592f",
+    "name": "S3",
+    "startMs": 100150,
+    "endMs": 104250
+  },
+  {
+    "musicId": 100327,
+    "difficulty": "utage",
+    "id": "ade080ce-e981-503c-81ff-88c2c6daa21d",
+    "name": "S4",
+    "startMs": 109750,
+    "endMs": 141050
+  },
+  {
+    "musicId": 100327,
+    "difficulty": "utage",
+    "id": "fd5958db-e2f4-5db2-9e49-ac5a7adc6dc2",
+    "name": "双押纵连",
+    "startMs": 141750,
+    "endMs": 143850
+  }
+]

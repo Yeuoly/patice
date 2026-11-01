@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 803,
+    "difficulty": "remaster",
+    "id": "15a1bcc7-8127-4182-b3e8-ecf7c5a52db7",
+    "name": "S1",
+    "startMs": 23000,
+    "endMs": 44000
+  },
+  {
+    "musicId": 803,
+    "difficulty": "remaster",
+    "id": "25881ea0-5185-5e77-9fff-f1460baa1f53",
+    "name": "尾杀",
+    "startMs": 102754,
+    "endMs": 108761
+  }
+]

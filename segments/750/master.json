@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 750,
+    "difficulty": "master",
+    "id": "1874868d-284b-527f-bb61-2855c6de0f47",
+    "name": "换位交互",
+    "startMs": 94450,
+    "endMs": 104350
+  },
+  {
+    "musicId": 750,
+    "difficulty": "master",
+    "id": "00f452e0-0e16-560f-8794-26467e5f4e47",
+    "name": "尾杀",
+    "startMs": 128050,
+    "endMs": 136150
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 11491,
+    "difficulty": "master",
+    "id": "90d48696-6d56-57a4-8f9e-ea960504b52d",
+    "name": "S1",
+    "startMs": 43755,
+    "endMs": 46770
+  },
+  {
+    "musicId": 11491,
+    "difficulty": "master",
+    "id": "1d1334a5-a28a-5c5e-9e68-df6d9008b2ac",
+    "name": "扫键",
+    "startMs": 50099,
+    "endMs": 53906
+  },
+  {
+    "musicId": 11491,
+    "difficulty": "master",
+    "id": "2af3c367-e859-5ef7-8302-9f132c660d3f",
+    "name": "S2",
+    "startMs": 110842,
+    "endMs": 114121
+  }
+]

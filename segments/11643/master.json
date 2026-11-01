@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 11643,
+    "difficulty": "master",
+    "id": "05dc8c3c-8154-59d1-aefb-d856ebdcc657",
+    "name": "叠滑",
+    "startMs": 22700,
+    "endMs": 24634
+  },
+  {
+    "musicId": 11643,
+    "difficulty": "master",
+    "id": "bdd8e40b-d107-505b-a27f-d0cf29e370ab",
+    "name": "穿心",
+    "startMs": 117577,
+    "endMs": 120398
+  },
+  {
+    "musicId": 11643,
+    "difficulty": "master",
+    "id": "0ef091de-0bb6-5d89-b970-1205de8025a1",
+    "name": "穿心",
+    "startMs": 122601,
+    "endMs": 125127
+  }
+]

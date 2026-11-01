@@ -1,0 +1,34 @@
+[
+  {
+    "musicId": 11662,
+    "difficulty": "master",
+    "id": "ab57bf5b-11b1-510b-8449-904ae2db954b",
+    "name": "扫键",
+    "startMs": 12915,
+    "endMs": 17402
+  },
+  {
+    "musicId": 11662,
+    "difficulty": "master",
+    "id": "37814e21-7408-552a-98da-7a85195b7830",
+    "name": "扫键",
+    "startMs": 21263,
+    "endMs": 25228
+  },
+  {
+    "musicId": 11662,
+    "difficulty": "master",
+    "id": "76af1640-2df0-5fb3-83d1-ca1a99706f2e",
+    "name": "尾杀1",
+    "startMs": 146159,
+    "endMs": 151218
+  },
+  {
+    "musicId": 11662,
+    "difficulty": "master",
+    "id": "24ec9700-fed0-52d5-96df-37d084747a8e",
+    "name": "尾杀2",
+    "startMs": 150318,
+    "endMs": 154351
+  }
+]

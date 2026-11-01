@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11778,
+    "difficulty": "remaster",
+    "id": "b445b200-5f6e-5331-ba2c-5d1c8808cba6",
+    "name": "叠滑",
+    "startMs": 21565,
+    "endMs": 23794
+  },
+  {
+    "musicId": 11778,
+    "difficulty": "remaster",
+    "id": "fef06c09-9541-5b3b-9444-bf71cecca1d1",
+    "name": "轴交互",
+    "startMs": 91460,
+    "endMs": 98285
+  }
+]

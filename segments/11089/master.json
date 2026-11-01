@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11089,
+    "difficulty": "master",
+    "id": "9fd2f85b-165b-5abe-b35e-14d6871b3672",
+    "name": "S1",
+    "startMs": 67486,
+    "endMs": 70547
+  },
+  {
+    "musicId": 11089,
+    "difficulty": "master",
+    "id": "82d276fe-e4e8-5b0c-9fff-e6d1fe361486",
+    "name": "穿心",
+    "startMs": 108164,
+    "endMs": 110970
+  }
+]

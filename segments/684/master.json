@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 684,
+    "difficulty": "master",
+    "id": "43e7c38c-1f0e-5e8e-9016-25ee251670bb",
+    "name": "S1",
+    "startMs": 6017,
+    "endMs": 12250
+  },
+  {
+    "musicId": 684,
+    "difficulty": "master",
+    "id": "c8309d23-2033-5999-b222-ef94e7f1d8d9",
+    "name": "换位交互",
+    "startMs": 94517,
+    "endMs": 103083
+  }
+]

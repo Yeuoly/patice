@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11946,
+    "difficulty": "master",
+    "id": "aa5ab133-43ac-586d-b7ad-665515d3c961",
+    "name": "S1",
+    "startMs": 98350,
+    "endMs": 102188
+  },
+  {
+    "musicId": 11946,
+    "difficulty": "master",
+    "id": "784e45bb-a982-5cfd-96c6-77ca99a06ff2",
+    "name": "轴交互",
+    "startMs": 139850,
+    "endMs": 142688
+  }
+]

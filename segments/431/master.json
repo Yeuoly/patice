@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 431,
+    "difficulty": "master",
+    "id": "ee09b077-0c39-54b9-a055-73a1ab0d551c",
+    "name": "穿心",
+    "startMs": 27004,
+    "endMs": 41361
+  },
+  {
+    "musicId": 431,
+    "difficulty": "master",
+    "id": "aea19028-9295-530d-b950-c92633825be1",
+    "name": "叠滑",
+    "startMs": 118362,
+    "endMs": 122843
+  }
+]

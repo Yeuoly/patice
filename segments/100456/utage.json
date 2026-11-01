@@ -1,0 +1,34 @@
+[
+  {
+    "musicId": 100456,
+    "difficulty": "utage",
+    "id": "3a756681-e164-54ed-b802-4c46a90e01b5",
+    "name": "片手交互",
+    "startMs": 32343,
+    "endMs": 44552
+  },
+  {
+    "musicId": 100456,
+    "difficulty": "utage",
+    "id": "9ebe6876-bc5e-5c54-a5ce-0b4498f860fb",
+    "name": "位移交互",
+    "startMs": 50436,
+    "endMs": 67257
+  },
+  {
+    "musicId": 100456,
+    "difficulty": "utage",
+    "id": "94669d69-5013-5c63-8418-ea17ad3342eb",
+    "name": "圈",
+    "startMs": 82366,
+    "endMs": 84330
+  },
+  {
+    "musicId": 100456,
+    "difficulty": "utage",
+    "id": "c1efdf7a-8c65-5863-b391-86e2b6ae3440",
+    "name": "尾杀",
+    "startMs": 108973,
+    "endMs": 115161
+  }
+]

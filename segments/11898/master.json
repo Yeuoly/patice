@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 11898,
+    "difficulty": "master",
+    "id": "36234575-f7de-50e6-8ea6-52c580b4f496",
+    "name": "双押扫键",
+    "startMs": 104350,
+    "endMs": 115071
+  },
+  {
+    "musicId": 11898,
+    "difficulty": "master",
+    "id": "efed67b0-5140-52b6-8333-baed3c676863",
+    "name": "S1",
+    "startMs": 114350,
+    "endMs": 119893
+  },
+  {
+    "musicId": 11898,
+    "difficulty": "master",
+    "id": "369d6cd6-ee6a-5fc4-8874-b3d7927336bf",
+    "name": "尾杀",
+    "startMs": 135000,
+    "endMs": 148000
+  }
+]

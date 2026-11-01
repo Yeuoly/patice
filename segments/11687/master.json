@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11687,
+    "difficulty": "master",
+    "id": "9c60e4ef-9e68-56d3-9d1c-ca52d7639392",
+    "name": "S1",
+    "startMs": 44451,
+    "endMs": 48378
+  },
+  {
+    "musicId": 11687,
+    "difficulty": "master",
+    "id": "979b2d67-2f46-564f-9932-2144473d8771",
+    "name": "尾杀",
+    "startMs": 143432,
+    "endMs": 149175
+  }
+]

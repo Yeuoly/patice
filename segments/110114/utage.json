@@ -1,0 +1,34 @@
+[
+  {
+    "musicId": 110114,
+    "difficulty": "utage",
+    "id": "c73be054-0996-521e-b421-40daadae1477",
+    "name": "换位纵连",
+    "startMs": 8950,
+    "endMs": 59850
+  },
+  {
+    "musicId": 110114,
+    "difficulty": "utage",
+    "id": "0749bb64-8b81-532a-92a3-72e91f09944e",
+    "name": "双押纵连",
+    "startMs": 58950,
+    "endMs": 72970
+  },
+  {
+    "musicId": 110114,
+    "difficulty": "utage",
+    "id": "2a887209-4f19-5949-a88a-a9932d5c7483",
+    "name": "纵连",
+    "startMs": 72150,
+    "endMs": 92410
+  },
+  {
+    "musicId": 110114,
+    "difficulty": "utage",
+    "id": "395b7e0a-975d-507d-b245-c5808dd79fe5",
+    "name": "纵连",
+    "startMs": 88950,
+    "endMs": 111850
+  }
+]

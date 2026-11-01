@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 581,
+    "difficulty": "master",
+    "id": "89d20c1e-b820-5cfc-a896-844ba43e409f",
+    "name": "换位交互",
+    "startMs": 26159,
+    "endMs": 29532
+  },
+  {
+    "musicId": 581,
+    "difficulty": "master",
+    "id": "88c8e7cb-d911-5074-a592-72ca2d5af980",
+    "name": "S1",
+    "startMs": 41478,
+    "endMs": 47803
+  },
+  {
+    "musicId": 581,
+    "difficulty": "master",
+    "id": "45d4fea2-5bf5-5800-95fd-c0605363aaed",
+    "name": "轴交互",
+    "startMs": 96690,
+    "endMs": 100064
+  }
+]

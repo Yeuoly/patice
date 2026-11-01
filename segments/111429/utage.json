@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 111429,
+    "difficulty": "utage",
+    "id": "182d8bf8-0b4d-59d0-a3ba-6d3397bef2e4",
+    "name": "叠滑",
+    "startMs": 50142,
+    "endMs": 52379
+  },
+  {
+    "musicId": 111429,
+    "difficulty": "utage",
+    "id": "db82688a-7a8a-59b2-86cf-aa33a2fc5a28",
+    "name": "S1",
+    "startMs": 82518,
+    "endMs": 110597
+  }
+]

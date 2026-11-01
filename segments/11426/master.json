@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11426,
+    "difficulty": "master",
+    "id": "faf3071d-e03d-56be-860d-96c3c94c6bb2",
+    "name": "短长押",
+    "startMs": 63674,
+    "endMs": 73696
+  },
+  {
+    "musicId": 11426,
+    "difficulty": "master",
+    "id": "b99ce29a-4a9f-5598-b5f1-86263366816b",
+    "name": "S1",
+    "startMs": 74350,
+    "endMs": 81872
+  }
+]

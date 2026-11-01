@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 11318,
+    "difficulty": "master",
+    "id": "3781b1d8-d84d-5a31-9759-b25390df8359",
+    "name": "交互",
+    "startMs": 53398,
+    "endMs": 62631
+  },
+  {
+    "musicId": 11318,
+    "difficulty": "master",
+    "id": "80b34241-9ce6-52b7-b74e-46fb9608f6fe",
+    "name": "S1",
+    "startMs": 69826,
+    "endMs": 75171
+  },
+  {
+    "musicId": 11318,
+    "difficulty": "master",
+    "id": "291b15d7-5397-5ba2-b9d6-36fec90c29f2",
+    "name": "尾杀",
+    "startMs": 141255,
+    "endMs": 149456
+  }
+]

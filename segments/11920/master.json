@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11920,
+    "difficulty": "master",
+    "id": "29f43bb6-6340-508a-ab0f-8fcbb93ee3c1",
+    "name": "海底谭",
+    "startMs": 90735,
+    "endMs": 95788
+  },
+  {
+    "musicId": 11920,
+    "difficulty": "master",
+    "id": "b600d765-f1ec-548f-b3e3-d52b3ebdc032",
+    "name": "S1",
+    "startMs": 107658,
+    "endMs": 111019
+  }
+]

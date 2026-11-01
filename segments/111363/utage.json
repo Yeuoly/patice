@@ -1,0 +1,42 @@
+[
+  {
+    "musicId": 111363,
+    "difficulty": "utage",
+    "id": "7980357f-ece9-5ff1-915e-f124fec05931",
+    "name": "片手纵连",
+    "startMs": 14834,
+    "endMs": 27734
+  },
+  {
+    "musicId": 111363,
+    "difficulty": "utage",
+    "id": "863a8b1d-bbc3-5c53-a440-e5228b623c5d",
+    "name": "S1",
+    "startMs": 28769,
+    "endMs": 41282
+  },
+  {
+    "musicId": 111363,
+    "difficulty": "utage",
+    "id": "5a92fdc6-1d1c-5150-86cd-a8bbf6df55dc",
+    "name": "S2",
+    "startMs": 53544,
+    "endMs": 78831
+  },
+  {
+    "musicId": 111363,
+    "difficulty": "utage",
+    "id": "f6460769-9439-5cfb-85fc-82ca00fad48d",
+    "name": "S3",
+    "startMs": 92544,
+    "endMs": 117153
+  },
+  {
+    "musicId": 111363,
+    "difficulty": "utage",
+    "id": "c6732802-0b5e-50bc-8a62-cd89d383b06a",
+    "name": "尾杀",
+    "startMs": 118576,
+    "endMs": 131282
+  }
+]

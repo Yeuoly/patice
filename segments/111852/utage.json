@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 111852,
+    "difficulty": "utage",
+    "id": "643400cb-1d2b-55d3-897c-43a66f5c4f27",
+    "name": "叠滑",
+    "startMs": 26350,
+    "endMs": 30062
+  },
+  {
+    "musicId": 111852,
+    "difficulty": "utage",
+    "id": "f29df221-dadd-5ef1-8a11-70ebf941a254",
+    "name": "海底谭",
+    "startMs": 47350,
+    "endMs": 49938
+  },
+  {
+    "musicId": 111852,
+    "difficulty": "utage",
+    "id": "c6f90674-8787-5aea-97c0-b3d1655bab8c",
+    "name": "尾杀",
+    "startMs": 113350,
+    "endMs": 119453
+  }
+]

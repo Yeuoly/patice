@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11155,
+    "difficulty": "master",
+    "id": "80fb3617-c5d0-54ac-8c08-73d3b828080c",
+    "name": "扫键",
+    "startMs": 42850,
+    "endMs": 45694
+  },
+  {
+    "musicId": 11155,
+    "difficulty": "master",
+    "id": "24cd7604-872e-5219-a062-006d4bc9fcd6",
+    "name": "轴交互",
+    "startMs": 67767,
+    "endMs": 73750
+  }
+]

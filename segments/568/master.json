@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 568,
+    "difficulty": "master",
+    "id": "90d7a5fc-c854-5027-9ded-aba2a8419045",
+    "name": "S1",
+    "startMs": 18550,
+    "endMs": 21212
+  },
+  {
+    "musicId": 568,
+    "difficulty": "master",
+    "id": "c413c0e2-1112-515a-a168-b27667a86af0",
+    "name": "纵连",
+    "startMs": 82150,
+    "endMs": 84175
+  }
+]

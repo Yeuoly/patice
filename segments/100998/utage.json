@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 100998,
+    "difficulty": "utage",
+    "id": "5b7c7bc3-534e-5d6b-a87f-45b6c2ee64d8",
+    "name": "叠滑",
+    "startMs": 51139,
+    "endMs": 70513
+  },
+  {
+    "musicId": 100998,
+    "difficulty": "utage",
+    "id": "e6bcc1e5-3003-5e60-8f25-21f31aa9d06c",
+    "name": "纵连",
+    "startMs": 107982,
+    "endMs": 112829
+  }
+]

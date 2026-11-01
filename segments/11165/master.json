@@ -1,0 +1,58 @@
+[
+  {
+    "musicId": 11165,
+    "difficulty": "master",
+    "id": "1946fa50-bce5-453f-908c-d5d2a4f86d00",
+    "name": "你知道的那段",
+    "startMs": 51000,
+    "endMs": 59000
+  },
+  {
+    "musicId": 11165,
+    "difficulty": "master",
+    "id": "244dbaee-d5f2-4987-b285-7cdf19eefc7d",
+    "name": "24分 + 如龙段",
+    "startMs": 63000,
+    "endMs": 75000
+  },
+  {
+    "musicId": 11165,
+    "difficulty": "master",
+    "id": "df653e44-9804-4165-9f49-baf575e28043",
+    "name": "S1",
+    "startMs": 76000,
+    "endMs": 79000
+  },
+  {
+    "musicId": 11165,
+    "difficulty": "master",
+    "id": "207baf92-c68c-572a-befe-ece3830be7e2",
+    "name": "交互",
+    "startMs": 78878,
+    "endMs": 85722
+  },
+  {
+    "musicId": 11165,
+    "difficulty": "master",
+    "id": "be7c3dd5-79c8-4849-af10-35c37317bfe0",
+    "name": "神秘分页",
+    "startMs": 87000,
+    "endMs": 92000
+  },
+  {
+    "musicId": 11165,
+    "difficulty": "master",
+    "id": "18933978-acdc-46ac-9270-6ede27b16ca5",
+    "name": "如龙",
+    "startMs": 92000,
+    "endMs": 94000
+  },
+  {
+    "musicId": 11165,
+    "difficulty": "master",
+    "id": "563a1791-78ae-458e-82c4-56335cc70db8",
+    "name": "24分 + 如龙段",
+    "startMs": 105000,
+    "endMs": 115000
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "musicId": 834,
+    "difficulty": "master",
+    "id": "827e6c23-50bb-50ae-92b0-818dc8d9c589",
+    "name": "紫潘圈",
+    "startMs": 72950,
+    "endMs": 80250
+  },
+  {
+    "musicId": 834,
+    "difficulty": "master",
+    "id": "9e54bc5e-9d28-563e-8af3-2319626fd35c",
+    "name": "S1",
+    "startMs": 82550,
+    "endMs": 84750
+  },
+  {
+    "musicId": 834,
+    "difficulty": "master",
+    "id": "a95aaa58-86b7-5738-b422-db9c228ca6d1",
+    "name": "如龙",
+    "startMs": 96950,
+    "endMs": 98650
+  },
+  {
+    "musicId": 834,
+    "difficulty": "master",
+    "id": "a40686cf-b434-5411-b476-b71858dc604e",
+    "name": "圈",
+    "startMs": 140017,
+    "endMs": 141717
+  }
+]

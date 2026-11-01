@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 385,
+    "difficulty": "master",
+    "id": "aaf37b9d-62a3-56a5-ad39-927c25bf357c",
+    "name": "S1",
+    "startMs": 75448,
+    "endMs": 82811
+  },
+  {
+    "musicId": 385,
+    "difficulty": "master",
+    "id": "bb7ac88c-242e-5a46-a960-b096f85d7b68",
+    "name": "叠滑",
+    "startMs": 98862,
+    "endMs": 105738
+  }
+]

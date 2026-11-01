@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11906,
+    "difficulty": "remaster",
+    "id": "e827527c-4cfa-5c9f-89e6-50f75e72d104",
+    "name": "S1",
+    "startMs": 75350,
+    "endMs": 81417
+  },
+  {
+    "musicId": 11906,
+    "difficulty": "remaster",
+    "id": "b94c9ffe-a3f5-5602-b63a-978137c8cc01",
+    "name": "海底谭",
+    "startMs": 109683,
+    "endMs": 113417
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 658,
+    "difficulty": "master",
+    "id": "f1c07be3-57e4-585e-b93d-da76e72724e1",
+    "name": "换位纵连",
+    "startMs": 47350,
+    "endMs": 53472
+  },
+  {
+    "musicId": 658,
+    "difficulty": "master",
+    "id": "cee8ce4f-3fe1-5977-9ac3-d5937a61ba1c",
+    "name": "S1",
+    "startMs": 87350,
+    "endMs": 92833
+  },
+  {
+    "musicId": 658,
+    "difficulty": "master",
+    "id": "af377151-4828-5e1d-8722-c7a688f7cf1c",
+    "name": "S2",
+    "startMs": 96017,
+    "endMs": 99750
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "musicId": 140227,
+    "difficulty": "utage",
+    "id": "86b5b866-1960-549e-a744-d1592d87816a",
+    "name": "变速圈",
+    "startMs": 8725,
+    "endMs": 16188
+  },
+  {
+    "musicId": 140227,
+    "difficulty": "utage",
+    "id": "6112c23d-f78a-518e-b980-e71925176fb6",
+    "name": "扫键",
+    "startMs": 49389,
+    "endMs": 53570
+  },
+  {
+    "musicId": 140227,
+    "difficulty": "utage",
+    "id": "2808b480-7e8e-537d-b5fe-3ec8fc2ef2f2",
+    "name": "圈",
+    "startMs": 89819,
+    "endMs": 91891
+  },
+  {
+    "musicId": 140227,
+    "difficulty": "utage",
+    "id": "98ae313a-330c-5409-8e35-52dcbb70fae7",
+    "name": "圈",
+    "startMs": 117475,
+    "endMs": 120133
+  }
+]

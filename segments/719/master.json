@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 719,
+    "difficulty": "master",
+    "id": "26ec03ad-3ebe-529c-9e21-1b7a7bdddfe2",
+    "name": "变速圈",
+    "startMs": 67521,
+    "endMs": 69822
+  },
+  {
+    "musicId": 719,
+    "difficulty": "master",
+    "id": "48d355aa-c063-58e0-aa57-8b0fd5345585",
+    "name": "S1",
+    "startMs": 73124,
+    "endMs": 76709
+  }
+]

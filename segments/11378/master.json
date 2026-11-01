@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 11378,
+    "difficulty": "master",
+    "id": "34fba2e5-cefa-5a73-ac84-b9655d3d179b",
+    "name": "位移交互",
+    "startMs": 36096,
+    "endMs": 39293
+  },
+  {
+    "musicId": 11378,
+    "difficulty": "master",
+    "id": "e2db4d56-993c-5e6d-bf97-45636127e0a4",
+    "name": "穿心",
+    "startMs": 47580,
+    "endMs": 50346
+  },
+  {
+    "musicId": 11378,
+    "difficulty": "master",
+    "id": "f05ac800-b437-5966-8d98-7b8deedda4b6",
+    "name": "S1",
+    "startMs": 110809,
+    "endMs": 113647
+  }
+]

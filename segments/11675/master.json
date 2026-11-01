@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11675,
+    "difficulty": "master",
+    "id": "f67a2652-a210-5c63-b797-904be933cf35",
+    "name": "双押纵连",
+    "startMs": 76150,
+    "endMs": 79950
+  },
+  {
+    "musicId": 11675,
+    "difficulty": "master",
+    "id": "139d020d-c5ce-5d43-ac97-e50aa420f1c7",
+    "name": "尾杀",
+    "startMs": 126875,
+    "endMs": 131375
+  }
+]

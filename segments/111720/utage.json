@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 111720,
+    "difficulty": "utage",
+    "id": "2f08b756-e4c0-5ef5-9e89-6ca61fe1878a",
+    "name": "三押交互",
+    "startMs": 6929,
+    "endMs": 17816
+  },
+  {
+    "musicId": 111720,
+    "difficulty": "utage",
+    "id": "4af2f62d-96aa-5d4b-8f29-5374c2ff553e",
+    "name": "三押交互",
+    "startMs": 107508,
+    "endMs": 121197
+  },
+  {
+    "musicId": 111720,
+    "difficulty": "utage",
+    "id": "de9b8622-42cc-51df-a706-98bd81bec455",
+    "name": "S1",
+    "startMs": 120455,
+    "endMs": 128145
+  }
+]

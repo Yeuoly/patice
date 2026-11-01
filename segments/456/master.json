@@ -1,0 +1,26 @@
+[
+  {
+    "musicId": 456,
+    "difficulty": "master",
+    "id": "e5c57f81-5fdb-52f0-bf6a-625056ce4144",
+    "name": "圈",
+    "startMs": 65270,
+    "endMs": 67257
+  },
+  {
+    "musicId": 456,
+    "difficulty": "master",
+    "id": "89f5c698-44f7-5f7c-9872-144003918fb5",
+    "name": "圈",
+    "startMs": 81301,
+    "endMs": 84330
+  },
+  {
+    "musicId": 456,
+    "difficulty": "master",
+    "id": "00db004a-da55-50d2-8d7f-8076b67721d1",
+    "name": "圈",
+    "startMs": 110037,
+    "endMs": 115161
+  }
+]

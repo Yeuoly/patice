@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 120227,
+    "difficulty": "utage",
+    "id": "e7d7786b-4dde-57ca-b9ed-9ec07c934df8",
+    "name": "穿心",
+    "startMs": 91694,
+    "endMs": 95758
+  },
+  {
+    "musicId": 120227,
+    "difficulty": "utage",
+    "id": "facdb144-0b2b-5d10-84de-1218c0747fc3",
+    "name": "穿心",
+    "startMs": 99194,
+    "endMs": 103258
+  }
+]

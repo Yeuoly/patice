@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 11673,
+    "difficulty": "master",
+    "id": "8756b23e-1adf-5c6f-a944-748e7ae5d609",
+    "name": "穿心",
+    "startMs": 102613,
+    "endMs": 106197
+  },
+  {
+    "musicId": 11673,
+    "difficulty": "master",
+    "id": "26b51fba-68a9-53a2-8750-377cf978c42a",
+    "name": "尾杀",
+    "startMs": 121876,
+    "endMs": 125145
+  }
+]

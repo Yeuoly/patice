@@ -1,0 +1,18 @@
+[
+  {
+    "musicId": 130227,
+    "difficulty": "utage",
+    "id": "c51961de-b0de-5a86-87dd-30a83eee0b09",
+    "name": "S1",
+    "startMs": 61225,
+    "endMs": 66930
+  },
+  {
+    "musicId": 130227,
+    "difficulty": "utage",
+    "id": "fcafb17f-f0b9-57b0-b5c8-d1acf800d265",
+    "name": "S2",
+    "startMs": 105288,
+    "endMs": 110406
+  }
+]
